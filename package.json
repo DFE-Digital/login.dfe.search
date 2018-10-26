@@ -20,6 +20,7 @@
     "body-parser": "^1.18.1",
     "express": "^4.15.4",
     "helmet": "^3.9.0",
+    "ioredis": "^4.2.0",
     "lodash": "^4.17.10",
     "login.dfe.api.auth": "git+https://github.com/DFE-Digital/login.dfe.api.auth.git#v1.0.0",
     "login.dfe.audit.winston-sequelize-transport": "git+https://github.com/DFE-Digital/login.dfe.audit.winston-sequelize-transport.git#v1.0",
