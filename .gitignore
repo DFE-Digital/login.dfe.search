@@ -61,7 +61,6 @@ typings/
 .next
 
 \.idea/markdown-navigator\.xml
-
 \.idea/markdown-navigator/
-
 \.idea/workspace\.xml
+/config/*.*
