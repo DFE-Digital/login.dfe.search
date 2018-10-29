@@ -36,7 +36,11 @@ const listUsers = async (page, pageSize, includeDevices, includeCodes, includeLe
     numberOfPages: pages.length,
   };
 };
+const listInvitations = async (page, pageSize, changedAfter, correlationId) => {
+  return Promise.resolve([]);
+};
 
 module.exports = {
   listUsers,
+  listInvitations,
 };

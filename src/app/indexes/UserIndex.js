@@ -2,7 +2,7 @@ const logger = require('./../../infrastructure/logger');
 const Index = require('./Index');
 const cache = require('./../../infrastructure/cache');
 const uuid = require('uuid/v4');
-const { listUsers } = require('./../../infrastructure/directories');
+const { listUsers, listInvitations } = require('./../../infrastructure/directories');
 const { mapAsync } = require('./../../utils/async');
 
 const indexStructure = {
@@ -111,11 +111,46 @@ const getAllUsers = async (changedAfter, correlationId) => {
   }
   return users;
 };
+const getAllInvitations = async (changedAfter, correlationId) => {
+  const invitations = [];
+  let hasMorePages = true;
+  let pageNumber = 1;
+  let numberOfPages;
+  while (hasMorePages) {
+    if (numberOfPages) {
+      logger.debug(`Reading page ${pageNumber} of ${numberOfPages} of invitations`, { correlationId });
+    } else {
+      logger.debug(`Reading page ${pageNumber} of invitations`, { correlationId });
+    }
+
+    try {
+      const page = await listInvitations(pageNumber, pageSize, changedAfter, correlationId);
+      const mapped = page.invitations.filter(i => !i.isCompleted).map((invitation) => ({
+        id: `inv-${invitation.id}`,
+        firstName: invitation.firstName,
+        lastName: invitation.lastName,
+        email: invitation.email,
+        statusId: invitation.deactivated ? -2 : -1,
+      }));
+
+      invitations.push(...mapped);
+
+      numberOfPages = page.numberOfPages;
+      pageNumber++;
+      hasMorePages = pageNumber <= page.numberOfPages;
+    } catch (e) {
+      throw new Error(`Error reading page ${pageNumber} of invitations - ${e.message}`);
+    }
+  }
+  return invitations;
+};
 const getSearchableString = (source) => {
   return source.toLowerCase()
     .replace(/\s/g, '')
-    .replace(/@/g, '');
+    .replace(/@/g, '__at__')
+    .replace(/\./g, '__dot__');
 };
+
 
 class UserIndex extends Index {
   constructor(name) {
@@ -128,7 +163,12 @@ class UserIndex extends Index {
       const searchableEmail = getSearchableString(user.email);
       const document = Object.assign({
         searchableName,
-        searchableEmail
+        searchableEmail,
+        organisations: [],
+        searchableOrganisations: [],
+        organisationCategories: [],
+        services: [],
+        legacyUsernames: [],
       }, user);
       // TODO: add orgs, services and stats
       return document;
@@ -141,7 +181,9 @@ class UserIndex extends Index {
     logger.debug(`Found ${users.length} users for indexing into ${this.name} (changed after = ${changedAfter})`, { correlationId });
     await this.store(users);
 
-    // TODO: get invitations
+    const invitations = await getAllInvitations(changedAfter, correlationId);
+    logger.debug(`Found ${invitations.length} invitations for indexing into ${this.name} (changed after = ${changedAfter})`, { correlationId });
+    await this.store(invitations);
   }
 
   static async current(newIndex = undefined) {

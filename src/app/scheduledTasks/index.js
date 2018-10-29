@@ -27,7 +27,7 @@ const scheduleTask = (name, cronSpec, action) => {
 };
 
 const start = () => {
-  // scheduleTask('re-index users', config.schedulesTasks.reindexUsers, reindexUsers);
+  scheduleTask('re-index users', config.schedulesTasks.reindexUsers, reindexUsers);
   scheduleTask('update audit cache', config.schedulesTasks.updateAuditCache, updateAuditCache);
 };
 module.exports = {
