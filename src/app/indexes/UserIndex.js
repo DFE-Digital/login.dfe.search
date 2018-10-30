@@ -34,6 +34,10 @@ const indexStructure = {
     searchable: true,
     sortable: true,
   },
+  primaryOrganisation: {
+    type: 'String',
+    sortable: true,
+  },
   organisations: {
     type: 'Collection',
     filterable: true,
@@ -101,6 +105,7 @@ const getAllUsers = async (changedAfter, correlationId) => {
       numberOfPages = page.numberOfPages;
       pageNumber++;
       hasMorePages = pageNumber <= page.numberOfPages;
+      hasMorePages = false;
     } catch (e) {
       throw new Error(`Error reading page ${pageNumber} of users - ${e.message}`);
     }
@@ -154,8 +159,9 @@ const getOrganisations = async (documentId, correlationId) => {
     accessibleOrganisations = await getUserOrganisations(documentId, correlationId)
   }
   return accessibleOrganisations.map(accessibleOrganisation => ({
+    id: accessibleOrganisation.organisation.id,
     name: accessibleOrganisation.organisation.name,
-    category: accessibleOrganisation.organisation.category ? accessibleOrganisation.organisation.category.name : undefined,
+    category: accessibleOrganisation.organisation.category ? accessibleOrganisation.organisation.category.id : undefined,
   }));
 };
 
@@ -178,7 +184,8 @@ class UserIndex extends Index {
       if (!document.organisations) {
         logger.debug(`getting organisations for ${document.id}`, { correlationId });
         const organisations = await getOrganisations(document.id);
-        document.organisations = uniq(organisations.map(x => x.name));
+        document.primaryOrganisation = organisations.length > 0 ? organisations[0].name : undefined;
+        document.organisations = uniq(organisations.map(x => x.id));
         document.searchableOrganisations = uniq(organisations.map(x => getSearchableString(x.name)));
         document.organisationCategories = uniq(organisations.map(x => x.category)).filter(x => x !== undefined);
       }
