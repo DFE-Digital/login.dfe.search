@@ -1,6 +1,7 @@
 const logger = require('./../../infrastructure/logger');
 const uuid = require('uuid/v4');
 const uniq = require('lodash/uniq');
+const omit = require('lodash/omit');
 const Index = require('./Index');
 const cache = require('./../../infrastructure/cache');
 const { getLoginStatsForUser } = require('./../../infrastructure/stats');
@@ -40,7 +41,6 @@ const indexStructure = {
   searchableOrganisations: {
     type: 'Collection',
     searchable: true,
-    filterable: true,
   },
   organisationCategories: {
     type: 'Collection',
@@ -172,7 +172,7 @@ class UserIndex extends Index {
         searchableName,
         searchableEmail,
       }, user);
-      if(!document.legacyUsernames){
+      if (!document.legacyUsernames) {
         document.legacyUsernames = [];
       }
       if (!document.organisations) {
@@ -201,6 +201,15 @@ class UserIndex extends Index {
       return document;
     });
     return super.store(documents);
+  }
+
+  async search(criteria, page = 1, pageSize = 25, sortBy = 'searchableName', sortAsc = true, filters = undefined) {
+    const pageOfDocuments = await super.search(criteria, page, pageSize, sortBy, sortAsc, filters);
+    return {
+      users: pageOfDocuments.documents.map(d => omit(d, ['searchableName', 'searchableEmail', 'searchableOrganisations'])),
+      totalNumberOfResults: pageOfDocuments.totalNumberOfResults,
+      numberOfPages: pageOfDocuments.numberOfPages,
+    }
   }
 
   async indexAllUsers(changedAfter, correlationId) {

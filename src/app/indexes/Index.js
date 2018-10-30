@@ -1,4 +1,4 @@
-const { createIndex, storeDocumentsInIndex } = require('./../../infrastructure/search');
+const { createIndex, storeDocumentsInIndex, searchIndex } = require('./../../infrastructure/search');
 const { forEachAsync } = require('./../../utils/async');
 const chunk = require('lodash/chunk');
 
@@ -51,6 +51,14 @@ class Index {
         throw new Error(`Error writing batch ${index} to ${this.name} - ${e.message}`);
       }
     })
+  }
+
+  async search(criteria, page, pageSize, sortBy, sortAsc = true, filters = undefined) {
+    try {
+      return await searchIndex(this.name, criteria, page, pageSize, sortBy, sortAsc, filters)
+    } catch (e) {
+      throw new Error(`Error searching ${this.name} using criteria '${criteria}' (page=${page}, pageSize=${pageSize}, sortBy=${sortBy}, sortAsc=${sortAsc}, filters=${JSON.stringify(filters)}) - ${e.message}`);
+    }
   }
 
   static async create(name, structure) {

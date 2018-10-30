@@ -8,6 +8,7 @@ const rp = require('login.dfe.request-promise-retry').defaults({
     keepAliveTimeout: config.hostingEnvironment.agentKeepAlive.keepAliveTimeout,
   }),
 });
+const omit = require('lodash/omit');
 
 const baseUri = `https://${config.search.azureSearch.serviceName}.search.windows.net/indexes`;
 const apiVersion = '2016-09-01';
@@ -71,7 +72,48 @@ const storeDocumentsInIndex = async (name, documents) => {
   });
 };
 
+const searchIndex = async (name, criteria, page, pageSize, sortBy, sortAsc = true, filters = undefined) => {
+  const skip = (page - 1) * pageSize;
+  let uri = `${baseUri}/${name}/docs?api-version=${apiVersion}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}`;
+  if (sortBy) {
+    const orderBy = sortAsc ? sortBy : `${sortBy} desc`;
+    uri += `&$orderby=${orderBy}`;
+  }
+  if (filters) {
+    let filterParam = '';
+    filters.forEach((filter) => {
+      if(filterParam.length > 0) {
+        filterParam += ' and ';
+      }
+      filterParam += `${filter.field}/any(x: search.in(x, '${filter.values.join(', ')}', ','))`
+    });
+    uri += `&$filter=${filterParam}`;
+  }
+
+  const response = await rp({
+    method: 'GET',
+    uri,
+    headers: {
+      'content-type': 'application/json',
+      'api-key': config.search.azureSearch.apiKey,
+    },
+    json: true,
+  });
+  let numberOfPages = 1;
+  const totalNumberOfResults = parseInt(response['@odata.count']);
+  if (!isNaN(totalNumberOfResults)) {
+    numberOfPages = Math.ceil(totalNumberOfResults / pageSize);
+  }
+
+  return {
+    documents: response.value.map(x => omit(x, ['@search.score'])),
+    totalNumberOfResults,
+    numberOfPages,
+  };
+};
+
 module.exports = {
   createIndex,
   storeDocumentsInIndex,
+  searchIndex,
 };
