@@ -46,6 +46,8 @@ const schema = new SimpleSchema({
   schedulesTasks: schedulesTasksSchema,
   cache: cacheSchema,
   audit: auditSchema,
+  directories: schemas.apiClient,
+  organisations: schemas.apiClient,
 });
 module.exports.validate = () => {
   validateConfigAgainstSchema(config, schema, logger)
