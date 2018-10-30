@@ -239,7 +239,7 @@ class UserIndex extends Index {
   }
 
   static async create() {
-    const name = `users-${uuid()}`;
+    const name = `search-users-${uuid()}`;
     await Index.create(name, indexStructure);
     return new UserIndex(name);
   }
