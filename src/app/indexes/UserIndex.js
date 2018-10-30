@@ -1,8 +1,11 @@
 const logger = require('./../../infrastructure/logger');
+const uuid = require('uuid/v4');
+const uniq = require('lodash/uniq');
 const Index = require('./Index');
 const cache = require('./../../infrastructure/cache');
-const uuid = require('uuid/v4');
+const { getLoginStatsForUser } = require('./../../infrastructure/stats');
 const { listUsers, listInvitations } = require('./../../infrastructure/directories');
+const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
 const { mapAsync } = require('./../../utils/async');
 
 const indexStructure = {
@@ -39,10 +42,6 @@ const indexStructure = {
     searchable: true,
     filterable: true,
   },
-  primaryOrganisation: {
-    type: 'String',
-    sortable: true,
-  },
   organisationCategories: {
     type: 'Collection',
     filterable: true,
@@ -63,9 +62,6 @@ const indexStructure = {
   statusId: {
     type: 'Int64',
     filterable: true,
-  },
-  statusDescription: {
-    type: 'String',
   },
   pendingEmail: {
     type: 'String',
@@ -105,6 +101,7 @@ const getAllUsers = async (changedAfter, correlationId) => {
       numberOfPages = page.numberOfPages;
       pageNumber++;
       hasMorePages = pageNumber <= page.numberOfPages;
+      hasMorePages = false;
     } catch (e) {
       throw new Error(`Error reading page ${pageNumber} of users - ${e.message}`);
     }
@@ -150,27 +147,51 @@ const getSearchableString = (source) => {
     .replace(/@/g, '__at__')
     .replace(/\./g, '__dot__');
 };
-
+const getOrganisations = async (documentId, correlationId) => {
+  let accessibleOrganisations;
+  if (documentId.startsWith('inv-')) {
+    accessibleOrganisations = await getInvitationOrganisations(documentId.substr(4), correlationId)
+  } else {
+    accessibleOrganisations = await getUserOrganisations(documentId, correlationId)
+  }
+  return accessibleOrganisations.map(accessibleOrganisation => ({
+    name: accessibleOrganisation.organisation.name,
+    category: accessibleOrganisation.organisation.category ? accessibleOrganisation.organisation.category.name : undefined,
+  }));
+};
 
 class UserIndex extends Index {
   constructor(name) {
     super(name, indexStructure);
   }
 
-  async store(users) {
+  async store(users, correlationId) {
     const documents = await mapAsync(users, async (user) => {
       const searchableName = getSearchableString(`${user.firstName}${user.lastName}`);
       const searchableEmail = getSearchableString(user.email);
       const document = Object.assign({
         searchableName,
         searchableEmail,
-        organisations: [],
-        searchableOrganisations: [],
-        organisationCategories: [],
-        services: [],
         legacyUsernames: [],
       }, user);
-      // TODO: add orgs, services and stats
+      if (!document.organisations) {
+        logger.debug(`getting organisations for ${document.id}`, { correlationId });
+        const organisations = await getOrganisations(document.id);
+        document.organisations = uniq(organisations.map(x => x.name));
+        document.searchableOrganisations = uniq(organisations.map(x => getSearchableString(x.name)));
+        document.organisationCategories = uniq(organisations.map(x => x.category)).filter(x => x !== undefined);
+      }
+      if (!document.services) {
+        logger.debug(`getting services for ${document.id}`, { correlationId });
+        // TODO: add services
+      }
+      if (!document.id.startsWith('inv-') && (!document.lastLogin || document.numberOfSuccessfulLoginsInPast12Months || document.statusLastChangedOn)) {
+        logger.debug(`getting stats for ${document.id}`, { correlationId });
+        const stats = await getLoginStatsForUser(document.id);
+        document.lastLogin = document.lastLogin || stats.lastLogin;
+        document.numberOfSuccessfulLoginsInPast12Months = document.numberOfSuccessfulLoginsInPast12Months || stats.loginsInPast12Months;
+        document.statusLastChangedOn = document.statusLastChangedOn || stats.lastStatusChange;
+      }
       return document;
     });
     return super.store(documents);
@@ -183,7 +204,7 @@ class UserIndex extends Index {
 
     const invitations = await getAllInvitations(changedAfter, correlationId);
     logger.debug(`Found ${invitations.length} invitations for indexing into ${this.name} (changed after = ${changedAfter})`, { correlationId });
-    await this.store(invitations);
+    await this.store(invitations, correlationId);
   }
 
   static async current(newIndex = undefined) {
