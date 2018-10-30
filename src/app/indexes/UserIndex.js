@@ -101,7 +101,6 @@ const getAllUsers = async (changedAfter, correlationId) => {
       numberOfPages = page.numberOfPages;
       pageNumber++;
       hasMorePages = pageNumber <= page.numberOfPages;
-      hasMorePages = false;
     } catch (e) {
       throw new Error(`Error reading page ${pageNumber} of users - ${e.message}`);
     }
@@ -172,8 +171,10 @@ class UserIndex extends Index {
       const document = Object.assign({
         searchableName,
         searchableEmail,
-        legacyUsernames: [],
       }, user);
+      if(!document.legacyUsernames){
+        document.legacyUsernames = [];
+      }
       if (!document.organisations) {
         logger.debug(`getting organisations for ${document.id}`, { correlationId });
         const organisations = await getOrganisations(document.id);
@@ -184,14 +185,19 @@ class UserIndex extends Index {
       if (!document.services) {
         logger.debug(`getting services for ${document.id}`, { correlationId });
         // TODO: add services
+        document.services = [];
       }
       if (!document.id.startsWith('inv-') && (!document.lastLogin || document.numberOfSuccessfulLoginsInPast12Months || document.statusLastChangedOn)) {
         logger.debug(`getting stats for ${document.id}`, { correlationId });
         const stats = await getLoginStatsForUser(document.id);
-        document.lastLogin = document.lastLogin || stats.lastLogin;
-        document.numberOfSuccessfulLoginsInPast12Months = document.numberOfSuccessfulLoginsInPast12Months || stats.loginsInPast12Months;
-        document.statusLastChangedOn = document.statusLastChangedOn || stats.lastStatusChange;
+        if (stats) {
+          document.lastLogin = document.lastLogin || stats.lastLogin;
+          document.numberOfSuccessfulLoginsInPast12Months = document.numberOfSuccessfulLoginsInPast12Months || stats.loginsInPast12Months.length;
+          document.statusLastChangedOn = document.statusLastChangedOn || stats.lastStatusChange;
+        }
       }
+      document.lastLogin = document.lastLogin ? document.lastLogin.getTime() : undefined;
+      document.statusLastChangedOn = document.statusLastChangedOn ? document.statusLastChangedOn.getTime() : undefined;
       return document;
     });
     return super.store(documents);
