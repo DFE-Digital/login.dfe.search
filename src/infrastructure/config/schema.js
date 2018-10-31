@@ -56,6 +56,7 @@ const schema = new SimpleSchema({
   search: searchSchema,
   directories: schemas.apiClient,
   organisations: schemas.apiClient,
+  access: schemas.apiClient,
 });
 module.exports.validate = () => {
   validateConfigAgainstSchema(config, schema, logger)

@@ -7,6 +7,7 @@ const cache = require('./../../infrastructure/cache');
 const { getLoginStatsForUser } = require('./../../infrastructure/stats');
 const { listUsers, listInvitations } = require('./../../infrastructure/directories');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
+const { listUserServices, listAllUsersServices, listInvitationServices, listAllInvitationsServices } = require('./../../infrastructure/access');
 const { mapAsync } = require('./../../utils/async');
 
 const indexStructure = {
@@ -105,6 +106,7 @@ const getAllUsers = async (changedAfter, correlationId) => {
       numberOfPages = page.numberOfPages;
       pageNumber++;
       hasMorePages = pageNumber <= page.numberOfPages;
+      hasMorePages = false;
     } catch (e) {
       throw new Error(`Error reading page ${pageNumber} of users - ${e.message}`);
     }
@@ -163,6 +165,15 @@ const getOrganisations = async (documentId, correlationId) => {
     category: accessibleOrganisation.organisation.category ? accessibleOrganisation.organisation.category.id : undefined,
   }));
 };
+const getServices = async (documentId, correlationId) => {
+  let services;
+  if (documentId.startsWith('inv-')) {
+    services = await listInvitationServices(documentId.substr(4), correlationId)
+  } else {
+    services = await listUserServices(documentId, correlationId)
+  }
+  return services ? services.map(service => service.serviceId) : [];
+};
 
 class UserIndex extends Index {
   constructor(name) {
@@ -190,8 +201,7 @@ class UserIndex extends Index {
       }
       if (!document.services) {
         logger.debug(`getting services for ${document.id}`, { correlationId });
-        // TODO: add services
-        document.services = [];
+        document.services = await getServices(document.id);
       }
       if (!document.id.startsWith('inv-') && (!document.lastLogin || document.numberOfSuccessfulLoginsInPast12Months || document.statusLastChangedOn)) {
         logger.debug(`getting stats for ${document.id}`, { correlationId });

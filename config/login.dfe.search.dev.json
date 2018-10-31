@@ -58,5 +58,8 @@
   },
   "organisations": {
     "type": "static"
+  },
+  "access": {
+    "type": "static"
   }
 }
