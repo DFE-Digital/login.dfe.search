@@ -105,7 +105,6 @@ const getAllUsers = async (changedAfter, correlationId) => {
       numberOfPages = page.numberOfPages;
       pageNumber++;
       hasMorePages = pageNumber <= page.numberOfPages;
-      hasMorePages = false;
     } catch (e) {
       throw new Error(`Error reading page ${pageNumber} of users - ${e.message}`);
     }
@@ -242,6 +241,14 @@ class UserIndex extends Index {
     const name = `search-users-${uuid()}`;
     await Index.create(name, indexStructure);
     return new UserIndex(name);
+  }
+
+  static async tidyIndexes(correlationId) {
+    await super.tidyIndexes('users', async (indexes) => {
+      const matching = indexes.filter(x => x.match(/^search\-users\-/));
+      const currentIndexName = await cache.get('Pointer:UserIndex');
+      return matching.filter(x => x !== currentIndexName);
+    }, correlationId);
   }
 }
 
