@@ -40,13 +40,20 @@ const auditSchema = new SimpleSchema({
   },
   params: schemas.sequelizeConnection,
 });
+const searchSchema = new SimpleSchema({
+  azureSearch: Object,
+  'azureSearch.serviceName': String,
+  'azureSearch.apiKey': String,
+});
 
 const schema = new SimpleSchema({
   loggerSettings: schemas.loggerSettings,
   hostingEnvironment: schemas.hostingEnvironment,
+  auth: schemas.apiServerAuth,
   scheduledTasks: scheduledTasksSchema,
   cache: cacheSchema,
   audit: auditSchema,
+  search: searchSchema,
   directories: schemas.apiClient,
   organisations: schemas.apiClient,
 });
