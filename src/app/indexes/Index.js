@@ -1,6 +1,8 @@
-const { createIndex, storeDocumentsInIndex, searchIndex } = require('./../../infrastructure/search');
-const { forEachAsync } = require('./../../utils/async');
 const chunk = require('lodash/chunk');
+const logger = require('./../../infrastructure/logger');
+const { listIndexes, createIndex, storeDocumentsInIndex, searchIndex, deleteIndex } = require('./../../infrastructure/search');
+const cache = require('./../../infrastructure/cache');
+const { forEachAsync } = require('./../../utils/async');
 
 const ensureValueValidForField = (value, field) => {
   if (!value && field.key) {
@@ -67,6 +69,25 @@ class Index {
     } catch (e) {
       throw new Error(`Error creating index ${name} - ${e.message}`);
     }
+  }
+
+  static async tidyIndexes(name, matcher, correlationId) {
+    const previouslyUnusedIndexes = await cache.get(`UnusedIndexes:${name}`);
+    if (previouslyUnusedIndexes) {
+      const stillUnusedIndexes = await matcher(previouslyUnusedIndexes);
+      await forEachAsync(stillUnusedIndexes, async (indexName) => {
+        try {
+          await deleteIndex(indexName);
+          logger.info(`deleted index ${indexName}`, { correlationId });
+        } catch (e) {
+          throw new Error(`Error deleting index ${indexName} - ${e.message}`);
+        }
+      });
+    }
+
+    const allIndexes = await listIndexes();
+    const unusedIndexes = await matcher(allIndexes);
+    await cache.set(`UnusedIndexes:${name}`, unusedIndexes);
   }
 }
 

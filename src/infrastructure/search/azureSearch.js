@@ -13,6 +13,18 @@ const omit = require('lodash/omit');
 const baseUri = `https://${config.search.azureSearch.serviceName}.search.windows.net/indexes`;
 const apiVersion = '2016-09-01';
 
+const listIndexes = async () => {
+  const indexesResponse = await rp({
+    method: 'GET',
+    uri: `${baseUri}?api-version=${apiVersion}`,
+    headers: {
+      'api-key': config.search.azureSearch.apiKey,
+    },
+    json: true,
+  });
+  return indexesResponse.value.map(x => x.name);
+};
+
 const createIndex = async (name, structure) => {
   const fields = Object.keys(structure).map((fieldName) => {
     const fieldDetails = structure[fieldName];
@@ -82,7 +94,7 @@ const searchIndex = async (name, criteria, page, pageSize, sortBy, sortAsc = tru
   if (filters) {
     let filterParam = '';
     filters.forEach((filter) => {
-      if(filterParam.length > 0) {
+      if (filterParam.length > 0) {
         filterParam += ' and ';
       }
       filterParam += `${filter.field}/any(x: search.in(x, '${filter.values.join(', ')}', ','))`
@@ -112,8 +124,27 @@ const searchIndex = async (name, criteria, page, pageSize, sortBy, sortAsc = tru
   };
 };
 
+const deleteIndex = async (name) => {
+  try {
+    await rp({
+      method: 'DELETE',
+      uri: `${baseUri}/${name}?api-version=${apiVersion}`,
+      headers: {
+        'api-key': config.search.azureSearch.apiKey,
+      },
+      json: true,
+    });
+  } catch (e) {
+    if (e.statusCode !== 404) {
+      throw e;
+    }
+  }
+};
+
 module.exports = {
+  listIndexes,
   createIndex,
   storeDocumentsInIndex,
   searchIndex,
+  deleteIndex,
 };
