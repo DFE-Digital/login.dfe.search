@@ -12,7 +12,7 @@ const listUsers = async (page, pageSize, includeDevices, includeCodes, includeLe
     includeDevices ? 'devices' : undefined,
     includeCodes ? 'codes' : undefined,
     includeLegacyUsernames ? 'legacyusernames' : undefined,
-  ].map(x => x !== undefined);
+  ].filter(x => x !== undefined);
   if (includes) {
     resource += `&include=${includes.join(',')}`;
   }
