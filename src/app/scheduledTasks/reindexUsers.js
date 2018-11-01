@@ -8,7 +8,7 @@ const reindexUsers = async (correlationId) => {
   logger.info(`Created users index ${index.name}`, {correlationId});
 
   // get all users
-  await index.indexAllUsers(undefined, correlationId);
+  await index.indexAllUsers(correlationId);
   logger.info('Indexed all users', {correlationId});
 
   // swap index
