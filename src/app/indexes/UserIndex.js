@@ -378,6 +378,13 @@ class UserIndex extends Index {
         document.organisations = uniq(organisations.map(x => x.id));
         document.searchableOrganisations = uniq(organisations.map(x => getSearchableString(x.name)));
         document.organisationCategories = uniq(organisations.map(x => x.category)).filter(x => x !== undefined);
+        document.organisationsJson = JSON.stringify(organisations.map(orgMap => ({
+          id: orgMap.id,
+          name: orgMap.name,
+          categoryId: orgMap.category ? orgMap.category : undefined,
+          statusId: orgMap.status || 0,
+          roleId: orgMap.role || 0,
+        })));
       }
       if (!document.services) {
         logger.debug(`getting services for ${document.id}`, { correlationId });
