@@ -338,8 +338,23 @@ class UserIndex extends Index {
 
   async search(criteria, page = 1, pageSize = 25, sortBy = 'searchableName', sortAsc = true, filters = undefined) {
     const pageOfDocuments = await super.search(criteria, page, pageSize, sortBy, sortAsc, filters);
+    const users = pageOfDocuments.documents.map(document => ({
+      id: document.id,
+      firstName: document.firstName,
+      lastName: document.lastName,
+      email: document.email,
+      primaryOrganisation: document.primaryOrganisation,
+      organisations: JSON.parse(document.organisationsJson),
+      services: document.services,
+      lastLogin: document.lastLogin ? new Date(document.lastLogin) : null,
+      numberOfSuccessfulLoginsInPast12Months: document.numberOfSuccessfulLoginsInPast12Months,
+      statusLastChangedOn: document.statusLastChangedOn ? new Date(document.statusLastChangedOn) : null,
+      statusId: document.statusId,
+      pendingEmail: document.pendingEmail,
+      legacyUsernames: document.legacyUsernames,
+    }));
     return {
-      users: pageOfDocuments.documents.map(d => omit(d, ['searchableName', 'searchableEmail', 'searchableOrganisations'])),
+      users,
       totalNumberOfResults: pageOfDocuments.totalNumberOfResults,
       numberOfPages: pageOfDocuments.numberOfPages,
     }
