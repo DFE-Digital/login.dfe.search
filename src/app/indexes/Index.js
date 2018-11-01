@@ -42,11 +42,12 @@ class Index {
     this.structure = structure;
   }
 
-  async store(documents) {
+  async store(documents, correlationId) {
     ensureDocumentsAreValidStructure(documents, this.structure);
 
     const batches = chunk(documents, 100);
     await forEachAsync(batches, async (batch, index) => {
+      logger.debug(`Writing batch ${index + 1} of ${batches.length} to ${this.name}`, { correlationId });
       try {
         await storeDocumentsInIndex(this.name, batch);
       } catch (e) {
