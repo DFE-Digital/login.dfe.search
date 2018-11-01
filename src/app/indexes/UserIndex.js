@@ -179,6 +179,7 @@ const mergeUsersOrganisationsServices = (users, userOrganisations, userServices)
       name: orgMap.organisation.name,
       categoryId: orgMap.organisation.category ? orgMap.organisation.category.id : undefined,
       statusId: orgMap.organisation.status.id,
+      roleId: orgMap.role ? orgMap.role.id : 0,
     })));
     const services = userServices.filter(x => x.userId.toLowerCase() === user.id.toLowerCase()).map(x => x.serviceId);
     return Object.assign({}, user, {
@@ -288,6 +289,7 @@ const mergeInvitationsOrganisationsServices = (invitations, invitationOrganisati
       name: orgMap.organisation.name,
       categoryId: orgMap.organisation.category ? orgMap.organisation.category.id : undefined,
       statusId: orgMap.organisation.status.id,
+      roleId: orgMap.role.id,
     })));
     const services = invitationServices.filter(x => `inv-${x.invitationId.toLowerCase()}` === invitation.id.toLowerCase()).map(x => x.serviceId);
     return Object.assign({}, invitation, {
