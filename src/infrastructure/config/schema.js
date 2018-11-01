@@ -5,6 +5,7 @@ const logger = require('./../logger');
 
 const scheduledTasksSchema = new SimpleSchema({
   reindexUsers: String,
+  updateUsersIndex: String,
   updateAuditCache: String,
   tidyIndexes: String,
 });

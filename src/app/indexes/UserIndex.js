@@ -406,30 +406,40 @@ class UserIndex extends Index {
     return super.store(documents, correlationId);
   }
 
-  async indexAllUsers(changedAfter, correlationId) {
-    const getUsersPromise = getAllUsers(changedAfter, correlationId);
+  async indexAllUsers(correlationId) {
+    const getUsersPromise = getAllUsers(undefined, correlationId);
     const getUserOrganisationsPromise = getAllUserOrganisations(correlationId);
     const getUserServicesPromise = getAllUserServices(correlationId);
     const users = await getUsersPromise;
     const userOrganisations = await getUserOrganisationsPromise;
     const userServices = await getUserServicesPromise;
-    logger.debug(`Found ${users.length} users, ${userOrganisations.length} organisations and ${userServices.length} services for indexing into ${this.name} (changed after = ${changedAfter})`, { correlationId });
+    logger.debug(`Found ${users.length} users, ${userOrganisations.length} organisations and ${userServices.length} services for indexing into ${this.name}`, { correlationId });
     const mergedUsers = mergeUsersOrganisationsServices(users, userOrganisations, userServices);
     logger.debug('Merged user details');
     await this.store(mergedUsers, correlationId);
     logger.debug(`Stored ${mergedUsers.length} users in ${this.name}`);
 
-    const getInvitationsPromise = await getAllInvitations(changedAfter, correlationId);
-    const getInvitationOrganisationsPromise = await getAllInvitationOrganisations(correlationId);
-    const getInvitationServicesPromise = await getAllInvitationServices(correlationId);
+    const getInvitationsPromise = getAllInvitations(undefined, correlationId);
+    const getInvitationOrganisationsPromise = getAllInvitationOrganisations(correlationId);
+    const getInvitationServicesPromise = getAllInvitationServices(correlationId);
     const invitations = await getInvitationsPromise;
     const invitationOrganisations = await getInvitationOrganisationsPromise;
     const invitationServices = await getInvitationServicesPromise;
-    logger.debug(`Found ${invitations.length} invitations and ${invitationServices.length} services for indexing into ${this.name} (changed after = ${changedAfter})`, { correlationId });
+    logger.debug(`Found ${invitations.length} invitations and ${invitationServices.length} services for indexing into ${this.name}`, { correlationId });
     const mergedInvitations = mergeInvitationsOrganisationsServices(invitations, invitationOrganisations, invitationServices);
     logger.debug('Merged invitation details');
     await this.store(mergedInvitations, correlationId);
     logger.debug(`Stored ${mergedInvitations.length} invitations in ${this.name}`);
+  }
+
+  async indexUsersChangedAfter(changedAfter, correlationId) {
+    const users = await getAllUsers(changedAfter, correlationId);
+    logger.debug(`Found ${users.length} users for indexing into ${this.name} (changed after = ${changedAfter})`, { correlationId });
+    await this.store(users, correlationId);
+
+    const invitations = getAllInvitations(changedAfter, correlationId);
+    logger.debug(`Found ${invitations.length} invitations for indexing into ${this.name} (changed after = ${changedAfter})`, { correlationId });
+    await this.store(invitations, correlationId);
   }
 
   static async current(newIndex = undefined) {
