@@ -4,6 +4,7 @@ const logger = require('./../../infrastructure/logger');
 const uuid = require('uuid/v4');
 
 const reindexUsers = require('./reindexUsers');
+const updateUsersIndex = require('./updateUsersIndex');
 const updateAuditCache = require('./updateAuditCache');
 const tidyIndexes = require('./tidyIndexes');
 
@@ -28,9 +29,10 @@ const scheduleTask = (name, cronSpec, action) => {
 };
 
 const start = () => {
-  scheduleTask('re-index users', config.schedulesTasks.reindexUsers, reindexUsers);
-  scheduleTask('update audit cache', config.schedulesTasks.updateAuditCache, updateAuditCache);
-  scheduleTask('tidy indexes', config.schedulesTasks.tidyIndexes, tidyIndexes);
+  scheduleTask('re-index users', config.scheduledTasks.reindexUsers, reindexUsers);
+  scheduleTask('update users index', config.scheduledTasks.updateUsersIndex, updateUsersIndex);
+  scheduleTask('update audit cache', config.scheduledTasks.updateAuditCache, updateAuditCache);
+  scheduleTask('tidy indexes', config.scheduledTasks.tidyIndexes, tidyIndexes);
 };
 module.exports = {
   start,
