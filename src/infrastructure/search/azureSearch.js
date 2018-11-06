@@ -97,7 +97,13 @@ const searchIndex = async (name, criteria, page, pageSize, sortBy, sortAsc = tru
       if (filterParam.length > 0) {
         filterParam += ' and ';
       }
-      filterParam += `${filter.field}/any(x: search.in(x, '${filter.values.join(', ')}', ','))`
+      if (filter.fieldType === 'Collection') {
+        filterParam += `${filter.field}/any(x: search.in(x, '${filter.values.join(', ')}', ','))`
+      } else if (filter.fieldType === 'Int64') {
+        filterParam += `(${filter.field} eq ${filter.values.join(` or ${filter.field} eq `)})`
+      } else {
+        filterParam += `(${filter.field} eq '${filter.values.join(`' or ${filter.field} eq '`)}')`;
+      }
     });
     uri += `&$filter=${filterParam}`;
   }

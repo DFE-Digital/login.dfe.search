@@ -4,7 +4,7 @@ const { getBatchOfAuditsSince } = require('./../../infrastructure/audit');
 const { getLoginStatsForUser, setLoginStatsForUser } = require('./../../infrastructure/stats');
 
 const processAuditSigninDetails = (entry, stats) => {
-  if (!entry.userId || entry.type !== 'sign-in' || entry.subType !== 'username-password') {
+  if (entry.type !== 'sign-in' || entry.subType !== 'username-password') {
     return false;
   }
 
@@ -57,14 +57,20 @@ const processUserBatch = async (batch) => {
 const processBatch = async (batch) => {
   const groupedByUser = [];
   batch.forEach((entry) => {
-    if (!entry.userId) {
+    let userId = entry.userId;
+    if (entry.type === 'support' && entry.subType === 'user-edit'
+      && entry.editedUser && entry.editedFields.find(y => y.name === 'status')) {
+      userId = entry.editedUser;
+    }
+
+    if (!userId) {
       return;
     }
 
-    let userBatch = groupedByUser.find(x => x.userId === entry.userId);
+    let userBatch = groupedByUser.find(x => x.userId === userId);
     if (!userBatch) {
       userBatch = {
-        userId: entry.userId,
+        userId: userId,
         entries: [],
       };
       groupedByUser.push(userBatch);

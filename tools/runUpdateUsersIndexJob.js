@@ -1,11 +1,11 @@
-const reindexUsers = require('./../src/app/scheduledTasks/reindexUsers');
+const updateUsersIndex = require('./../src/app/scheduledTasks/updateUsersIndex');
 const uuid = require('uuid/v4');
 
 const run = async () => {
-  const correlationId = `Single-ReindexUsers-${uuid()}`;
-  console.info(`starting re-index users ${correlationId}`);
+  const correlationId = `Single-UpdateUsersIndex-${uuid()}`;
+  console.info(`starting update users index ${correlationId}`);
   const start = Date.now();
-  await reindexUsers(correlationId);
+  await updateUsersIndex(correlationId);
   return Date.now() - start;
 };
 run().then((durationInMilliseconds) => {
