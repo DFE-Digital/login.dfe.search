@@ -58,7 +58,29 @@ class Index {
 
   async search(criteria, page, pageSize, sortBy, sortAsc = true, filters = undefined) {
     try {
-      return await searchIndex(this.name, criteria, page, pageSize, sortBy, sortAsc, filters)
+      let mappedFilters;
+      if (filters) {
+        mappedFilters = [];
+        filters.forEach((filter) => {
+          if (!filter.field) {
+            throw new Error('All filters must have a field');
+          }
+          if (!filter.values) {
+            throw new Error(`All filters must have a values (Missing on ${filter.field})`);
+          }
+          const field = this.structure[filter.field];
+          if (!field) {
+            throw new Error(`Field ${filter.field} is not in the index structure for ${this.name}`);
+          }
+
+          mappedFilters.push({
+            field: filter.field,
+            fieldType: field.type,
+            values: filter.values,
+          });
+        })
+      }
+      return await searchIndex(this.name, criteria, page, pageSize, sortBy, sortAsc, mappedFilters)
     } catch (e) {
       throw new Error(`Error searching ${this.name} using criteria '${criteria}' (page=${page}, pageSize=${pageSize}, sortBy=${sortBy}, sortAsc=${sortAsc}, filters=${JSON.stringify(filters)}) - ${e.message}`);
     }
