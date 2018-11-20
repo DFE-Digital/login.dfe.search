@@ -166,10 +166,8 @@ describe('when updating user details', () => {
       firstName: 'Robert',
       lastName: 'Johnson',
       email: 'user1@unit.test',
-      organisations: ['org1'],
-      primaryOrganisation: 'Organisation One',
-      searchableOrganisations: ['organisationone'],
-      organisationCategories: ['001'],
+      organisations: undefined,
+      primaryOrganisation: undefined,
       organisationsJson: JSON.stringify([
         {
           id: 'org1',
