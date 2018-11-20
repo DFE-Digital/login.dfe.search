@@ -61,7 +61,32 @@ const mockLogger = () => {
   };
 };
 
+const mockRequest = (customRequestProperties) => {
+  return Object.assign({
+    params: {},
+    query: {},
+    correlationId: 'correlation-id',
+  }, customRequestProperties);
+};
+const mockResponse = () => {
+  const res = {
+    status: jest.fn(),
+    contentType: jest.fn(),
+    json: jest.fn(),
+    send: jest.fn(),
+    mockResetAll: function() {
+      this.status.mockReset().mockReturnValue(this);
+      this.contentType.mockReset().mockReturnValue(this);
+      this.json.mockReset().mockReturnValue(this);
+      this.send.mockReset().mockReturnValue(this);
+    },
+  };
+  return res;
+};
+
 module.exports = {
   mockConfig,
   mockLogger,
+  mockRequest,
+  mockResponse,
 };
