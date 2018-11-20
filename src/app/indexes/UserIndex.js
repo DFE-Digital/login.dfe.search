@@ -371,6 +371,21 @@ class UserIndex extends Index {
       if (!document.legacyUsernames) {
         document.legacyUsernames = [];
       }
+      if (document.organisationsJson) {
+        const orgsModel = JSON.parse(document.organisationsJson);
+        if (!document.primaryOrganisation) {
+          document.primaryOrganisation = orgsModel.length > 0 ? orgsModel[0].name : undefined;
+        }
+        if (!document.organisations) {
+          document.organisations = uniq(orgsModel.map(x => x.id));
+        }
+        if (!document.searchableOrganisations) {
+          document.searchableOrganisations = uniq(orgsModel.map(x => getSearchableString(x.name)));
+        }
+        if (!document.organisationCategories) {
+          document.organisationCategories = uniq(orgsModel.map(x => x.category)).filter(x => x !== undefined);
+        }
+      }
       if (!document.organisations) {
         logger.debug(`getting organisations for ${document.id}`, { correlationId });
         const organisations = await getOrganisations(document.id);

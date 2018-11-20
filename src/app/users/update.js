@@ -1,10 +1,9 @@
 const UserIndex = require('./../indexes/UserIndex');
-const uniq = require('lodash/uniq');
 
 const patchableProperties = ['firstName', 'lastName', 'email', 'organisations', 'services', 'statusId', 'pendingEmail', 'legacyUsernames'];
 const requiredOrganisationProperties = ['id', 'name', 'categoryId', 'statusId', 'roleId'];
 
-const processPathProperties = (req) => {
+const processPatchProperties = (req) => {
   const result = {
     patch: {},
     errors: [],
@@ -44,12 +43,6 @@ const processPathProperties = (req) => {
   });
   return result;
 };
-const getSearchableString = (source) => {
-  return source.toLowerCase()
-    .replace(/\s/g, '')
-    .replace(/@/g, '__at__')
-    .replace(/\./g, '__dot__');
-};
 const update = async (req, res) => {
   const userIndex = await UserIndex.current();
   const searchResult = await userIndex.search('*', 1, 1, 'searchableName', true, [
@@ -62,20 +55,15 @@ const update = async (req, res) => {
     return res.status(404).send();
   }
 
-  const patchRequest = processPathProperties(req);
+  const patchRequest = processPatchProperties(req);
   if (patchRequest.errors.length > 0) {
     return res.status(400).contentType('json').send({ errors: patchRequest.errors });
   }
 
   const patched = Object.assign({}, searchResult.users[0], patchRequest.patch);
-
-  // TODO: refactor to be shared by index
-  patched.organisations = patched.organisations || [];
-  patched.primaryOrganisation = patched.organisations.length > 0 ? patched.organisations[0].name : undefined;
-  patched.searchableOrganisations = uniq(patched.organisations.map(x => getSearchableString(x.name)));
-  patched.organisationCategories = uniq(patched.organisations.map(x => x.categoryId)).filter(x => x !== undefined);
   patched.organisationsJson = JSON.stringify(patched.organisations);
-  patched.organisations = uniq(patched.organisations.map(x => x.id));
+  patched.organisations = undefined;
+  patched.primaryOrganisation = undefined;
 
   await userIndex.store([patched], req.correlationId);
   return res.status(202).send();
