@@ -452,7 +452,7 @@ class UserIndex extends Index {
     logger.debug(`Found ${users.length} users for indexing into ${this.name} (changed after = ${changedAfter})`, { correlationId });
     await this.store(users, correlationId);
 
-    const invitations = getAllInvitations(changedAfter, correlationId);
+    const invitations = await getAllInvitations(changedAfter, correlationId);
     logger.debug(`Found ${invitations.length} invitations for indexing into ${this.name} (changed after = ${changedAfter})`, { correlationId });
     await this.store(invitations, correlationId);
   }
