@@ -34,7 +34,7 @@ class ApiClient {
       if (e.statusCode === 404) {
         return undefined;
       }
-      throw e;
+      throw new Error(`${e.message} (GET: ${this._baseUrl}${resource})`);
     }
   }
 }
