@@ -459,11 +459,15 @@ class UserIndex extends Index {
 
   static async current(newIndex = undefined) {
     if (newIndex) {
-      await cache.set('Pointer:UserIndex', newIndex.name)
-    } else {
-      const currentIndexName = await cache.get('Pointer:UserIndex');
-      return new UserIndex(currentIndexName);
+      await cache.set('Pointer:UserIndex', newIndex.name);
+      return;
     }
+
+    const currentIndexName = await cache.get('Pointer:UserIndex');
+    if (!currentIndexName) {
+      return undefined;
+    }
+    return new UserIndex(currentIndexName);
   }
 
   static async create() {
