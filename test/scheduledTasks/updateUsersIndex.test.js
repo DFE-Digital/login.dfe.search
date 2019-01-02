@@ -56,5 +56,15 @@ describe('when running re-index users task', () => {
 
     expect(cache.set).toHaveBeenCalledTimes(1);
     expect(cache.set.mock.calls[0][0]).toBe('Pointer:LastUserUpdateTime');
-  })
+  });
+
+  it('then it should not attempt to index if no current index', async () => {
+    UserIndex.current.mockReturnValue(undefined);
+
+    await updateUsersIndex(correlationId);
+
+    expect(userIndex.indexUsersChangedAfter).toHaveBeenCalledTimes(0);
+    expect(cache.get).toHaveBeenCalledTimes(0);
+    expect(cache.set).toHaveBeenCalledTimes(0);
+  });
 });
