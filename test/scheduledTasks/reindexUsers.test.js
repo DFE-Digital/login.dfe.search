@@ -1,8 +1,10 @@
 jest.mock('./../../src/infrastructure/config', () => require('./../helpers').mockConfig());
 jest.mock('./../../src/infrastructure/logger', () => require('./../helpers').mockLogger());
+jest.mock('./../../src/infrastructure/cache');
 jest.mock('./../../src/app/indexes/UserIndex');
 
 const UserIndex = require('./../../src/app/indexes/UserIndex');
+const cache = require('./../../src/infrastructure/cache');
 const reindexUsers = require('./../../src/app/scheduledTasks/reindexUsers');
 
 const userIndex = {
@@ -15,6 +17,8 @@ describe('when running re-index users task', () => {
     userIndex.indexAllUsers.mockReset();
     UserIndex.create.mockReset().mockReturnValue(userIndex);
     UserIndex.current.mockReset();
+
+    cache.set.mockReset();
   });
 
   it('then it should create a new index', async () => {
@@ -50,5 +54,12 @@ describe('when running re-index users task', () => {
     }
 
     expect(UserIndex.current).toHaveBeenCalledTimes(0);
+  });
+
+  it('then it should update pointer in cache after successful update', async () => {
+    await reindexUsers(correlationId);
+
+    expect(cache.set).toHaveBeenCalledTimes(1);
+    expect(cache.set.mock.calls[0][0]).toBe('Pointer:LastUserUpdateTime');
   });
 });
