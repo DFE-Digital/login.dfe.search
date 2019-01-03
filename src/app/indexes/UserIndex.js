@@ -132,9 +132,9 @@ const getAllUserOrganisations = async (correlationId) => {
 
       organisations.push(...page.userOrganisations);
 
-      numberOfPages = page.numberOfPages;
+      numberOfPages = page.totalNumberOfPages;
       pageNumber++;
-      hasMorePages = pageNumber <= page.numberOfPages;
+      hasMorePages = pageNumber <= numberOfPages;
     } catch (e) {
       throw new Error(`Error reading page ${pageNumber} of user organisations - ${e.message}`);
     }
