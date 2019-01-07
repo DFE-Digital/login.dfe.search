@@ -1,7 +1,6 @@
 const logger = require('./../../infrastructure/logger');
 const uuid = require('uuid/v4');
 const uniq = require('lodash/uniq');
-const omit = require('lodash/omit');
 const Index = require('./Index');
 const cache = require('./../../infrastructure/cache');
 const { getLoginStatsForUser } = require('./../../infrastructure/stats');
@@ -9,6 +8,7 @@ const { listUsers, listInvitations } = require('./../../infrastructure/directori
 const { listUsersOrganisations, getUserOrganisations, listInvitationsOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
 const { listUserServices, listAllUsersServices, listInvitationServices, listAllInvitationsServices } = require('./../../infrastructure/access');
 const { mapAsync } = require('./../../utils/async');
+const BasicArrayList = require('./../../utils/BasicArrayList');
 
 const indexStructure = {
   id: {
@@ -82,7 +82,9 @@ const indexStructure = {
 const pageSize = 500;
 
 const getAllUsers = async (changedAfter, correlationId) => {
-  const users = [];
+  logger.info(`Begin reading user changed after ${changedAfter}`, { correlationId });
+
+  let users;
   let hasMorePages = true;
   let pageNumber = 1;
   let numberOfPages;
@@ -101,10 +103,13 @@ const getAllUsers = async (changedAfter, correlationId) => {
         lastName: user.family_name,
         email: user.email,
         statusId: user.status,
-        legacyUsernames: user.legacyUsernames,
+        legacyUsernames: user.legacyUsernames
       }));
 
-      users.push(...mapped);
+      if (!users) {
+        users = new BasicArrayList(page.numberOfPages * pageSize);
+      }
+      users.add(mapped);
 
       numberOfPages = page.numberOfPages;
       pageNumber++;
@@ -113,13 +118,15 @@ const getAllUsers = async (changedAfter, correlationId) => {
       throw new Error(`Error reading page ${pageNumber} of users - ${e.message}`);
     }
   }
-  return users;
+  return users.toArray();
 };
-const getAllUserOrganisations = async (correlationId) => {
-  const organisations = [];
+const updateUsersWithOrganisations = async (users, correlationId) => {
+  logger.info('Begin reading user organisations', { correlationId });
+
   let hasMorePages = true;
   let pageNumber = 1;
   let numberOfPages;
+  let user;
   while (hasMorePages) {
     if (numberOfPages) {
       logger.debug(`Reading page ${pageNumber} of ${numberOfPages} of user organisations`, { correlationId });
@@ -130,7 +137,17 @@ const getAllUserOrganisations = async (correlationId) => {
     try {
       const page = await listUsersOrganisations(pageNumber, pageSize, correlationId);
 
-      organisations.push(...page.userOrganisations);
+      page.userOrganisations.forEach((userOrganisation) => {
+        if (!user || user.id.toLowerCase() !== userOrganisation.userId.toLowerCase()) {
+          user = users.find(u => u.id.toLowerCase() === userOrganisation.userId.toLowerCase());
+          if (!user) {
+            logger.warn(`User organisation mapping with id ${userOrganisation.id} is for unknown user ${userOrganisation.userId}`, { correlationId });
+            return;
+          }
+        }
+
+        user.organisationMappings.push(userOrganisation);
+      });
 
       numberOfPages = page.totalNumberOfPages;
       pageNumber++;
@@ -139,13 +156,34 @@ const getAllUserOrganisations = async (correlationId) => {
       throw new Error(`Error reading page ${pageNumber} of user organisations - ${e.message}`);
     }
   }
-  return organisations;
+
+  console.debug('All user organisations read. Mapping details to user...');
+  for (let i = 0; i < users.length; i += 1) {
+    user = users[i];
+    console.debug(`Mapping org details for user ${i + 1} of ${users.length} (${user.email} / ${user.id})`, { correlationId });
+
+    user.primaryOrganisation = user.organisationMappings.length > 0 ? user.organisationMappings[0].organisation.name : undefined;
+    user.organisations = user.organisationMappings.map(x => x.organisation.id);
+    user.searchableOrganisations = user.organisationMappings.map(x => getSearchableString(x.organisation.name));
+    user.organisationCategories = user.organisationMappings.map(x => x.organisation.category ? x.organisation.category.id : undefined).filter(x => x !== undefined);
+    user.organisationsJson = JSON.stringify(user.organisationMappings.map(orgMap => ({
+      id: orgMap.organisation.id,
+      name: orgMap.organisation.name,
+      categoryId: orgMap.organisation.category ? orgMap.organisation.category.id : undefined,
+      statusId: orgMap.organisation.status.id,
+      roleId: orgMap.role ? orgMap.role.id : 0,
+    })));
+
+    user.organisationMappings = undefined;
+  }
 };
-const getAllUserServices = async (correlationId) => {
-  const services = [];
+const updateUsersWithServices = async (users, correlationId) => {
+  logger.info('Begin reading user services', { correlationId });
+
   let hasMorePages = true;
   let pageNumber = 1;
   let numberOfPages;
+  let user;
   while (hasMorePages) {
     if (numberOfPages) {
       logger.debug(`Reading page ${pageNumber} of ${numberOfPages} of user services`, { correlationId });
@@ -155,42 +193,21 @@ const getAllUserServices = async (correlationId) => {
 
     try {
       const page = await listAllUsersServices(pageNumber, pageSize, correlationId);
-
-      services.push(...page.services);
-
       numberOfPages = page.numberOfPages;
       pageNumber++;
       hasMorePages = pageNumber <= page.numberOfPages;
+
+      page.services.forEach((userService) => {
+        if (!user || user.id.toLowerCase() !== userService.userId.toLowerCase()) {
+          user = users.find(u => u.id.toLowerCase() === userService.userId.toLowerCase());
+        }
+
+        user.services.push(userService.serviceId);
+      });
     } catch (e) {
       throw new Error(`Error reading page ${pageNumber} of user services - ${e.message}`);
     }
   }
-  return services;
-};
-const mergeUsersOrganisationsServices = (users, userOrganisations, userServices) => {
-  return users.map((user) => {
-    const userOrgMappings = userOrganisations.filter(x => x.userId.toLowerCase() === user.id.toLowerCase());
-    const primaryOrganisation = userOrgMappings.length > 0 ? userOrgMappings[0].organisation.name : undefined;
-    const organisations = userOrgMappings.map(x => x.organisation.id);
-    const searchableOrganisations = userOrgMappings.map(x => getSearchableString(x.organisation.name));
-    const organisationCategories = userOrgMappings.map(x => x.organisation.category ? x.organisation.category.id : undefined).filter(x => x !== undefined);
-    const organisationsJson = JSON.stringify(userOrgMappings.map(orgMap => ({
-      id: orgMap.organisation.id,
-      name: orgMap.organisation.name,
-      categoryId: orgMap.organisation.category ? orgMap.organisation.category.id : undefined,
-      statusId: orgMap.organisation.status.id,
-      roleId: orgMap.role ? orgMap.role.id : 0,
-    })));
-    const services = userServices.filter(x => x.userId.toLowerCase() === user.id.toLowerCase()).map(x => x.serviceId);
-    return Object.assign({}, user, {
-      primaryOrganisation,
-      organisations,
-      searchableOrganisations,
-      organisationCategories,
-      organisationsJson,
-      services
-    });
-  });
 };
 const getAllInvitations = async (changedAfter, correlationId) => {
   const invitations = [];
@@ -302,6 +319,7 @@ const mergeInvitationsOrganisationsServices = (invitations, invitationOrganisati
     });
   });
 };
+
 const getSearchableString = (source) => {
   return source.toLowerCase()
     .replace(/\s/g, '')
@@ -361,7 +379,7 @@ class UserIndex extends Index {
   }
 
   async store(users, correlationId) {
-    const documents = await mapAsync(users, async (user) => {
+    const documents = await mapAsync(users, async (user, index) => {
       const searchableName = getSearchableString(`${user.firstName}${user.lastName}`);
       const searchableEmail = getSearchableString(user.email);
       const document = Object.assign({
@@ -387,7 +405,7 @@ class UserIndex extends Index {
         }
       }
       if (!document.organisations) {
-        logger.debug(`getting organisations for ${document.id}`, { correlationId });
+        logger.debug(`getting organisations for ${document.id} (${index + 1} of ${users.length})`, { correlationId });
         const organisations = await getOrganisations(document.id);
         document.primaryOrganisation = organisations.length > 0 ? organisations[0].name : undefined;
         document.organisations = uniq(organisations.map(x => x.id));
@@ -402,11 +420,11 @@ class UserIndex extends Index {
         })));
       }
       if (!document.services) {
-        logger.debug(`getting services for ${document.id}`, { correlationId });
+        logger.debug(`getting services for ${document.id} (${index + 1} of ${users.length})`, { correlationId });
         document.services = await getServices(document.id);
       }
       if (!document.id.startsWith('inv-') && (!document.lastLogin || document.numberOfSuccessfulLoginsInPast12Months || document.statusLastChangedOn)) {
-        logger.debug(`getting stats for ${document.id}`, { correlationId });
+        logger.debug(`getting stats for ${document.id} (${index + 1} of ${users.length})`, { correlationId });
         const stats = await getLoginStatsForUser(document.id);
         if (stats) {
           document.lastLogin = document.lastLogin || stats.lastLogin;
@@ -418,21 +436,35 @@ class UserIndex extends Index {
       document.statusLastChangedOn = document.statusLastChangedOn ? document.statusLastChangedOn.getTime() : undefined;
       return document;
     });
-    return super.store(documents, correlationId);
+    return await super.store(documents, correlationId);
   }
 
   async indexAllUsers(correlationId) {
-    const getUsersPromise = getAllUsers(undefined, correlationId);
-    const getUserOrganisationsPromise = getAllUserOrganisations(correlationId);
-    const getUserServicesPromise = getAllUserServices(correlationId);
-    const users = await getUsersPromise;
-    const userOrganisations = await getUserOrganisationsPromise;
-    const userServices = await getUserServicesPromise;
-    logger.debug(`Found ${users.length} users, ${userOrganisations.length} organisations and ${userServices.length} services for indexing into ${this.name}`, { correlationId });
-    const mergedUsers = mergeUsersOrganisationsServices(users, userOrganisations, userServices);
-    logger.debug('Merged user details');
-    await this.store(mergedUsers, correlationId);
-    logger.debug(`Stored ${mergedUsers.length} users in ${this.name}`);
+    const stats = {
+      start: Date.now(),
+      readUsers: 0,
+      addedUserOrgs: 0,
+      addedUserServices: 0,
+      storedUsers: 0,
+      readInvitationData: 0,
+      mergedInvitationData: 0,
+      storedInvitations: 0,
+    };
+
+    const users = await getAllUsers(undefined, correlationId);
+    users.forEach((user) => {
+      user.organisationMappings = [];
+      user.services = [];
+    });
+    stats.readUsers = Date.now();
+    await updateUsersWithOrganisations(users, correlationId);
+    stats.addedUserOrgs = Date.now();
+    await updateUsersWithServices(users, correlationId);
+    stats.addedUserServices = Date.now();
+    logger.debug(`Finished building ${users.length} user details. Storing...`);
+    await this.store(users, correlationId);
+    stats.storedUsers = Date.now();
+    logger.debug(`Stored ${users.length} users in ${this.name}`);
 
     const getInvitationsPromise = getAllInvitations(undefined, correlationId);
     const getInvitationOrganisationsPromise = getAllInvitationOrganisations(correlationId);
@@ -440,11 +472,16 @@ class UserIndex extends Index {
     const invitations = await getInvitationsPromise;
     const invitationOrganisations = await getInvitationOrganisationsPromise;
     const invitationServices = await getInvitationServicesPromise;
+    stats.readInvitationData = Date.now();
     logger.debug(`Found ${invitations.length} invitations and ${invitationServices.length} services for indexing into ${this.name}`, { correlationId });
     const mergedInvitations = mergeInvitationsOrganisationsServices(invitations, invitationOrganisations, invitationServices);
+    stats.mergedInvitationData = Date.now();
     logger.debug('Merged invitation details');
     await this.store(mergedInvitations, correlationId);
+    stats.storedInvitations = Date.now();
     logger.debug(`Stored ${mergedInvitations.length} invitations in ${this.name}`);
+
+    logger.debug(`re-index stats are: ${JSON.stringify(stats)}`);
   }
 
   async indexUsersChangedAfter(changedAfter, correlationId) {
