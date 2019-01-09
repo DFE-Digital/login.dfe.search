@@ -223,7 +223,7 @@ const getAllInvitations = async (changedAfter, correlationId) => {
 
     try {
       const page = await listInvitations(pageNumber, pageSize, changedAfter, correlationId);
-      const mapped = page.invitations.filter(i => !i.isCompleted).map((invitation) => ({
+      const mapped = page.invitations.filter(i => !i.uid).map((invitation) => ({
         id: `inv-${invitation.id}`,
         firstName: invitation.firstName,
         lastName: invitation.lastName,
