@@ -19,9 +19,11 @@
     "applicationName": "Search-API"
   },
   "scheduledTasks": {
-    "reindexUsers": "*/1 * * * *",
-    "updateAuditCache": "*/1 * * * *",
-    "tidyIndexes": "*/1 * * * *"
+    "reindexUsers": "0 0 * * *",
+    "updateUsersIndex": "0 0 * * *",
+    "updateAuditCache": "0 0 * * *",
+    "tidyIndexes": "0 0 * * *",
+    "reindexDevices": "0 0 * * *"
   },
   "cache": {
     "type": "redis",

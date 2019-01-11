@@ -8,6 +8,7 @@ const scheduledTasksSchema = new SimpleSchema({
   updateUsersIndex: String,
   updateAuditCache: String,
   tidyIndexes: String,
+  reindexDevices: String,
 });
 const cacheSchema = new SimpleSchema({
   type: {
