@@ -1,24 +1,24 @@
 const logger = require('./../../infrastructure/logger');
-const UserIndex = require('./../indexes/UserIndex');
+const DeviceIndex = require('./../indexes/DeviceIndex');
 const cache = require('./../../infrastructure/cache');
 
 const reindexDevices = async (correlationId) => {
   const start = new Date();
 
   // create index
-  // const index = await UserIndex.create();
-  // logger.info(`Created users index ${index.name}`, {correlationId});
+  const index = await DeviceIndex.create();
+  logger.info(`Created devices index ${index.name}`, {correlationId});
 
-  // get all users
-  // await index.indexAllUsers(correlationId);
-  // logger.info('Indexed all users', {correlationId});
+  // get all devices
+  await index.indexAllDevices(correlationId);
+  logger.info('Indexed all devices', {correlationId});
 
   // swap index
-  // await UserIndex.current(index);
-  // logger.info(`Set users index to ${index.name}`, {correlationId});
+  await DeviceIndex.current(index);
+  logger.info(`Set devices index to ${index.name}`, {correlationId});
 
   // update pointer
   await cache.set('Pointer:LastDeviceUpdateTime', start.getTime());
-  logger.info(`Updated device update pointer to ${start}`, { correlationId });
+  logger.info(`Updated devices update pointer to ${start}`, { correlationId });
 };
 module.exports = reindexDevices;
