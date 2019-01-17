@@ -40,7 +40,16 @@ const listInvitations = async (page, pageSize, changedAfter, correlationId) => {
   return Promise.resolve([]);
 };
 
+const listDeviceAssociations = async (page, pageSize, correlationId) => {
+  return Promise.resolve({
+    deviceAssociations: [],
+    page,
+    numberOfPages: 0,
+  });
+};
+
 module.exports = {
   listUsers,
   listInvitations,
+  listDeviceAssociations,
 };
