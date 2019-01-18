@@ -129,9 +129,17 @@ class DeviceIndex extends Index {
     super(name, indexStructure);
   }
 
-  async search(criteria, page = 1, pageSize = 25, sortBy = 'searchableName', sortAsc = true, filters = undefined) {
+  async search(criteria, page = 1, pageSize = 25, sortBy = 'serialNumber', sortAsc = true, filters = undefined) {
     const pageOfDocuments = await super.search(criteria, page, pageSize, sortBy, sortAsc, filters);
-    const devices = pageOfDocuments.devices;
+    const devices = pageOfDocuments.documents.map(document => ({
+      serialNumber: document.serialNumber,
+      statusId: document.statusId,
+      assigneeId: document.assigneeId,
+      assignee: document.assignee,
+      organisationName: document.organisationName,
+      lastLogin: document.lastLogin,
+      numberOfSuccessfulLoginsInPast12Months: document.numberOfSuccessfulLoginsInPast12Months,
+    }));
     return {
       devices,
       totalNumberOfResults: pageOfDocuments.totalNumberOfResults,
