@@ -9,6 +9,7 @@ const { listUsersOrganisations, getUserOrganisations, listInvitationsOrganisatio
 const { listUserServices, listAllUsersServices, listInvitationServices, listAllInvitationsServices } = require('./../../infrastructure/access');
 const { mapAsync } = require('./../../utils/async');
 const BasicArrayList = require('./../../utils/BasicArrayList');
+const { getSearchableString } = require('./utils');
 
 const indexStructure = {
   id: {
@@ -320,12 +321,7 @@ const mergeInvitationsOrganisationsServices = (invitations, invitationOrganisati
   });
 };
 
-const getSearchableString = (source) => {
-  return source.toLowerCase()
-    .replace(/\s/g, '')
-    .replace(/@/g, '__at__')
-    .replace(/\./g, '__dot__');
-};
+
 const getOrganisations = async (documentId, correlationId) => {
   let accessibleOrganisations;
   if (documentId.startsWith('inv-')) {
