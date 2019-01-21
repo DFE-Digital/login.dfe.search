@@ -149,9 +149,24 @@ class DeviceIndex extends Index {
 
   async store(devices, correlationId) {
     const documents = devices.map((device) => {
-      let statusId = 1;
+      return Object.assign({}, device, {
+        searchableAssignee: getSearchableString(device.assignee),
+        searchableOrganisationName: getSearchableString(device.organisationName),
+      });
+    });
+    return await super.store(documents, correlationId);
+  }
+
+  async indexAllDevices(correlationId) {
+    const devices = await getAllDevices(correlationId);
+    await updateDevicesWithAssignees(devices, correlationId);
+    await updateDevicesWithOrganisationDetails(devices, correlationId);
+    await updateDevicesWithLoginStats(devices, correlationId);
+
+    const indexableDevices = devices.map((device) => {
       const assignee = device.user ? `${device.user.given_name} ${device.user.family_name}` : '';
       const organisationName = device.organisation ? device.organisation.name : '';
+      let statusId = 1;
 
       if (device.deactivated) {
         statusId = 3;
@@ -164,22 +179,13 @@ class DeviceIndex extends Index {
         statusId,
         assigneeId: device.user ? device.user.sub : '',
         assignee,
-        searchableAssignee: getSearchableString(assignee),
         organisationName,
-        searchableOrganisationName: getSearchableString(organisationName),
         lastLogin: device.loginStats ? device.loginStats.lastLogin.getTime() : 0,
         numberOfSuccessfulLoginsInPast12Months: device.loginStats ? device.loginStats.loginsInPast12Months.length : 0,
       };
     });
-    return await super.store(documents, correlationId);
-  }
 
-  async indexAllDevices(correlationId) {
-    const devices = await getAllDevices(correlationId);
-    await updateDevicesWithAssignees(devices, correlationId);
-    await updateDevicesWithOrganisationDetails(devices, correlationId);
-    await updateDevicesWithLoginStats(devices, correlationId);
-    return this.store(devices, correlationId);
+    return this.store(indexableDevices, correlationId);
   }
 
   static async current(newIndex = undefined) {
