@@ -27,7 +27,13 @@ const listInvitations = async (page, pageSize, changedAfter, correlationId) => {
   return client.get(resource, correlationId);
 };
 
+const listDeviceAssociations = async (page, pageSize, correlationId) => {
+  let resource = `/devices?page=${page}&pageSize=${pageSize}`;
+  return client.get(resource, correlationId);
+};
+
 module.exports = {
   listUsers,
   listInvitations,
+  listDeviceAssociations
 };

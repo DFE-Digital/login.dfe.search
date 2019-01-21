@@ -7,6 +7,7 @@ const reindexUsers = require('./reindexUsers');
 const updateUsersIndex = require('./updateUsersIndex');
 const updateAuditCache = require('./updateAuditCache');
 const tidyIndexes = require('./tidyIndexes');
+const reindexDevices = require('./reindexDevices');
 
 const scheduleTask = (name, cronSpec, action) => {
   const job = schedule.scheduleJob(cronSpec, async () => {
@@ -33,6 +34,7 @@ const start = () => {
   scheduleTask('update users index', config.scheduledTasks.updateUsersIndex, updateUsersIndex);
   scheduleTask('update audit cache', config.scheduledTasks.updateAuditCache, updateAuditCache);
   scheduleTask('tidy indexes', config.scheduledTasks.tidyIndexes, tidyIndexes);
+  scheduleTask('re-index devices', config.scheduledTasks.reindexDevices, reindexDevices);
 };
 module.exports = {
   start,

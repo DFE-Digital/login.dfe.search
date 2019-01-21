@@ -8,6 +8,7 @@ const scheduledTasksSchema = new SimpleSchema({
   updateUsersIndex: String,
   updateAuditCache: String,
   tidyIndexes: String,
+  reindexDevices: String,
 });
 const cacheSchema = new SimpleSchema({
   type: {
@@ -58,6 +59,7 @@ const schema = new SimpleSchema({
   directories: schemas.apiClient,
   organisations: schemas.apiClient,
   access: schemas.apiClient,
+  devices: schemas.apiClient,
 });
 module.exports.validate = () => {
   validateConfigAgainstSchema(config, schema, logger)
