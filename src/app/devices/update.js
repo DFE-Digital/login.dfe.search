@@ -26,7 +26,7 @@ const processPatchProperties = (req) => {
     result.errors.push(`If patching assigneeId, you must also patch assignee`);
   }
 
-  if (result.patch.statusId !== undefined && (result.patch.statusId < 1 || result.patch.statusId > 2)) {
+  if (result.patch.statusId !== undefined && (result.patch.statusId < 1 || result.patch.statusId > 3)) {
     result.errors.push(`If patching statusId, value can only be 1 (Unassigned), 2 (Assigned), or 3 (Deactivated)`);
   }
 
