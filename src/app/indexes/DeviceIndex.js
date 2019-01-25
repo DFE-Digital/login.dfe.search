@@ -40,6 +40,7 @@ const indexStructure = {
   },
   lastLogin: {
     type: 'Int64',
+    sortable: true,
   },
   numberOfSuccessfulLoginsInPast12Months: {
     type: 'Int64',
