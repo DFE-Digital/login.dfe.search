@@ -61,6 +61,7 @@ const indexStructure = {
   },
   lastLogin: {
     type: 'Int64',
+    sortable: true,
   },
   numberOfSuccessfulLoginsInPast12Months: {
     type: 'Int64',
@@ -71,6 +72,7 @@ const indexStructure = {
   statusId: {
     type: 'Int64',
     filterable: true,
+    sortable: true,
   },
   pendingEmail: {
     type: 'String',
@@ -194,17 +196,21 @@ const updateUsersWithServices = async (users, correlationId) => {
 
     try {
       const page = await listAllUsersServices(pageNumber, pageSize, correlationId);
-      numberOfPages = page.numberOfPages;
-      pageNumber++;
-      hasMorePages = pageNumber <= page.numberOfPages;
 
       page.services.forEach((userService) => {
         if (!user || user.id.toLowerCase() !== userService.userId.toLowerCase()) {
           user = users.find(u => u.id.toLowerCase() === userService.userId.toLowerCase());
         }
+        if (!user) {
+          return;
+        }
 
         user.services.push(userService.serviceId);
       });
+
+      numberOfPages = page.numberOfPages;
+      pageNumber++;
+      hasMorePages = pageNumber <= page.numberOfPages;
     } catch (e) {
       throw new Error(`Error reading page ${pageNumber} of user services - ${e.message}`);
     }
