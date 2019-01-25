@@ -34,6 +34,8 @@ describe('when searching devices', () => {
       query: {
         criteria: 'test',
         page: 2,
+        sortBy: 'assignee',
+        sortDirection: 'desc',
       },
     });
 
@@ -45,7 +47,7 @@ describe('when searching devices', () => {
 
     expect(DeviceIndex.current).toHaveBeenCalledTimes(1);
     expect(deviceIndex.search).toHaveBeenCalledTimes(1);
-    expect(deviceIndex.search).toHaveBeenCalledWith('test', 2, 25, 'serialNumber', true, undefined);
+    expect(deviceIndex.search).toHaveBeenCalledWith('test', 2, 25, 'assignee', false, undefined);
   });
 
   it('then it should search the current device index with default criteria if none supplied in request', async () => {
@@ -55,7 +57,27 @@ describe('when searching devices', () => {
 
     expect(DeviceIndex.current).toHaveBeenCalledTimes(1);
     expect(deviceIndex.search).toHaveBeenCalledTimes(1);
-    expect(deviceIndex.search).toHaveBeenCalledWith('*', 2, 25, 'serialNumber', true, undefined);
+    expect(deviceIndex.search).toHaveBeenCalledWith('*', 2, 25, 'assignee', false, undefined);
+  });
+
+  it('then it should search the current device index with default sort direction if none supplied in request', async () => {
+    req.query.sortDirection = undefined;
+
+    await search(req, res);
+
+    expect(DeviceIndex.current).toHaveBeenCalledTimes(1);
+    expect(deviceIndex.search).toHaveBeenCalledTimes(1);
+    expect(deviceIndex.search).toHaveBeenCalledWith('test', 2, 25, 'assignee', true, undefined);
+  });
+
+  it('then it should search the current device index with default sort field if none supplied in request', async () => {
+    req.query.sortBy = undefined;
+
+    await search(req, res);
+
+    expect(DeviceIndex.current).toHaveBeenCalledTimes(1);
+    expect(deviceIndex.search).toHaveBeenCalledTimes(1);
+    expect(deviceIndex.search).toHaveBeenCalledWith('test', 2, 25, 'serialNumber', false, undefined);
   });
 
   it('then it should the current device index with page 1 if none supplied in request', async () => {
@@ -65,7 +87,7 @@ describe('when searching devices', () => {
 
     expect(DeviceIndex.current).toHaveBeenCalledTimes(1);
     expect(deviceIndex.search).toHaveBeenCalledTimes(1);
-    expect(deviceIndex.search).toHaveBeenCalledWith('test', 1, 25, 'serialNumber', true, undefined);
+    expect(deviceIndex.search).toHaveBeenCalledWith('test', 1, 25, 'assignee', false, undefined);
   });
 
   it('then it should return results as json', async () => {
