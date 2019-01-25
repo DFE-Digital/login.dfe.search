@@ -3,6 +3,8 @@ const DeviceIndex = require('./../indexes/DeviceIndex');
 const search = async (req, res) => {
   const criteria = req.query.criteria || '*';
   const page = parseInt(req.query.page) || 1;
+  const sortBy = req.query.sortBy || 'serialNumber';
+  const sortAsc = !((req.query.sortDirection || 'asc') === 'desc');
 
   if (isNaN(page) || page < 1) {
     return res.status(400).json({
@@ -11,7 +13,7 @@ const search = async (req, res) => {
   }
 
   const index = await DeviceIndex.current();
-  const pageOfDevices = await index.search(criteria, page, 25, 'serialNumber', true, undefined);
+  const pageOfDevices = await index.search(criteria, page, 25, sortBy, sortAsc, undefined);
   return res.json(pageOfDevices);
 };
 module.exports = search;
