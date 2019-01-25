@@ -1,6 +1,6 @@
 const DeviceIndex = require('./../indexes/DeviceIndex');
 
-const patchableProperties = ['assigneeId', 'assignee', 'organisationName'];
+const patchableProperties = ['assigneeId', 'assignee', 'organisationName', 'statusId'];
 
 const processPatchProperties = (req) => {
   const result = {
@@ -24,6 +24,10 @@ const processPatchProperties = (req) => {
   }
   if (result.patch.assigneeId && !result.patch.assignee) {
     result.errors.push(`If patching assigneeId, you must also patch assignee`);
+  }
+
+  if (result.patch.statusId !== undefined && (result.patch.statusId < 1 || result.patch.statusId > 2)) {
+    result.errors.push(`If patching statusId, value can only be 1 (Unassigned), 2 (Assigned), or 3 (Deactivated)`);
   }
 
   return result;
