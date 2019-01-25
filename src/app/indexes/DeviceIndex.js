@@ -150,8 +150,8 @@ class DeviceIndex extends Index {
   async store(devices, correlationId) {
     const documents = devices.map((device) => {
       return Object.assign({}, device, {
-        searchableAssignee: getSearchableString(device.assignee),
-        searchableOrganisationName: getSearchableString(device.organisationName),
+        searchableAssignee: device.assignee ? getSearchableString(device.assignee) : '',
+        searchableOrganisationName: device.organisationName ? getSearchableString(device.organisationName) : '',
       });
     });
     return await super.store(documents, correlationId);
