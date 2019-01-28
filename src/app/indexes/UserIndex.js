@@ -448,7 +448,7 @@ class UserIndex extends Index {
           urn: orgMap.organisation.urn,
           uid: orgMap.organisation.uid,
           establishmentNumber: orgMap.organisation.establishmentNumber,
-          laNumber: orgMap.organisation.localAuthority ? orgMap.organisation.localAuthority.establishmentNumber : undefined,d
+          laNumber: orgMap.organisation.localAuthority ? orgMap.organisation.localAuthority.establishmentNumber : undefined,
           categoryId: orgMap.category ? orgMap.category : undefined,
           statusId: orgMap.status || 0,
           roleId: orgMap.role || 0,
