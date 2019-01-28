@@ -1,6 +1,7 @@
 const logger = require('./../../infrastructure/logger');
 const uuid = require('uuid/v4');
 const uniq = require('lodash/uniq');
+const flatten = require('lodash/flatten');
 const Index = require('./Index');
 const cache = require('./../../infrastructure/cache');
 const { getLoginStatsForUser } = require('./../../infrastructure/stats');
@@ -51,6 +52,10 @@ const indexStructure = {
   organisationCategories: {
     type: 'Collection',
     filterable: true,
+  },
+  organisationIdentifiers: {
+    type: 'Collection',
+    searchable: true,
   },
   organisationsJson: {
     type: 'String',
@@ -169,9 +174,19 @@ const updateUsersWithOrganisations = async (users, correlationId) => {
     user.organisations = user.organisationMappings.map(x => x.organisation.id);
     user.searchableOrganisations = user.organisationMappings.map(x => getSearchableString(x.organisation.name));
     user.organisationCategories = user.organisationMappings.map(x => x.organisation.category ? x.organisation.category.id : undefined).filter(x => x !== undefined);
+    user.organisationIdentifiers = flatten(user.organisationMappings.map(orgMap => ([
+      orgMap.organisation.urn,
+      orgMap.organisation.uid,
+      orgMap.organisation.establishmentNumber,
+      orgMap.organisation.localAuthority ? orgMap.organisation.localAuthority.establishmentNumber : undefined,
+    ]))).filter(id => id !== undefined && id !== null);
     user.organisationsJson = JSON.stringify(user.organisationMappings.map(orgMap => ({
       id: orgMap.organisation.id,
       name: orgMap.organisation.name,
+      urn: orgMap.organisation.urn,
+      uid: orgMap.organisation.uid,
+      establishmentNumber: orgMap.organisation.establishmentNumber,
+      laNumber: orgMap.organisation.localAuthority ? orgMap.organisation.localAuthority.establishmentNumber : undefined,
       categoryId: orgMap.organisation.category ? orgMap.organisation.category.id : undefined,
       statusId: orgMap.organisation.status.id,
       roleId: orgMap.role ? orgMap.role.id : 0,
@@ -405,6 +420,14 @@ class UserIndex extends Index {
         if (!document.organisationCategories) {
           document.organisationCategories = uniq(orgsModel.map(x => x.category)).filter(x => x !== undefined);
         }
+        if (!document.organisationIdentifiers) {
+          document.organisationIdentifiers = flatten(orgsModel.map(orgMap => ([
+            orgMap.organisation.urn,
+            orgMap.organisation.uid,
+            orgMap.organisation.establishmentNumber,
+            orgMap.organisation.localAuthority ? orgMap.organisation.localAuthority.establishmentNumber : undefined,
+          ]))).filter(id => id !== undefined && id !== null);
+        }
       }
       if (!document.organisations) {
         logger.debug(`getting organisations for ${document.id} (${index + 1} of ${users.length})`, { correlationId });
@@ -413,9 +436,19 @@ class UserIndex extends Index {
         document.organisations = uniq(organisations.map(x => x.id));
         document.searchableOrganisations = uniq(organisations.map(x => getSearchableString(x.name)));
         document.organisationCategories = uniq(organisations.map(x => x.category)).filter(x => x !== undefined);
+        document.organisationIdentifiers = flatten(organisations.map(x => ([
+          x.urn,
+          x.uid,
+          x.establishmentNumber,
+          x.localAuthority ? x.localAuthority.establishmentNumber : undefined,
+        ]))).filter(id => id !== undefined && id !== null);
         document.organisationsJson = JSON.stringify(organisations.map(orgMap => ({
           id: orgMap.id,
           name: orgMap.name,
+          urn: orgMap.organisation.urn,
+          uid: orgMap.organisation.uid,
+          establishmentNumber: orgMap.organisation.establishmentNumber,
+          laNumber: orgMap.organisation.localAuthority ? orgMap.organisation.localAuthority.establishmentNumber : undefined,
           categoryId: orgMap.category ? orgMap.category : undefined,
           statusId: orgMap.status || 0,
           roleId: orgMap.role || 0,
