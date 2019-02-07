@@ -422,10 +422,10 @@ class UserIndex extends Index {
         }
         if (!document.organisationIdentifiers) {
           document.organisationIdentifiers = flatten(orgsModel.map(orgMap => ([
-            orgMap.organisation.urn,
-            orgMap.organisation.uid,
-            orgMap.organisation.establishmentNumber,
-            orgMap.organisation.localAuthority ? orgMap.organisation.localAuthority.establishmentNumber : undefined,
+            orgMap.urn,
+            orgMap.uid,
+            orgMap.establishmentNumber,
+            orgMap.localAuthority ? orgMap.localAuthority.establishmentNumber : undefined,
           ]))).filter(id => id !== undefined && id !== null);
         }
       }
@@ -445,10 +445,10 @@ class UserIndex extends Index {
         document.organisationsJson = JSON.stringify(organisations.map(orgMap => ({
           id: orgMap.id,
           name: orgMap.name,
-          urn: orgMap.organisation.urn,
-          uid: orgMap.organisation.uid,
-          establishmentNumber: orgMap.organisation.establishmentNumber,
-          laNumber: orgMap.organisation.localAuthority ? orgMap.organisation.localAuthority.establishmentNumber : undefined,
+          urn: orgMap.urn,
+          uid: orgMap.uid,
+          establishmentNumber: orgMap.establishmentNumber,
+          laNumber: orgMap.localAuthority ? orgMap.localAuthority.establishmentNumber : undefined,
           categoryId: orgMap.category ? orgMap.category : undefined,
           statusId: orgMap.status || 0,
           roleId: orgMap.role || 0,
