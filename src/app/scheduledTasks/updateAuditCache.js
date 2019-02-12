@@ -59,7 +59,7 @@ const processBatch = async (batch) => {
   batch.forEach((entry) => {
     let userId = entry.userId;
     if (entry.type === 'support' && entry.subType === 'user-edit'
-      && entry.editedUser && entry.editedFields.find(y => y.name === 'status')) {
+      && entry.editedUser && entry.editedFields && entry.editedFields.find(y => y.name === 'status')) {
       userId = entry.editedUser;
     }
 
