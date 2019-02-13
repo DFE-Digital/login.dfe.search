@@ -17,7 +17,7 @@ const processAuditSigninDetails = (entry, stats) => {
 };
 const processAuditChangeDetails = (entry, stats) => {
   if (entry.type !== 'support' || entry.subType !== 'user-edit'
-    || !entry.editedUser || !entry.editedFields.find(y => y.name === 'status')) {
+    || !entry.editedUser || !entry.editedFields || !entry.editedFields.find(y => y.name === 'status')) {
     return false;
   }
 
