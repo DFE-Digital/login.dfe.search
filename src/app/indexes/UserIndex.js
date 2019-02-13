@@ -468,7 +468,7 @@ class UserIndex extends Index {
           document.statusLastChangedOn = document.statusLastChangedOn || stats.lastStatusChange;
         }
       }
-      document.lastLogin = document.lastLogin ? document.lastLogin.getTime() : undefined;
+      document.lastLogin = document.lastLogin ? document.lastLogin.getTime() : 0;
       document.statusLastChangedOn = document.statusLastChangedOn ? document.statusLastChangedOn.getTime() : undefined;
       return document;
     });
