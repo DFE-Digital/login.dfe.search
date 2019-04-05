@@ -452,7 +452,7 @@ class UserIndex extends Index {
           laNumber: orgMap.localAuthority ? orgMap.localAuthority.establishmentNumber : undefined,
           categoryId: orgMap.category ? orgMap.category : undefined,
           statusId: orgMap.status || 0,
-          roleId: orgMap.role || 0,
+          roleId: orgMap.role ? orgMap.role.id : 0,
         })));
       }
       if (!document.services) {
