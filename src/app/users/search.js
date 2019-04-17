@@ -1,7 +1,7 @@
 const UserIndex = require('./../indexes/UserIndex');
 
 const extractFilters = (req) => {
-  const filterable = ['id', 'organisations', 'organisationCategories', 'services'];
+  const filterable = ['id', 'organisations', 'organisationCategories', 'services', 'statusId'];
   const filters = [];
   filterable.forEach((field) => {
     const param = req.query[`filter_${field}`];
