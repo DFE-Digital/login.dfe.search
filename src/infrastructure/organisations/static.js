@@ -9,6 +9,10 @@ const getUserOrganisations = async (userId, correlationId) => {
   return Promise.resolve([]);
 };
 
+const getUserOrganisationsV2 = async (userId, correlationId) => {
+  return Promise.resolve([]);
+};
+
 const listInvitationsOrganisations = async (page, pageSize, correlationId) => {
   return Promise.resolve({
     invitationOrganisations: [],
@@ -25,4 +29,5 @@ module.exports = {
   getUserOrganisations,
   listInvitationsOrganisations,
   getInvitationOrganisations,
+  getUserOrganisationsV2,
 };
