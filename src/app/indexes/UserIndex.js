@@ -6,7 +6,7 @@ const Index = require('./Index');
 const cache = require('./../../infrastructure/cache');
 const { getLoginStatsForUser } = require('./../../infrastructure/stats');
 const { listUsers, listInvitations } = require('./../../infrastructure/directories');
-const { listUsersOrganisations, getUserOrganisations, listInvitationsOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
+const { listUsersOrganisations, getUserOrganisationsV2, listInvitationsOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
 const { listUserServices, listAllUsersServices, listInvitationServices, listAllInvitationsServices } = require('./../../infrastructure/access');
 const { mapAsync } = require('./../../utils/async');
 const BasicArrayList = require('./../../utils/BasicArrayList');
@@ -348,12 +348,19 @@ const getOrganisations = async (documentId, correlationId) => {
   if (documentId.startsWith('inv-')) {
     accessibleOrganisations = await getInvitationOrganisations(documentId.substr(4), correlationId)
   } else {
-    accessibleOrganisations = await getUserOrganisations(documentId, correlationId)
+    accessibleOrganisations = await getUserOrganisationsV2(documentId, correlationId)
   }
   return accessibleOrganisations.map(accessibleOrganisation => ({
     id: accessibleOrganisation.organisation.id,
     name: accessibleOrganisation.organisation.name,
+    urn: accessibleOrganisation.organisation.urn,
+    uid: accessibleOrganisation.organisation.uid,
+    ukprn: accessibleOrganisation.organisation.ukprn,
     category: accessibleOrganisation.organisation.category ? accessibleOrganisation.organisation.category.id : undefined,
+    establishmentNumber: accessibleOrganisation.organisation.establishmentNumber,
+    laNumber: accessibleOrganisation.organisation.localAuthority ? accessibleOrganisation.organisation.localAuthority.establishmentNumber : undefined,
+    status: accessibleOrganisation.organisation.status ? accessibleOrganisation.organisation.status.id : 0,
+    role: accessibleOrganisation.role ? accessibleOrganisation.role.id : 0
   }));
 };
 const getServices = async (documentId, correlationId) => {
@@ -448,11 +455,12 @@ class UserIndex extends Index {
           name: orgMap.name,
           urn: orgMap.urn,
           uid: orgMap.uid,
+          ukprn: orgMap.ukprn,
           establishmentNumber: orgMap.establishmentNumber,
-          laNumber: orgMap.localAuthority ? orgMap.localAuthority.establishmentNumber : undefined,
+          laNumber: orgMap.laNumber,
           categoryId: orgMap.category ? orgMap.category : undefined,
           statusId: orgMap.status || 0,
-          roleId: orgMap.role ? orgMap.role.id : 0,
+          roleId: orgMap.role,
         })));
       }
       if (!document.services) {
