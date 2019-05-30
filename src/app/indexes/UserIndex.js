@@ -318,7 +318,7 @@ const getAllInvitationServices = async (correlationId) => {
 };
 const mergeInvitationsOrganisationsServices = (invitations, invitationOrganisations, invitationServices) => {
   return invitations.map((invitation) => {
-    const invitationOrgMappings = invitationOrganisations.filter(x => x.invitationId.toLowerCase() === invitation.id.toLowerCase());
+    const invitationOrgMappings = invitationOrganisations.filter(x => `inv-${x.invitationId.toLowerCase()}` === invitation.id.toLowerCase());
     const primaryOrganisation = invitationOrgMappings.length > 0 ? invitationOrgMappings[0].organisation.name : undefined;
     const organisations = invitationOrgMappings.map(x => x.organisation.id);
     const searchableOrganisations = invitationOrgMappings.map(x => getSearchableString(x.organisation.name));
