@@ -190,6 +190,8 @@ const updateUsersWithOrganisations = async (users, correlationId) => {
       categoryId: orgMap.organisation.category ? orgMap.organisation.category.id : undefined,
       statusId: orgMap.organisation.status.id,
       roleId: orgMap.role ? orgMap.role.id : 0,
+      numericIdentifier: orgMap.numericIdentifier,
+      textIdentifier: orgMap.textIdentifier
     })));
 
     user.organisationMappings = undefined;
@@ -360,7 +362,9 @@ const getOrganisations = async (documentId, correlationId) => {
     establishmentNumber: accessibleOrganisation.organisation.establishmentNumber,
     laNumber: accessibleOrganisation.organisation.localAuthority ? accessibleOrganisation.organisation.localAuthority.establishmentNumber : undefined,
     status: accessibleOrganisation.organisation.status ? accessibleOrganisation.organisation.status.id : 0,
-    role: accessibleOrganisation.role ? accessibleOrganisation.role.id : 0
+    role: accessibleOrganisation.role ? accessibleOrganisation.role.id : 0,
+    numericIdentifier: accessibleOrganisation.numericIdentifier,
+    textIdentifier: accessibleOrganisation.textIdentifier
   }));
 };
 const getServices = async (documentId, correlationId) => {
@@ -461,6 +465,8 @@ class UserIndex extends Index {
           categoryId: orgMap.category ? orgMap.category : undefined,
           statusId: orgMap.status || 0,
           roleId: orgMap.role,
+          numericIdentifier: orgMap.numericIdentifier,
+          textIdentifier: orgMap.textIdentifier
         })));
       }
       if (!document.services) {
