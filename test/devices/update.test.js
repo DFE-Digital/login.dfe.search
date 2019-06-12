@@ -135,4 +135,17 @@ describe('when updating a device', () => {
       errors: ['If patching assigneeId, you must also patch assignee'],
     });
   });
+
+  it('then it should return a bad request response if attempting to patch an statusId with invalid value', async () => {
+    req.body.statusId = 4;
+
+    await update(req, res);
+
+    expect(res.status).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledTimes(1);
+    expect(res.send).toHaveBeenCalledWith({
+      errors: ['If patching statusId, value can only be 1 (Unassigned), 2 (Assigned), or 3 (Deactivated)'],
+    });
+  });
 });

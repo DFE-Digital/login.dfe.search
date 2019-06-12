@@ -10,6 +10,10 @@ const getUserOrganisations = async (userId, correlationId) => {
   return client.get(`/organisations/associated-with-user/${userId}`, correlationId);
 };
 
+const getUserOrganisationsV2 = async (userId, correlationId) => {
+  return client.get(`/organisations/v2/associated-with-user/${userId}`, correlationId);
+};
+
 const listInvitationsOrganisations = async (page, pageSize, correlationId) => {
   return client.get(`/organisations/invitations?page=${page}&pageSize=${pageSize}`, correlationId);
 };
@@ -22,4 +26,5 @@ module.exports = {
   getUserOrganisations,
   listInvitationsOrganisations,
   getInvitationOrganisations,
+  getUserOrganisationsV2,
 };
