@@ -316,9 +316,9 @@ const getAllInvitationOrganisations = async (correlationId) => {
 
       organisations.push(...page.invitationOrganisations);
 
-      numberOfPages = page.numberOfPages;
+      numberOfPages = page.totalNumberOfPages;
       pageNumber++;
-      hasMorePages = pageNumber <= page.numberOfPages;
+      hasMorePages = pageNumber <= numberOfPages;
     } catch (e) {
       throw new Error(`Error reading page ${pageNumber} of invitation organisations - ${e.message}`);
     }
