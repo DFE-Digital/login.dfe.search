@@ -1,5 +1,4 @@
 const logger = require('./../../infrastructure/logger');
-const config = require('./../../infrastructure/config');
 const uuid = require('uuid/v4');
 const uniq = require('lodash/uniq');
 const flatten = require('lodash/flatten');
@@ -606,7 +605,7 @@ class UserIndex extends Index {
   }
 
   static async create() {
-    const name = `${config.search.useKeyPrefix}search-users-${uuid()}`;
+    const name = `search-users-${uuid()}`;
     await Index.create(name, indexStructure);
     return new UserIndex(name);
   }

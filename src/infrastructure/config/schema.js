@@ -44,10 +44,6 @@ const auditSchema = new SimpleSchema({
 });
 const searchSchema = new SimpleSchema({
   azureSearch: Object,
-  'useKeyPrefix': {
-    type: String,
-    optional: true
-  },
   'azureSearch.serviceName': String,
   'azureSearch.apiKey': String,
 });
