@@ -1,5 +1,10 @@
 const express = require('express');
+const expressLayouts = require('express-ejs-layouts');
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const session = require('express-session');
+const flash = require('express-flash-2');
+const path = require('path');
 const logger = require('./infrastructure/logger');
 const https = require('https');
 const config = require('./infrastructure/config');
@@ -22,6 +27,25 @@ app.use(helmet({
 
 if (config.hostingEnvironment.env !== 'dev') {
   app.set('trust proxy', 1);
+}
+
+
+if (config.hostingEnvironment.useDevViews) {
+
+  app.use(session({
+    secret: 'development, screens, only',
+    httpOnly: true,
+    secure: true,
+  }));
+  app.use(flash());
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(cookieParser());
+  app.use(bodyParser.json());
+
+  app.set('view engine', 'ejs');
+  app.set('views', path.resolve(__dirname, 'app'));
+  app.use(expressLayouts);
+  app.set('layout', 'layouts/layout');
 }
 
 app.use(bodyParser.json());
