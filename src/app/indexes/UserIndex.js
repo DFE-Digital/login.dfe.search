@@ -597,6 +597,7 @@ class UserIndex extends Index {
     }
 
     const currentIndexName = await cache.get('Pointer:UserIndex');
+
     if (!currentIndexName) {
       return undefined;
     }
@@ -609,6 +610,7 @@ class UserIndex extends Index {
     return new UserIndex(name);
   }
 
+
   static async tidyIndexes(correlationId) {
     await super.tidyIndexes('users', async (indexes) => {
       const matching = indexes.filter(x => x.match(/^search\-users\-/));
@@ -617,5 +619,8 @@ class UserIndex extends Index {
     }, correlationId);
   }
 }
+
+
+
 
 module.exports = UserIndex;
