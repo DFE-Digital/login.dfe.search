@@ -5,7 +5,7 @@ const flatten = require('lodash/flatten');
 const Index = require('./Index');
 const cache = require('./../../infrastructure/cache');
 const { getLoginStatsForUser } = require('./../../infrastructure/stats');
-const { listUsers, listInvitations } = require('./../../infrastructure/directories');
+const { listUsers, listInvitations, getUser, getInvitation } = require('./../../infrastructure/directories');
 const { listUsersOrganisations, getUserOrganisationsV2, listInvitationsOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
 const { listUserServices, listAllUsersServices, listInvitationServices, listAllInvitationsServices } = require('./../../infrastructure/access');
 const { mapAsync } = require('./../../utils/async');
@@ -128,6 +128,22 @@ const getAllUsers = async (changedAfter, correlationId) => {
   }
   return users.toArray();
 };
+
+const getUserById = async (id, correlationId) => {
+  logger.info('Begin get user by id', {correlationId});
+
+  const user = await getUser(id, correlationId);
+  const mapped = {
+    id: user.sub,
+    firstName: user.given_name,
+    lastName: user.family_name,
+    email: user.email,
+    statusId: user.status,
+    legacyUsernames: user.legacyUsernames
+  };
+  return [mapped]
+};
+
 const updateUsersWithOrganisations = async (users, correlationId) => {
   logger.info('Begin reading user organisations', { correlationId });
 
@@ -266,6 +282,23 @@ const getAllInvitations = async (changedAfter, correlationId) => {
   }
   return invitations;
 };
+
+const getInvitationById = async (id, correlationId) => {
+  logger.info('Begin get invitation by id', {correlationId});
+
+  const invitation = await getInvitation(id.substr(4), correlationId);
+  if (!invitation.isCompleted) {
+    const mapped = {
+      id: `inv-${invitation.id}`,
+      firstName: invitation.firstName,
+      lastName: invitation.lastName,
+      email: invitation.email,
+      statusId: invitation.deactivated ? -2 : -1,
+    };
+    return [mapped]
+  }
+};
+
 const getAllInvitationOrganisations = async (correlationId) => {
   const organisations = [];
   let hasMorePages = true;
@@ -283,9 +316,9 @@ const getAllInvitationOrganisations = async (correlationId) => {
 
       organisations.push(...page.invitationOrganisations);
 
-      numberOfPages = page.numberOfPages;
+      numberOfPages = page.totalNumberOfPages;
       pageNumber++;
-      hasMorePages = pageNumber <= page.numberOfPages;
+      hasMorePages = pageNumber <= numberOfPages;
     } catch (e) {
       throw new Error(`Error reading page ${pageNumber} of invitation organisations - ${e.message}`);
     }
@@ -542,6 +575,19 @@ class UserIndex extends Index {
     const invitations = await getAllInvitations(changedAfter, correlationId);
     logger.debug(`Found ${invitations.length} invitations for indexing into ${this.name} (changed after = ${changedAfter})`, { correlationId });
     await this.store(invitations, correlationId);
+  }
+
+  async indexUserById(id, correlationId) {
+    if (id.startsWith('inv-')) {
+      const invitation = await getInvitationById(id, correlationId);
+      logger.debug(`Invitation ${id} for indexing into ${this.name}`, { correlationId });
+      await this.store(invitation, correlationId);
+
+    } else {
+      const user = await getUserById(id, correlationId);
+      logger.debug(`User ${id} for indexing into ${this.name}`, { correlationId });
+      await this.store(user, correlationId);
+    }
   }
 
   static async current(newIndex = undefined) {
