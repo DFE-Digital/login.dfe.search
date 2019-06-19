@@ -12,6 +12,7 @@ const omit = require('lodash/omit');
 
 const baseUri = `https://${config.search.azureSearch.serviceName}.search.windows.net/indexes`;
 const apiVersion = '2016-09-01';
+const searchPrefix = config.search.azureSearch.useKeyPrefix || '';
 
 const listIndexes = async () => {
   const indexesResponse = await rp({
@@ -55,13 +56,13 @@ const createIndex = async (name, structure) => {
 
   await rp({
     method: 'PUT',
-    uri: `${baseUri}/${name}?api-version=${apiVersion}`,
+    uri: `${baseUri}/${searchPrefix}${name}?api-version=${apiVersion}`,
     headers: {
       'content-type': 'application/json',
       'api-key': config.search.azureSearch.apiKey,
     },
     body: {
-      name,
+      name: `${searchPrefix}${name}`,
       fields,
     },
     json: true,
@@ -72,7 +73,7 @@ const storeDocumentsInIndex = async (name, documents) => {
   const indexDocuments = documents.map(x => Object.assign({ '@search.action': 'upload' }, x));
   await rp({
     method: 'POST',
-    uri: `${baseUri}/${name}/docs/index?api-version=${apiVersion}`,
+    uri: `${baseUri}/${searchPrefix}${name}/docs/index?api-version=${apiVersion}`,
     headers: {
       'content-type': 'application/json',
       'api-key': config.search.azureSearch.apiKey,
@@ -86,7 +87,7 @@ const storeDocumentsInIndex = async (name, documents) => {
 
 const searchIndex = async (name, criteria, page, pageSize, sortBy, sortAsc = true, filters = undefined) => {
   const skip = (page - 1) * pageSize;
-  let uri = `${baseUri}/${name}/docs?api-version=${apiVersion}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}`;
+  let uri = `${baseUri}/${searchPrefix}${name}/docs?api-version=${apiVersion}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}`;
   if (sortBy) {
     const orderBy = sortAsc ? sortBy : `${sortBy} desc`;
     uri += `&$orderby=${orderBy}`;
@@ -134,7 +135,7 @@ const deleteIndex = async (name) => {
   try {
     await rp({
       method: 'DELETE',
-      uri: `${baseUri}/${name}?api-version=${apiVersion}`,
+      uri: `${baseUri}/${searchPrefix}${name}?api-version=${apiVersion}`,
       headers: {
         'api-key': config.search.azureSearch.apiKey,
       },
