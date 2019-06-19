@@ -46,10 +46,6 @@ const searchSchema = new SimpleSchema({
   azureSearch: Object,
   'azureSearch.serviceName': String,
   'azureSearch.apiKey': String,
-  'azureSearch.useKeyPrefix': {
-    type: String,
-    optional: true
-  }
 });
 
 const schema = new SimpleSchema({
