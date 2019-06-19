@@ -1,4 +1,5 @@
 const logger = require('./../../infrastructure/logger');
+const config = require('./../../infrastructure/config');
 const uuid = require('uuid/v4');
 const uniq = require('lodash/uniq');
 const flatten = require('lodash/flatten');
@@ -597,6 +598,7 @@ class UserIndex extends Index {
     }
 
     const currentIndexName = await cache.get('Pointer:UserIndex');
+
     if (!currentIndexName) {
       return undefined;
     }
@@ -604,10 +606,11 @@ class UserIndex extends Index {
   }
 
   static async create() {
-    const name = `search-users-${uuid()}`;
+    const name = `${config.search.useKeyPrefix}search-users-${uuid()}`;
     await Index.create(name, indexStructure);
     return new UserIndex(name);
   }
+
 
   static async tidyIndexes(correlationId) {
     await super.tidyIndexes('users', async (indexes) => {
@@ -617,5 +620,8 @@ class UserIndex extends Index {
     }, correlationId);
   }
 }
+
+
+
 
 module.exports = UserIndex;

@@ -12,7 +12,7 @@ const omit = require('lodash/omit');
 
 const baseUri = `https://${config.search.azureSearch.serviceName}.search.windows.net/indexes`;
 const apiVersion = '2016-09-01';
-const searchPrefix = config.search.azureSearch.useKeyPrefix || '';
+const searchPrefix = config.search.useKeyPrefix || '';
 
 const listIndexes = async () => {
   const indexesResponse = await rp({
