@@ -590,6 +590,12 @@ class UserIndex extends Index {
     }
   }
 
+  async deleteUserById(id) {
+    logger.debug(`Deleting document with id: ${id}`);
+    await super.delete(id);
+  }
+
+
   static async current(newIndex = undefined) {
     if (newIndex) {
       await cache.set('Pointer:UserIndex', newIndex.name);
