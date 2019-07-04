@@ -84,6 +84,26 @@ const storeDocumentsInIndex = async (name, documents) => {
   });
 };
 
+const deleteDocumentInIndex = async (name, id) => {
+  await rp({
+    method: 'POST',
+    uri: `${baseUri}/${name}/docs/index?api-version=${apiVersion}`,
+    headers: {
+      'content-type': 'application/json',
+      'api-key': config.search.azureSearch.apiKey,
+    },
+    body: {
+      value: [
+        {
+          "@search.action": "delete",
+          "id": id
+        }
+      ],
+    },
+    json: true,
+  })
+};
+
 const searchIndex = async (name, criteria, page, pageSize, sortBy, sortAsc = true, filters = undefined) => {
   const skip = (page - 1) * pageSize;
   let uri = `${baseUri}/${name}/docs?api-version=${apiVersion}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}`;
@@ -153,4 +173,5 @@ module.exports = {
   storeDocumentsInIndex,
   searchIndex,
   deleteIndex,
+  deleteDocumentInIndex,
 };

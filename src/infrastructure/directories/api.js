@@ -32,8 +32,20 @@ const listDeviceAssociations = async (page, pageSize, correlationId) => {
   return client.get(resource, correlationId);
 };
 
+const getInvitation = async (id, correlationId) => {
+  let resource = `/invitations/${id}`;
+  return client.get(resource, correlationId);
+};
+
+const getUser = async (id, correlationId) => {
+  let resource = `/users/${id}`;
+  return client.get(resource, correlationId);
+};
+
 module.exports = {
   listUsers,
   listInvitations,
-  listDeviceAssociations
+  listDeviceAssociations,
+  getInvitation,
+  getUser,
 };

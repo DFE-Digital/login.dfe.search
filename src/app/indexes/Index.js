@@ -1,6 +1,6 @@
 const chunk = require('lodash/chunk');
 const logger = require('./../../infrastructure/logger');
-const { listIndexes, createIndex, storeDocumentsInIndex, searchIndex, deleteIndex } = require('./../../infrastructure/search');
+const { listIndexes, createIndex, storeDocumentsInIndex, searchIndex, deleteIndex, deleteDocumentInIndex } = require('./../../infrastructure/search');
 const cache = require('./../../infrastructure/cache');
 const { forEachAsync } = require('./../../utils/async');
 
@@ -83,6 +83,14 @@ class Index {
       return await searchIndex(this.name, criteria, page, pageSize, sortBy, sortAsc, mappedFilters)
     } catch (e) {
       throw new Error(`Error searching ${this.name} using criteria '${criteria}' (page=${page}, pageSize=${pageSize}, sortBy=${sortBy}, sortAsc=${sortAsc}, filters=${JSON.stringify(filters)}) - ${e.message}`);
+    }
+  }
+
+  async delete(id) {
+    try {
+      await deleteDocumentInIndex(this.name, id);
+    } catch (e) {
+      throw new Error(`Error deleting document with id ${id} from index ${this.name} - ${e.message}`)
     }
   }
 
