@@ -38,4 +38,11 @@ const start = () => {
 };
 module.exports = {
   start,
+  availableTasks: {
+    "Re-index Users" : reindexUsers,
+    "Update Users Index": updateUsersIndex,
+    "Update Audit Cache": updateAuditCache,
+    "Tidy Indexes": tidyIndexes,
+    "Re-index Devices": reindexDevices
+  }
 };
