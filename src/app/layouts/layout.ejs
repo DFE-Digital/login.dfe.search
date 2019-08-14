@@ -8,18 +8,18 @@
 
     <title><%=locals.title || (locals.app ? locals.app.title : null) || 'Login.DfE'%></title>
 
-    <link rel="stylesheet" href="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/css/govuk/fonts.css">
-    <link rel="stylesheet" href="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/css/govuk/govuk-template.css">
-    <link rel="stylesheet" href="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/css/screen.css">
+    <link rel="stylesheet" href="<%= locals.urls.assets %>/css/govuk/fonts.css">
+    <link rel="stylesheet" href="<%= locals.urls.assets %>/css/govuk/govuk-template.css">
+    <link rel="stylesheet" href="<%= locals.urls.assets %>/css/screen.css">
 
-    <link rel="shortcut icon" href="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/images/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="<%= locals.urls.assets %>/images/favicon.ico" type="image/x-icon" />
 
-    <link rel="apple-touch-icon" sizes="180x180" href="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/images/apple-icon-180x180.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/images/apple-icon-167x167.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/images/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" href="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/images/apple-icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="<%= locals.urls.assets %>/images/apple-icon-180x180.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="<%= locals.urls.assets %>/images/apple-icon-167x167.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="<%= locals.urls.assets %>/images/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" href="<%= locals.urls.assets %>/images/apple-icon.png">
 
-    <meta property="og:image" content="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/images/opengraph-image.png">
+    <meta property="og:image" content="<%= locals.urls.assets %>/images/opengraph-image.png">
 
 </head>
 <body>
@@ -91,7 +91,7 @@
 </footer>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-<script src="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/javascript/app.js"></script>
+<script src="<%= locals.urls.assets %>/javascript/app.js"></script>
 
 </body>
 </html>
