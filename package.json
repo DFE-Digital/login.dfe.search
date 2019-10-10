@@ -2,7 +2,6 @@
   "name": "login.dfe.search",
   "version": "1.0.0",
   "description": "API for searching aggregated data with DfE Sign-in",
-  "main": "src/web.js",
   "scripts": {
     "test": "./node_modules/.bin/jest"
   },
