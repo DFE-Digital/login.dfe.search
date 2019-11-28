@@ -25,7 +25,7 @@ const mockConfig = (customConfig) => {
         password: 'unit-tests',
         dialect: 'mssql',
         name: 'audit',
-        encrypt: false,
+        encrypt: true,
         schema: 'dbo',
       }
     },
