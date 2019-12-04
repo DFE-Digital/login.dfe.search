@@ -45,10 +45,10 @@ const loginStats = [
   {
     userId: 'user-1',
     stats: {
-      lastLogin: new Date(Date.UTC(2018, 9, 2, 10, 45, 12)),
+      lastLogin: new Date(Date.UTC(2019, 9, 2, 10, 45, 12)),
       lastStatusChange: undefined,
       loginsInPast12Months: [
-        new Date(Date.UTC(2018, 11, 2, 10, 45, 12)),
+        new Date(Date.UTC(2019, 11, 2, 10, 45, 12)),
       ],
     },
   },
@@ -114,7 +114,7 @@ describe('when updating audit cache with stats', () => {
     expect(setLoginStatsForUser).toHaveBeenCalledTimes(2);
     expect(setLoginStatsForUser.mock.calls[0][0]).toBe('user-1');
     expect(setLoginStatsForUser.mock.calls[0][1]).toMatchObject({
-      lastLogin: new Date(Date.UTC(2018, 9, 31, 9, 2, 0)),
+      lastLogin: new Date(Date.UTC(2019, 9, 2, 10, 45, 12)),
     });
     expect(setLoginStatsForUser.mock.calls[1][0]).toBe('user-2');
     expect(setLoginStatsForUser.mock.calls[1][1]).toMatchObject({
@@ -132,7 +132,7 @@ describe('when updating audit cache with stats', () => {
     expect(setLoginStatsForUser.mock.calls[0][0]).toBe('user-1');
     expect(setLoginStatsForUser.mock.calls[0][1]).toMatchObject({
       loginsInPast12Months: [
-        new Date(Date.UTC(2018, 11, 2, 10, 45, 12))
+        new Date(Date.UTC(2019, 11, 2, 10, 45, 12))
       ],
     });
     expect(setLoginStatsForUser.mock.calls[1][0]).toBe('user-2');
