@@ -15,8 +15,13 @@ const extractFilters = (req) => {
   return filters.length > 0 ? filters : undefined;
 };
 
+const removeWildCardAndEscapeSpecialChars = (criteria) => {
+  const format = /[ !'@#$%&()_+\-=\[\]{};':"\\|,.<>\/?]/;
+  return format.test(criteria)? criteria.slice(0, -1).replace(/[.'+?^${}()|[\]\\]/g, '\\$&'): criteria;
+}
+
 const search = async (req, res) => {
-  const criteria = req.query.criteria || '*';
+  const criteria = removeWildCardAndEscapeSpecialChars(req.query.criteria) || '*';
   const page = parseInt(req.query.page) || 1;
   const filters = extractFilters(req);
   const sortBy = req.query.sortBy || 'searchableName';
