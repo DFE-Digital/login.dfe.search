@@ -15,7 +15,7 @@ const updateUsersIndex = async (correlationId) => {
   logger.info(`Starting to process users updated since ${lastUpdated} into ${index.name}`, { correlationId });
 
   await index.indexUsersChangedAfter(lastUpdated, correlationId);
-  logger.info('Finished processing users updated since ${lastUpdated} into ${index.name}', { correlationId });
+  logger.info(`Finished processing users updated since ${lastUpdated} into ${index.name}`, { correlationId });
 
   await cache.set('Pointer:LastUserUpdateTime', start.getTime());
   logger.info(`Updated user update pointer to ${start}`, { correlationId });
