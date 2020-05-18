@@ -7,6 +7,7 @@ const flash = require('express-flash-2');
 const path = require('path');
 const logger = require('./infrastructure/logger');
 const https = require('https');
+const http = require('http');
 const config = require('./infrastructure/config');
 const configSchema = require('./infrastructure/config/schema');
 const helmet = require('helmet');
@@ -18,6 +19,8 @@ const apiAuth = require('login.dfe.api.auth');
 configSchema.validate();
 
 const app = express();
+https.globalAgent.maxSockets = http.globalAgent.maxSockets = config.hostingEnvironment.agentKeepAlive.maxSockets || 50;
+
 app.use(helmet({
   noCache: true,
   frameguard: {
