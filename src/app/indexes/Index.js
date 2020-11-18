@@ -102,7 +102,7 @@ class Index {
     }
   }
 
-  static async tidyIndexes(name, matcher, correlationId) {
+  static async tidyIndexes(matcher, correlationId) {
     const allIndexes = await listIndexes();
     const unusedIndexes = await matcher(allIndexes);
     if (unusedIndexes) {
