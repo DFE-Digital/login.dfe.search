@@ -46,7 +46,7 @@ const indexStructure = {
     type: 'Int64',
   },
 };
-const pageSize = 50;
+const pageSize = 500;
 
 const getAllDevices = async (correlationId) => {
   logger.info('Getting list of devices to index', { correlationId });
