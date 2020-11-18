@@ -33,8 +33,8 @@ const start = () => {
   scheduleTask('re-index users', config.scheduledTasks.reindexUsers, reindexUsers);
   scheduleTask('update users index', config.scheduledTasks.updateUsersIndex, updateUsersIndex);
   scheduleTask('update audit cache', config.scheduledTasks.updateAuditCache, updateAuditCache);
-  scheduleTask('tidy indexes', config.scheduledTasks.tidyIndexes, tidyIndexes);
   scheduleTask('re-index devices', config.scheduledTasks.reindexDevices, reindexDevices);
+  scheduleTask('tidy indexes', config.scheduledTasks.tidyIndexes, tidyIndexes);
 };
 module.exports = {
   start,
