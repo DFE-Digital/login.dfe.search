@@ -110,9 +110,9 @@ const searchIndex = async (name, criteria, page, pageSize, sortBy, sortAsc = tru
         filterParam += ' and ';
       }
       if (filter.fieldType === 'Collection') {
-        filterParam += `${filter.field}/any(x: search.in(x, '${filter.values.join(', ')}', ','))`
+        filterParam += `${filter.field}/any(x: search.in(x, '${filter.values.join(',')}', ','))`;
       } else if (filter.fieldType === 'Int64') {
-        filterParam += `(${filter.field} eq ${filter.values.join(` or ${filter.field} eq `)})`
+        filterParam += `(${filter.field} eq ${filter.values.join(` or ${filter.field} eq `)})`;
       } else {
         filterParam += `(${filter.field} eq '${filter.values.join(`' or ${filter.field} eq '`)}')`;
       }
