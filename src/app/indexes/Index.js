@@ -102,11 +102,11 @@ class Index {
     }
   }
 
-  static async tidyIndexes(name, matcher, correlationId) {
-    const previouslyUnusedIndexes = await cache.get(`UnusedIndexes:${name}`);
-    if (previouslyUnusedIndexes) {
-      const stillUnusedIndexes = await matcher(previouslyUnusedIndexes);
-      await forEachAsync(stillUnusedIndexes, async (indexName) => {
+  static async tidyIndexes(matcher, correlationId) {
+    const allIndexes = await listIndexes();
+    const unusedIndexes = await matcher(allIndexes);
+    if (unusedIndexes) {
+      await forEachAsync(unusedIndexes, async (indexName) => {
         try {
           await deleteIndex(indexName);
           logger.info(`deleted index ${indexName}`, { correlationId });
@@ -115,10 +115,6 @@ class Index {
         }
       });
     }
-
-    const allIndexes = await listIndexes();
-    const unusedIndexes = await matcher(allIndexes);
-    await cache.set(`UnusedIndexes:${name}`, unusedIndexes);
   }
 }
 
