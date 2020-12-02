@@ -64,3 +64,5 @@ typings/
 \.idea/markdown-navigator/
 \.idea/workspace\.xml
 /config/*.*
+
+.vscode
