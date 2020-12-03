@@ -88,6 +88,8 @@ const indexStructure = {
   },
 };
 const pageSize = 250;
+const chunkSize = 50;
+const sleepTime = 1000;
 
 const getAllUsers = async (changedAfter, correlationId) => {
   logger.info(`Begin reading user changed after ${changedAfter}`, { correlationId });
@@ -440,6 +442,15 @@ class UserIndex extends Index {
     }
   }
 
+  async storeChunked(users, correlationId) {
+    for (let i = 0; i < users.length; i+=chunkSize) {
+      const end = Math.min(i+chunkSize, users.length);
+      const chunk = users.slice(i, end);
+      await this.store(chunk, correlationId);
+      await new Promise(r => setTimeout(r, sleepTime));
+    }
+  }
+
   async store(users, correlationId) {
     const documents = await mapAsync(users, async (user, index) => {
       const searchableName = getSearchableString(`${user.firstName}${user.lastName}`);
@@ -545,7 +556,7 @@ class UserIndex extends Index {
     await updateUsersWithServices(users, correlationId);
     stats.addedUserServices = Date.now();
     logger.debug(`Finished building ${users.length} user details. Storing...`);
-    await this.store(users, correlationId);
+    await this.storeChunked(users, correlationId);
     stats.storedUsers = Date.now();
     logger.debug(`Stored ${users.length} users in ${this.name}`);
 
@@ -560,7 +571,7 @@ class UserIndex extends Index {
     const mergedInvitations = mergeInvitationsOrganisationsServices(invitations, invitationOrganisations, invitationServices);
     stats.mergedInvitationData = Date.now();
     logger.debug('Merged invitation details');
-    await this.store(mergedInvitations, correlationId);
+    await this.storeChunked(mergedInvitations, correlationId);
     stats.storedInvitations = Date.now();
     logger.debug(`Stored ${mergedInvitations.length} invitations in ${this.name}`);
 
@@ -570,11 +581,11 @@ class UserIndex extends Index {
   async indexUsersChangedAfter(changedAfter, correlationId) {
     const users = await getAllUsers(changedAfter, correlationId);
     logger.debug(`Found ${users.length} users for indexing into ${this.name} (changed after = ${changedAfter})`, { correlationId });
-    await this.store(users, correlationId);
+    await this.storeChunked(users, correlationId);
 
     const invitations = await getAllInvitations(changedAfter, correlationId);
     logger.debug(`Found ${invitations.length} invitations for indexing into ${this.name} (changed after = ${changedAfter})`, { correlationId });
-    await this.store(invitations, correlationId);
+    await this.storeChunked(invitations, correlationId);
   }
 
   async indexUserById(id, correlationId) {
