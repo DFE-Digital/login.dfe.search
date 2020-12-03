@@ -89,7 +89,6 @@ const indexStructure = {
 };
 const pageSize = 250;
 const chunkSize = 50;
-const sleepTime = 1000;
 
 const getAllUsers = async (changedAfter, correlationId) => {
   logger.info(`Begin reading user changed after ${changedAfter}`, { correlationId });
@@ -447,7 +446,6 @@ class UserIndex extends Index {
     for (let i = 0; i < usersLength; i+=chunkSize) {
       const chunk = users.slice(i, i+chunkSize);
       await this.store(chunk, correlationId);
-      await new Promise(r => setTimeout(r, sleepTime));
     }
   }
 
