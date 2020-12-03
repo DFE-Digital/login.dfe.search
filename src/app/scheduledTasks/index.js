@@ -22,7 +22,7 @@ const scheduleTask = (name, cronSpec, action) => {
         running[name] = true;
         await action(correlationId);
         running[name] = false;
-        
+
         const durationInMilliseconds = Date.now() - start;
         logger.info(`successfully completed job ${name} in ${durationInMilliseconds / 1000}s`, { correlationId });
       } else {
@@ -39,11 +39,11 @@ const scheduleTask = (name, cronSpec, action) => {
 };
 
 const start = () => {
-  // scheduleTask('re-index users', config.scheduledTasks.reindexUsers, reindexUsers);
+  scheduleTask('re-index users', config.scheduledTasks.reindexUsers, reindexUsers);
   scheduleTask('update users index', config.scheduledTasks.updateUsersIndex, updateUsersIndex);
-  // scheduleTask('update audit cache', config.scheduledTasks.updateAuditCache, updateAuditCache);
-  // scheduleTask('re-index devices', config.scheduledTasks.reindexDevices, reindexDevices);
-  // scheduleTask('tidy indexes', config.scheduledTasks.tidyIndexes, tidyIndexes);
+  scheduleTask('update audit cache', config.scheduledTasks.updateAuditCache, updateAuditCache);
+  scheduleTask('re-index devices', config.scheduledTasks.reindexDevices, reindexDevices);
+  scheduleTask('tidy indexes', config.scheduledTasks.tidyIndexes, tidyIndexes);
 };
 module.exports = {
   start,
