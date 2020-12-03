@@ -9,6 +9,8 @@ const updateAuditCache = require('./updateAuditCache');
 const tidyIndexes = require('./tidyIndexes');
 const reindexDevices = require('./reindexDevices');
 
+const running = {};
+
 const scheduleTask = (name, cronSpec, action) => {
   const job = schedule.scheduleJob(cronSpec, async () => {
     const correlationId = `${name.replace(/[\s,-]/g, '')}-${uuid()}`;
@@ -16,11 +18,18 @@ const scheduleTask = (name, cronSpec, action) => {
       logger.info(`starting job ${name}`, { correlationId });
 
       const start = Date.now();
-      await action(correlationId);
-      const durationInMilliseconds = Date.now() - start;
+      if (!running[name]){
+        running[name] = true;
+        await action(correlationId);
+        running[name] = false;
 
-      logger.info(`successfully completed job ${name} in ${durationInMilliseconds / 1000}s`, { correlationId });
+        const durationInMilliseconds = Date.now() - start;
+        logger.info(`successfully completed job ${name} in ${durationInMilliseconds / 1000}s`, { correlationId });
+      } else {
+        logger.info(`another job is running, skipped ${name}`, { correlationId });
+      }
     } catch (e) {
+      running[name] = false;
       logger.error(`error running job ${name}: ${e.stack}`, { correlationId });
     } finally {
       logger.info(`next invocation of job ${name} will be ${job.nextInvocation()}`);
