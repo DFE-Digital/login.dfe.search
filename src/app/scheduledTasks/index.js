@@ -21,14 +21,17 @@ const scheduleTask = (name, cronSpec, action) => {
       if (!running[name]){
         running[name] = true;
         await action(correlationId);
+        running[name] = false;
+        
+        const durationInMilliseconds = Date.now() - start;
+        logger.info(`successfully completed job ${name} in ${durationInMilliseconds / 1000}s`, { correlationId });
+      } else {
+        logger.info(`another job is running, skipped ${name}`, { correlationId });
       }
-      const durationInMilliseconds = Date.now() - start;
-
-      logger.info(`successfully completed job ${name} in ${durationInMilliseconds / 1000}s`, { correlationId });
     } catch (e) {
+      running[name] = false;
       logger.error(`error running job ${name}: ${e.stack}`, { correlationId });
     } finally {
-      running[name] = false;
       logger.info(`next invocation of job ${name} will be ${job.nextInvocation()}`);
     }
   });
@@ -36,11 +39,11 @@ const scheduleTask = (name, cronSpec, action) => {
 };
 
 const start = () => {
-  scheduleTask('re-index users', config.scheduledTasks.reindexUsers, reindexUsers);
+  // scheduleTask('re-index users', config.scheduledTasks.reindexUsers, reindexUsers);
   scheduleTask('update users index', config.scheduledTasks.updateUsersIndex, updateUsersIndex);
-  scheduleTask('update audit cache', config.scheduledTasks.updateAuditCache, updateAuditCache);
-  scheduleTask('re-index devices', config.scheduledTasks.reindexDevices, reindexDevices);
-  scheduleTask('tidy indexes', config.scheduledTasks.tidyIndexes, tidyIndexes);
+  // scheduleTask('update audit cache', config.scheduledTasks.updateAuditCache, updateAuditCache);
+  // scheduleTask('re-index devices', config.scheduledTasks.reindexDevices, reindexDevices);
+  // scheduleTask('tidy indexes', config.scheduledTasks.tidyIndexes, tidyIndexes);
 };
 module.exports = {
   start,
