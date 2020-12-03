@@ -443,9 +443,9 @@ class UserIndex extends Index {
   }
 
   async storeChunked(users, correlationId) {
-    for (let i = 0; i < users.length; i+=chunkSize) {
-      const end = Math.min(i+chunkSize, users.length);
-      const chunk = users.slice(i, end);
+    const usersLength = users.length;
+    for (let i = 0; i < usersLength; i+=chunkSize) {
+      const chunk = users.slice(i, i+chunkSize);
       await this.store(chunk, correlationId);
       await new Promise(r => setTimeout(r, sleepTime));
     }
