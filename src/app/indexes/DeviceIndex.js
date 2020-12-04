@@ -46,7 +46,7 @@ const indexStructure = {
     type: 'Int64',
   },
 };
-const pageSize = 500;
+const pageSize = 250;
 
 const getAllDevices = async (correlationId) => {
   logger.info('Getting list of devices to index', { correlationId });
@@ -209,7 +209,7 @@ class DeviceIndex extends Index {
   }
 
   static async tidyIndexes(correlationId) {
-    await super.tidyIndexes('devices', async (indexes) => {
+    await super.tidyIndexes(async (indexes) => {
       const matching = indexes.filter(x => x.match(/^search\-devices\-/));
       const currentIndexName = await cache.get('Pointer:DeviceIndex');
       return matching.filter(x => x !== currentIndexName);

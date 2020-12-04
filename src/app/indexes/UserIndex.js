@@ -87,7 +87,7 @@ const indexStructure = {
     searchable: true,
   },
 };
-const pageSize = 500;
+const pageSize = 250;
 
 const getAllUsers = async (changedAfter, correlationId) => {
   logger.info(`Begin reading user changed after ${changedAfter}`, { correlationId });
@@ -618,7 +618,7 @@ class UserIndex extends Index {
 
 
   static async tidyIndexes(correlationId) {
-    await super.tidyIndexes('users', async (indexes) => {
+    await super.tidyIndexes(async (indexes) => {
       const matching = indexes.filter(x => x.match(/^search\-users\-/));
       const currentIndexName = await cache.get('Pointer:UserIndex');
       return matching.filter(x => x !== currentIndexName);
