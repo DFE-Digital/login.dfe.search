@@ -41,14 +41,23 @@ const batchOfAuditRecords = [
     userId: 'user-2',
   },
 ];
+
+const getPreviousDate = (month) => {
+  const d = new Date()
+  return new Date(d.setMonth(d.getMonth() - month))
+}
+
+const lastLogin = getPreviousDate(6)
+const lastLoginAfterThreeMonths = getPreviousDate(3)
+
 const loginStats = [
   {
     userId: 'user-1',
     stats: {
-      lastLogin: new Date(Date.UTC(2019, 9, 2, 10, 45, 12)),
+      lastLogin: lastLogin,
       lastStatusChange: undefined,
       loginsInPast12Months: [
-        new Date(Date.UTC(2019, 11, 2, 10, 45, 12)),
+        lastLoginAfterThreeMonths
       ],
     },
   },
@@ -114,7 +123,7 @@ describe('when updating audit cache with stats', () => {
     expect(setLoginStatsForUser).toHaveBeenCalledTimes(2);
     expect(setLoginStatsForUser.mock.calls[0][0]).toBe('user-1');
     expect(setLoginStatsForUser.mock.calls[0][1]).toMatchObject({
-      lastLogin: new Date(Date.UTC(2019, 9, 2, 10, 45, 12)),
+      lastLogin: lastLogin
     });
     expect(setLoginStatsForUser.mock.calls[1][0]).toBe('user-2');
     expect(setLoginStatsForUser.mock.calls[1][1]).toMatchObject({
@@ -132,7 +141,7 @@ describe('when updating audit cache with stats', () => {
     expect(setLoginStatsForUser.mock.calls[0][0]).toBe('user-1');
     expect(setLoginStatsForUser.mock.calls[0][1]).toMatchObject({
       loginsInPast12Months: [
-        new Date(Date.UTC(2019, 11, 2, 10, 45, 12))
+        lastLoginAfterThreeMonths
       ],
     });
     expect(setLoginStatsForUser.mock.calls[1][0]).toBe('user-2');

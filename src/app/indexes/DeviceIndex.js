@@ -181,7 +181,7 @@ class DeviceIndex extends Index {
         assigneeId: device.user ? device.user.sub : '',
         assignee,
         organisationName,
-        lastLogin: device.loginStats ? device.loginStats.lastLogin.getTime() : 0,
+        lastLogin: device.loginStats && device.loginStats.lastLogin ? device.loginStats.lastLogin.getTime() : 0,
         numberOfSuccessfulLoginsInPast12Months: device.loginStats ? device.loginStats.loginsInPast12Months.length : 0,
       };
     });
