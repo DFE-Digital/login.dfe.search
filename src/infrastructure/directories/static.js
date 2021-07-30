@@ -48,7 +48,7 @@ const listDeviceAssociations = async (page, pageSize, correlationId) => {
   });
 };
 
-const getInvitation = async (invitationId, correlationId) => {
+const getInvitation = async (invitationId) => {
   return {
     firstName: 'Some',
     lastName: 'User',
@@ -59,7 +59,7 @@ const getInvitation = async (invitationId, correlationId) => {
   };
 };
 
-const getUser = async (uid, correlationId) => {
+const getUser = async (uid) => {
   return {
     sub: '7a1b077a-d7d4-4b60-83e8-1a1b49849510',
     given_name: 'Test',

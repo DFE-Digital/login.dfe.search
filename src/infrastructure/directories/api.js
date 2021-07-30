@@ -1,3 +1,4 @@
+const { invitation, directories } = require('login.dfe.dao');
 const config = require('./../config');
 const ApiClient = require('./../utils/ApiClient');
 
@@ -28,19 +29,13 @@ const listInvitations = async (page, pageSize, changedAfter, correlationId) => {
 };
 
 const listDeviceAssociations = async (page, pageSize, correlationId) => {
-  let resource = `/devices?page=${page}&pageSize=${pageSize}`;
+  const resource = `/devices?page=${page}&pageSize=${pageSize}`;
   return client.get(resource, correlationId);
 };
 
-const getInvitation = async (id, correlationId) => {
-  let resource = `/invitations/${id}`;
-  return client.get(resource, correlationId);
-};
+const getInvitation = async (id) => invitation.getInvitationResponseById(id);
 
-const getUser = async (id, correlationId) => {
-  let resource = `/users/${id}`;
-  return client.get(resource, correlationId);
-};
+const getUser = async (id) => directories.getUser(id);
 
 module.exports = {
   listUsers,
