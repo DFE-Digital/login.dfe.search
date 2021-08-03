@@ -133,7 +133,7 @@ const getAllUsers = async (changedAfter, correlationId) => {
 const getUserById = async (id, correlationId) => {
   logger.info('Begin get user by id', {correlationId});
 
-  const user = await getUser(id, correlationId);
+  const user = await getUser(id);
   const mapped = {
     id: user.sub,
     firstName: user.given_name,
@@ -287,7 +287,7 @@ const getAllInvitations = async (changedAfter, correlationId) => {
 const getInvitationById = async (id, correlationId) => {
   logger.info('Begin get invitation by id', {correlationId});
 
-  const invitation = await getInvitation(id.substr(4), correlationId);
+  const invitation = await getInvitation(id.substr(4));
   if (!invitation.isCompleted) {
     const mapped = {
       id: `inv-${invitation.id}`,
@@ -382,9 +382,9 @@ const mergeInvitationsOrganisationsServices = (invitations, invitationOrganisati
 const getOrganisations = async (documentId, correlationId) => {
   let accessibleOrganisations;
   if (documentId.startsWith('inv-')) {
-    accessibleOrganisations = await getInvitationOrganisations(documentId.substr(4), correlationId)
+    accessibleOrganisations = await getInvitationOrganisations(documentId.substr(4));
   } else {
-    accessibleOrganisations = await getUserOrganisationsV2(documentId, correlationId)
+    accessibleOrganisations = await getUserOrganisationsV2(documentId);
   }
   return accessibleOrganisations.map(accessibleOrganisation => ({
     id: accessibleOrganisation.organisation.id,
