@@ -47,6 +47,23 @@ const searchSchema = new SimpleSchema({
   'azureSearch.serviceName': String,
   'azureSearch.apiKey': String,
 });
+const notificationsSchema = new SimpleSchema({
+  connectionString: patterns.redis,
+});
+const adapterSchema = new SimpleSchema({
+  type: {
+    type: String,
+    allowedValues: ['file', 'redis', 'mongo', 'azuread', 'sequelize'],
+  },
+  directories: {
+    type: schemas.sequelizeConnection,
+    optional: true,
+  },
+  organisation: {
+    type: schemas.sequelizeConnection,
+    optional: true,
+  },
+});
 
 const schema = new SimpleSchema({
   loggerSettings: schemas.loggerSettings,
@@ -60,6 +77,8 @@ const schema = new SimpleSchema({
   organisations: schemas.apiClient,
   access: schemas.apiClient,
   devices: schemas.apiClient,
+  notifications: notificationsSchema,
+  adapter: adapterSchema,
 });
 module.exports.validate = () => {
   validateConfigAgainstSchema(config, schema, logger)
