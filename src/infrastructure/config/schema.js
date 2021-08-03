@@ -79,6 +79,7 @@ const schema = new SimpleSchema({
   devices: schemas.apiClient,
   notifications: notificationsSchema,
   adapter: adapterSchema,
+  assets: schemas.assets,
 });
 module.exports.validate = () => {
   validateConfigAgainstSchema(config, schema, logger)
