@@ -82,5 +82,5 @@ const schema = new SimpleSchema({
   assets: schemas.assets,
 });
 module.exports.validate = () => {
-  validateConfigAgainstSchema(config, schema, logger)
+  validateConfigAgainstSchema(config, schema, logger);
 };
