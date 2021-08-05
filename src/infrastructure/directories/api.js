@@ -1,4 +1,4 @@
-const { invitation, directories } = require('login.dfe.dao');
+const { directories } = require('login.dfe.dao');
 const config = require('./../config');
 const ApiClient = require('./../utils/ApiClient');
 
