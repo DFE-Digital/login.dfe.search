@@ -48,7 +48,7 @@ const listDeviceAssociations = async (page, pageSize, correlationId) => {
   });
 };
 
-const getInvitation = async (invitationId) => {
+const getInvitation = async (invitationId, correlationId) => {
   return {
     firstName: 'Some',
     lastName: 'User',
