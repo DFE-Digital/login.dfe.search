@@ -1,4 +1,3 @@
-const { organisation, invitation } = require('login.dfe.dao');
 const config = require('./../config');
 const ApiClient = require('./../utils/ApiClient');
 
@@ -11,12 +10,16 @@ const getUserOrganisations = async (userId, correlationId) => {
   return client.get(`/organisations/associated-with-user/${userId}`, correlationId);
 };
 
-const getUserOrganisationsV2 = async (userId) => organisation.getOrganisationsForUserIncludingServices(userId);
+const getUserOrganisationsV2 = async (userId, correlationId) {
+  return client.get(`/organisations/v2/associated-with-user/${userId}`, correlationId);
+}
 
 const listInvitationsOrganisations = async (page, pageSize, correlationId) => {
   return client.get(`/organisations/invitations?page=${page}&pageSize=${pageSize}`, correlationId);
 };
-const getInvitationOrganisations = async (invitationId) => invitation.getInvitationById(invitationId);
+const getInvitationOrganisations = async (invitationId, correlationId) {
+  return client.get(`/invitations/v2/${invitationId}`, correlationId);
+}
 
 module.exports = {
   listUsersOrganisations,
