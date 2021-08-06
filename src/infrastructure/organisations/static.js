@@ -9,7 +9,7 @@ const getUserOrganisations = async (userId, correlationId) => {
   return Promise.resolve([]);
 };
 
-const getUserOrganisationsV2 = async (userId) => {
+const getUserOrganisationsV2 = async (userId, correlationId) => {
   return Promise.resolve([]);
 };
 
@@ -20,7 +20,7 @@ const listInvitationsOrganisations = async (page, pageSize, correlationId) => {
     totalNumberOfPages: 0,
   });
 };
-const getInvitationOrganisations = async (invitationId) => {
+const getInvitationOrganisations = async (invitationId, correlationId) => {
   return Promise.resolve([]);
 };
 
