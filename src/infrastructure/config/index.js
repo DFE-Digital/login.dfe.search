@@ -24,15 +24,16 @@ const getSettingsFromFile = (settingsPath) => {
 };
 
 const fetchConfig = () => {
+  const settings = '/Users/mahiitservices/workspace/dfe/login.dfe.search/config/login.dfe.search.local.json';
+  process.env.settings = settings;
   if (process.env.settings) {
-    const settings = process.env.settings;
-    let settingsObject = getSettingsObject(settings);
-    if (settingsObject !== null) {
-      return settingsObject;
-    }
+    // let settingsObject = getSettingsObject(settings);
+    // if (settingsObject !== null) {
+    //   return settingsObject;
+    // }
 
     const settingsPath = Path.resolve(settings);
-    settingsObject = getSettingsFromFile(settingsPath);
+    let settingsObject = getSettingsFromFile(settingsPath);
     if (settingsObject !== null) {
       return settingsObject;
     }
