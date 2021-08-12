@@ -313,7 +313,7 @@ const getAllInvitationOrganisations = async (correlationId) => {
     }
 
     try {
-      const page = await listInvitationsOrganisations(pageNumber, pageSize, correlationId);
+      const page = await listInvitationsOrganisations(pageNumber, pageSize);
 
       organisations.push(...page.invitationOrganisations);
 
@@ -382,7 +382,7 @@ const mergeInvitationsOrganisationsServices = (invitations, invitationOrganisati
 const getOrganisations = async (documentId, correlationId) => {
   let accessibleOrganisations;
   if (documentId.startsWith('inv-')) {
-    accessibleOrganisations = await getInvitationOrganisations(documentId.substr(4), correlationId);
+    accessibleOrganisations = await getInvitationOrganisations(documentId.substr(4));
   } else {
     accessibleOrganisations = await getUserOrganisationsV2(documentId, correlationId);
   }

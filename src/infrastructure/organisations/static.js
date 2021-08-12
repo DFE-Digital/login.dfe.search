@@ -13,14 +13,14 @@ const getUserOrganisationsV2 = async (userId, correlationId) => {
   return Promise.resolve([]);
 };
 
-const listInvitationsOrganisations = async (page, pageSize, correlationId) => {
+const listInvitationsOrganisations = async (page, pageSize) => {
   return Promise.resolve({
     invitationOrganisations: [],
     totalNumberOfRecords: 0,
     totalNumberOfPages: 0,
   });
 };
-const getInvitationOrganisations = async (invitationId, correlationId) => {
+const getInvitationOrganisations = async (invitationId) => {
   return Promise.resolve([]);
 };
 
