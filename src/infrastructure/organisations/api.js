@@ -18,8 +18,9 @@ const getUserOrganisationsV2 = async (userId, correlationId) => {
 const listInvitationsOrganisations = async (page, pageSize) => {
   return invitation.listInvitationsForOrganisations(page, pageSize);
 };
+
 const getInvitationOrganisations = async (invitationId) => {
-  return invitation.getInvitationById(invitationId);
+  return invitation.getInvitationResponseById(invitationId);
 }
 
 module.exports = {
