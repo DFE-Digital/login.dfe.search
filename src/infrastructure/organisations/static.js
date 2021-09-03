@@ -1,4 +1,4 @@
-const listUsersOrganisations = async (page, pageSize, correlationId) => {
+const listUsersOrganisations = async (page, pageSize) => {
   return Promise.resolve({
     userOrganisations: [],
     totalNumberOfRecords: 0,
