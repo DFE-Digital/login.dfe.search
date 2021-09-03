@@ -160,7 +160,7 @@ const updateUsersWithOrganisations = async (users, correlationId) => {
     }
 
     try {
-      const page = await listUsersOrganisations(pageNumber, pageSize, correlationId);
+      const page = await listUsersOrganisations(pageNumber, pageSize);
 
       page.userOrganisations.forEach((userOrganisation) => {
         if (!user || user.id.toLowerCase() !== userOrganisation.userId.toLowerCase()) {
