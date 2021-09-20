@@ -26,6 +26,7 @@ const search = async (req, res) => {
   const filters = extractFilters(req);
   const sortBy = req.query.sortBy || 'searchableName';
   const sortAsc = !((req.query.sortDirection || 'asc') === 'desc');
+  const searchFields = req.query.searchFields || undefined;
 
   if (isNaN(page) || page < 1) {
     return res.status(400).json({
@@ -34,7 +35,7 @@ const search = async (req, res) => {
   }
 
   const index = await UserIndex.current();
-  const pageOfUsers = await index.search(criteria, page, 25, sortBy, sortAsc, filters);
+  const pageOfUsers = await index.search(criteria, page, 25, sortBy, sortAsc, filters, searchFields);
   return res.json(pageOfUsers);
 };
 module.exports = search;

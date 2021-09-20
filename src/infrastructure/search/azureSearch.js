@@ -96,13 +96,18 @@ const deleteDocumentInIndex = async (name, id) => {
   })
 };
 
-const searchIndex = async (name, criteria, page, pageSize, sortBy, sortAsc = true, filters = undefined) => {
+const searchIndex = async (name, criteria, page, pageSize, sortBy, sortAsc = true, filters = undefined, searchFields = undefined) => {
   const skip = (page - 1) * pageSize;
   let uri = `${baseUri}/${name}/docs?api-version=${apiVersion}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}&queryType=full&searchMode=all`;
   if (sortBy) {
     const orderBy = sortAsc ? sortBy : `${sortBy} desc`;
     uri += `&$orderby=${orderBy}`;
   }
+
+  if(searchFields) {
+    uri += `&searchFields=${searchFields}`;
+  }
+
   if (filters) {
     let filterParam = '';
     filters.forEach((filter) => {
