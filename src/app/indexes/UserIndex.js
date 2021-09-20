@@ -416,9 +416,9 @@ class UserIndex extends Index {
     super(name, indexStructure);
   }
 
-  async search(criteria, page = 1, pageSize = 25, sortBy = 'searchableName', sortAsc = true, filters = undefined) {
+  async search(criteria, page = 1, pageSize = 25, sortBy = 'searchableName', sortAsc = true, filters = undefined, searchFields = undefined) {
     const searchableCriteria = getSearchableString(criteria);
-    const pageOfDocuments = await super.search(searchableCriteria, page, pageSize, sortBy, sortAsc, filters);
+    const pageOfDocuments = await super.search(searchableCriteria, page, pageSize, sortBy, sortAsc, filters, searchFields);
     const users = pageOfDocuments.documents.map(document => ({
       id: document.id,
       firstName: document.firstName,

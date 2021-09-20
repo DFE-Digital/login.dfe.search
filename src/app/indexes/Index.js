@@ -56,7 +56,7 @@ class Index {
     })
   }
 
-  async search(criteria, page, pageSize, sortBy, sortAsc = true, filters = undefined) {
+  async search(criteria, page, pageSize, sortBy, sortAsc = true, filters = undefined, searchFields = undefined) {
     try {
       let mappedFilters;
       if (filters) {
@@ -80,7 +80,7 @@ class Index {
           });
         })
       }
-      return await searchIndex(this.name, criteria, page, pageSize, sortBy, sortAsc, mappedFilters)
+      return await searchIndex(this.name, criteria, page, pageSize, sortBy, sortAsc, mappedFilters, searchFields)
     } catch (e) {
       throw new Error(`Error searching ${this.name} using criteria '${criteria}' (page=${page}, pageSize=${pageSize}, sortBy=${sortBy}, sortAsc=${sortAsc}, filters=${JSON.stringify(filters)}) - ${e.message}`);
     }
