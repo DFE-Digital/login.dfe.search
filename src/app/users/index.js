@@ -10,7 +10,7 @@ const deleteUser = require('./delete');
 const router = express.Router({ mergeParams: true });
 
 const area = () => {
-  router.get('/', asyncWrapper(search));
+  router.post('/', asyncWrapper(search));
   router.post('/update-index', asyncWrapper(create));
   router.get('/:uid', asyncWrapper(getById));
   router.patch('/:uid', asyncWrapper(update));
