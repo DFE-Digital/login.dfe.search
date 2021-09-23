@@ -22,16 +22,17 @@ const removeWildCardAndEscapeSpecialChars = (criteria) => {
 }
 
 const search = async (req, res) => {
-  const criteria = removeWildCardAndEscapeSpecialChars(req.query.criteria) || '*';
-  const page = parseInt(req.query.page) || 1;
+  const paramsSource = req.method === 'POST' ? req.body : req.query;
+  const criteria = removeWildCardAndEscapeSpecialChars(paramsSource.criteria) || '*';
+  const page = parseInt(paramsSource.page) || 1;
   const filters = extractFilters(req);
-  const sortBy = req.query.sortBy || 'searchableName';
-  const sortAsc = !((req.query.sortDirection || 'asc') === 'desc');
-  const searchFields = req.query.searchFields || undefined;
+  const sortBy = paramsSource.sortBy || 'searchableName';
+  const sortAsc = !((paramsSource.sortDirection || 'asc') === 'desc');
+  const searchFields = paramsSource.searchFields || undefined;
 
   if (isNaN(page) || page < 1) {
     return res.status(400).json({
-      reason: 'page query string must be a number 1 or greater'
+      reason: 'page query string must be a number 1 or greater',
     });
   }
 
