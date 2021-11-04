@@ -1,7 +1,11 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "templatesBaseUri": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/DFE-Digital/login.dfe.infrastructure/master/"
+        },
         "appServiceName": {
             "type": "string",
             "metadata": {
@@ -74,13 +78,43 @@
         },
         "includeDeploymentSlot": {
             "type": "bool",
-            "defaultValue": true,
+            "defaultValue": false,
             "metadata": {
-                "description": "Set to false for worker"
+                "description": "Enable Route All to send all traffic through the virtual network"
+            }
+        },
+        "virtualNetworkResourceGroupName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Resource group of the virtual network"
+            }
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Name of the virtual network"
+            }
+        },
+        "subnetPrefix": {
+            "type": "string",
+            "defaultValue": "sch-sn",
+            "metadata": {
+                "description": "Prefix of the subnet to integrate the app service with"
+            }
+        },
+        "vnetRouteAllEnabled": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Enable Route All to send all traffic through the virtual network"
             }
         }
     },
     "variables": {
+        "enableVirtualNetworkIntegration": "[and(not(empty(parameters('virtualNetworkResourceGroupName'))), not(empty(parameters('virtualNetworkName'))))]",
+        "serviceSubnetResourceId": "[if(variables('enableVirtualNetworkIntegration'), resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), concat(parameters('subnetPrefix'))), '')]"
     },
     "resources": [
         {
@@ -90,7 +124,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/DFE-Digital/login.dfe.infrastructure/master/Shared/app-service-plan.json",
+                    "uri": "[concat(parameters('templatesBaseUri'), 'Shared/app-service-plan.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -116,7 +150,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/DFE-Digital/login.dfe.infrastructure/master/Shared/app-service-certificate.json",
+                    "uri": "[concat(parameters('templatesBaseUri'), 'Shared/app-service-certificate.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -142,7 +176,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/DFE-Digital/login.dfe.infrastructure/master/Shared/app-service.json",
+                    "uri": "[concat(parameters('templatesBaseUri'),'Shared/app-service.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -175,6 +209,12 @@
                     },
                     "includeDeploymentSlot": {
                         "value": "[parameters('includeDeploymentSlot')]"
+                    },
+                    "subnetResourceId": {
+                        "value": "[variables('serviceSubnetResourceId')]"
+                    },
+                    "vnetRouteAllEnabled": {
+                        "value": "[parameters('vnetRouteAllEnabled')]"
                     }
                 }
             },

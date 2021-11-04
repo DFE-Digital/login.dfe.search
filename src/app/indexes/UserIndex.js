@@ -160,7 +160,7 @@ const updateUsersWithOrganisations = async (users, correlationId) => {
     }
 
     try {
-      const page = await listUsersOrganisations(pageNumber, pageSize, correlationId);
+      const page = await listUsersOrganisations(pageNumber, pageSize);
 
       page.userOrganisations.forEach((userOrganisation) => {
         if (!user || user.id.toLowerCase() !== userOrganisation.userId.toLowerCase()) {
@@ -313,7 +313,7 @@ const getAllInvitationOrganisations = async (correlationId) => {
     }
 
     try {
-      const page = await listInvitationsOrganisations(pageNumber, pageSize, correlationId);
+      const page = await listInvitationsOrganisations(pageNumber, pageSize);
 
       organisations.push(...page.invitationOrganisations);
 
@@ -382,9 +382,9 @@ const mergeInvitationsOrganisationsServices = (invitations, invitationOrganisati
 const getOrganisations = async (documentId, correlationId) => {
   let accessibleOrganisations;
   if (documentId.startsWith('inv-')) {
-    accessibleOrganisations = await getInvitationOrganisations(documentId.substr(4), correlationId)
+    accessibleOrganisations = await getInvitationOrganisations(documentId.substr(4));
   } else {
-    accessibleOrganisations = await getUserOrganisationsV2(documentId, correlationId)
+    accessibleOrganisations = await getUserOrganisationsV2(documentId, correlationId);
   }
   return accessibleOrganisations.map(accessibleOrganisation => ({
     id: accessibleOrganisation.organisation.id,
@@ -416,9 +416,9 @@ class UserIndex extends Index {
     super(name, indexStructure);
   }
 
-  async search(criteria, page = 1, pageSize = 25, sortBy = 'searchableName', sortAsc = true, filters = undefined) {
+  async search(criteria, page = 1, pageSize = 25, sortBy = 'searchableName', sortAsc = true, filters = undefined, searchFields = undefined) {
     const searchableCriteria = getSearchableString(criteria);
-    const pageOfDocuments = await super.search(searchableCriteria, page, pageSize, sortBy, sortAsc, filters);
+    const pageOfDocuments = await super.search(searchableCriteria, page, pageSize, sortBy, sortAsc, filters, searchFields);
     const users = pageOfDocuments.documents.map(document => ({
       id: document.id,
       firstName: document.firstName,
