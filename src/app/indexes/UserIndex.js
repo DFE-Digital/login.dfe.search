@@ -363,7 +363,7 @@ const mergeInvitationsOrganisationsServices = (invitations, invitationOrganisati
       id: orgMap.organisation.id,
       name: orgMap.organisation.name,
       categoryId: orgMap.organisation.category ? orgMap.organisation.category.id : undefined,
-      statusId: orgMap.organisation.status.id,
+      statusId: orgMap.organisation.status ? orgMap.organisation.status.id : 0,
       roleId: orgMap.role.id,
     })));
     const services = invitationServices.filter(x => `inv-${x.invitationId.toLowerCase()}` === invitation.id.toLowerCase()).map(x => x.serviceId);
