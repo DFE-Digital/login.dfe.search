@@ -1,7 +1,7 @@
 const schedule = require('node-schedule');
 const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
-const uuid = require('uuid/v4');
+const { v4:uuid } = require('uuid');
 
 const reindexUsers = require('./reindexUsers');
 const updateUsersIndex = require('./updateUsersIndex');
