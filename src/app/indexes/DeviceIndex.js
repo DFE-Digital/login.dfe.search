@@ -1,6 +1,6 @@
 const logger = require('./../../infrastructure/logger');
 const Index = require('./Index');
-const uuid = require('uuid/v4');
+const { v4:uuid } = require('uuid');
 const cache = require('./../../infrastructure/cache');
 const { listDevices } = require('./../../infrastructure/devices');
 const { listDeviceAssociations } = require('./../../infrastructure/directories');
