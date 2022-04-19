@@ -1,5 +1,5 @@
 const logger = require('./../../infrastructure/logger');
-const uuid = require('uuid/v4');
+const { v4:uuid } = require('uuid');
 const uniq = require('lodash/uniq');
 const flatten = require('lodash/flatten');
 const Index = require('./Index');
