@@ -6,8 +6,8 @@ const config = require('./infrastructure/config');
 
 
 const registerRoutes = (app) => {
-  app.use('/users', users());
-  app.use('/devices', devices());
+  app.use('/sch/users', users());
+  app.use('/sch/devices', devices());
 
   if (config.hostingEnvironment.useDevViews) {
     app.use('/', devTaskHelpers());
