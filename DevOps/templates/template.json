@@ -79,7 +79,7 @@
         },
         "subnetPrefix": {
             "type": "string",
-            "defaultValue": "org-sn",
+            "defaultValue": "sch-sn",
             "metadata": {
                 "description": "Prefix of the subnet to integrate the app service with"
             }
