@@ -1,5 +1,5 @@
 const users = require('./app/users');
-const devices = require('./app/devices');
+//const devices = require('./app/devices');
 const devTaskHelpers = require('./app/devTaskHelpers');
 
 const config = require('./infrastructure/config');

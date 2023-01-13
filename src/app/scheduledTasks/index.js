@@ -7,7 +7,7 @@ const reindexUsers = require('./reindexUsers');
 const updateUsersIndex = require('./updateUsersIndex');
 const updateAuditCache = require('./updateAuditCache');
 const tidyIndexes = require('./tidyIndexes');
-const reindexDevices = require('./reindexDevices');
+//const reindexDevices = require('./reindexDevices');
 
 const running = {};
 
@@ -42,7 +42,7 @@ const start = () => {
   scheduleTask('re-index users', config.scheduledTasks.reindexUsers, reindexUsers);
   scheduleTask('update users index', config.scheduledTasks.updateUsersIndex, updateUsersIndex);
   scheduleTask('update audit cache', config.scheduledTasks.updateAuditCache, updateAuditCache);
-  scheduleTask('re-index devices', config.scheduledTasks.reindexDevices, reindexDevices);
+  //scheduleTask('re-index devices', config.scheduledTasks.reindexDevices, reindexDevices);
   scheduleTask('tidy indexes', config.scheduledTasks.tidyIndexes, tidyIndexes);
 };
 module.exports = {
@@ -52,6 +52,6 @@ module.exports = {
     "Update Users Index": updateUsersIndex,
     "Update Audit Cache": updateAuditCache,
     "Tidy Indexes": tidyIndexes,
-    "Re-index Devices": reindexDevices
+    //"Re-index Devices": reindexDevices
   }
 };
