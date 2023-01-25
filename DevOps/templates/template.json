@@ -98,23 +98,26 @@
                 "description": "Whether or not to include a staging deployment slot"
             }
         },
-        "gatewayVnetRg": {
+        "sharedResourceGroupName": {
             "type": "string",
             "metadata": {
-                "description": "Gateway virtual network resource group"
+                "description": "Virtual network resource group"
             }
         },
-        "gatewayVnetName": {
+        "sharedVirtualNetworkName": {
             "type": "string",
             "metadata": {
-                "description": "Gateway virtual network name"
+                "description": "Virtual network name"
             }
         }
     },
     "variables": {
         "enableVirtualNetworkIntegration": "[and(not(empty(parameters('virtualNetworkResourceGroupName'))), not(empty(parameters('virtualNetworkName'))))]",
         "serviceSubnetResourceId": "[if(variables('enableVirtualNetworkIntegration'), resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), concat(parameters('subnetPrefix'))), '')]",
-        "gatewaySubnetId": "[resourceId(parameters('gatewayVnetRg'),'Microsoft.Network/virtualNetworks/subnets',parameters('gatewayVnetName'), 'gateway')]"
+        "prestierG1Id": "[resourceId(parameters('sharedResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('sharedVirtualNetworkName'), 'prestier-g1-sn')]",
+        "prestierG2Id": "[resourceId(parameters('sharedResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('sharedVirtualNetworkName'), 'prestier-g2-sn')]",
+        "prestierG3Id": "[resourceId(parameters('sharedResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('sharedVirtualNetworkName'), 'prestier-g3-sn')]",
+        "prestierG4Id": "[resourceId(parameters('sharedResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('sharedVirtualNetworkName'), 'prestier-g4-sn')]"
     },
     "resources": [
         {
@@ -172,11 +175,32 @@
                     "ipSecurityRestrictions": {
                         "value": [
                             {
-                                "vnetSubnetResourceId": "[variables('gatewaySubnetId')]",
+                                "vnetSubnetResourceId": "[variables('prestierG1Id')]",
                                 "action": "Allow",
                                 "tag": "Default",
-                                "name": "Gateway",
+                                "name": "prestier-g1",
                                 "priority": 10
+                            },
+                            {
+                                "vnetSubnetResourceId": "[variables('prestierG2Id')]",
+                                "action": "Allow",
+                                "tag": "Default",
+                                "name": "prestier-g2",
+                                "priority": 20
+                            },
+                            {
+                                "vnetSubnetResourceId": "[variables('prestierG3Id')]",
+                                "action": "Allow",
+                                "tag": "Default",
+                                "name": "prestier-g3",
+                                "priority": 30
+                            },
+                            {
+                                "vnetSubnetResourceId": "[variables('prestierG4Id')]",
+                                "action": "Allow",
+                                "tag": "Default",
+                                "name": "prestier-g4",
+                                "priority": 40
                             }
                         ]
                     }
