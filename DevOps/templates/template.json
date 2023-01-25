@@ -97,27 +97,15 @@
             "metadata": {
                 "description": "Whether or not to include a staging deployment slot"
             }
-        },
-        "sharedResourceGroupName": {
-            "type": "string",
-            "metadata": {
-                "description": "Virtual network resource group"
-            }
-        },
-        "sharedVirtualNetworkName": {
-            "type": "string",
-            "metadata": {
-                "description": "Virtual network name"
-            }
         }
     },
     "variables": {
         "enableVirtualNetworkIntegration": "[and(not(empty(parameters('virtualNetworkResourceGroupName'))), not(empty(parameters('virtualNetworkName'))))]",
         "serviceSubnetResourceId": "[if(variables('enableVirtualNetworkIntegration'), resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), concat(parameters('subnetPrefix'))), '')]",
-        "prestierG1Id": "[resourceId(parameters('sharedResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('sharedVirtualNetworkName'), 'prestier-g1-sn')]",
-        "prestierG2Id": "[resourceId(parameters('sharedResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('sharedVirtualNetworkName'), 'prestier-g2-sn')]",
-        "prestierG3Id": "[resourceId(parameters('sharedResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('sharedVirtualNetworkName'), 'prestier-g3-sn')]",
-        "prestierG4Id": "[resourceId(parameters('sharedResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('sharedVirtualNetworkName'), 'prestier-g4-sn')]"
+        "prestierG1Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'prestier-g1-sn')]",
+        "prestierG2Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'prestier-g2-sn')]",
+        "prestierG3Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'prestier-g3-sn')]",
+        "prestierG4Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'prestier-g4-sn')]"
     },
     "resources": [
         {
