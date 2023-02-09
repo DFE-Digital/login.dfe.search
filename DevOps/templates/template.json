@@ -137,7 +137,14 @@
             "tag": "Default",
             "name": "prestier-g4",
             "priority": 40
-        }]
+        },
+        {
+            "vnetSubnetResourceId": "[variables('prestierG5Id')]",
+            "action": "Allow",
+            "tag": "Default",
+            "name": "prestier-g5",
+            "priority": 50
+        },]
     },
     "resources": [
         {
