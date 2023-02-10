@@ -110,41 +110,90 @@
         "prestierG3Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'prestier-g3-sn')]",
         "prestierG4Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'prestier-g4-sn')]",
         "prestierG5Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'prestier-g5-sn')]",
-        "baseIpSecurityRestrictions": [{
-            "vnetSubnetResourceId": "[variables('prestierG1Id')]",
-            "action": "Allow",
-            "tag": "Default",
-            "name": "prestier-g1",
-            "priority": 10
-        },
-        {
-            "vnetSubnetResourceId": "[variables('prestierG2Id')]",
-            "action": "Allow",
-            "tag": "Default",
-            "name": "prestier-g2",
-            "priority": 20
-        },
-        {
-            "vnetSubnetResourceId": "[variables('prestierG3Id')]",
-            "action": "Allow",
-            "tag": "Default",
-            "name": "prestier-g3",
-            "priority": 30
-        },
-        {
-            "vnetSubnetResourceId": "[variables('prestierG4Id')]",
-            "action": "Allow",
-            "tag": "Default",
-            "name": "prestier-g4",
-            "priority": 40
-        },
-        {
-            "vnetSubnetResourceId": "[variables('prestierG5Id')]",
-            "action": "Allow",
-            "tag": "Default",
-            "name": "prestier-g5",
-            "priority": 50
-        }]
+        "midtierG1Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'midtier-g1-sn')]",
+        "midtierG2Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'midtier-g2-sn')]",
+        "midtierG3Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'midtier-g3-sn')]",
+        "backendG1Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'backend-g1-sn')]",
+        "backendG2Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'backend-g2-sn')]",
+        "backendG3Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'backend-g3-sn')]",
+        "baseIpSecurityRestrictions":[{
+                "vnetSubnetResourceId": "[variables('prestierG1Id')]",
+                "action": "Allow",
+                "tag": "Default",
+                "name": "prestier-g1",
+                "priority": 10
+            },
+            {
+                "vnetSubnetResourceId": "[variables('prestierG2Id')]",
+                "action": "Allow",
+                "tag": "Default",
+                "name": "prestier-g2",
+                "priority": 20
+            },
+            {
+                "vnetSubnetResourceId": "[variables('prestierG3Id')]",
+                "action": "Allow",
+                "tag": "Default",
+                "name": "prestier-g3",
+                "priority": 30
+            },
+            {
+                "vnetSubnetResourceId": "[variables('prestierG4Id')]",
+                "action": "Allow",
+                "tag": "Default",
+                "name": "prestier-g4",
+                "priority": 40
+            },
+            {
+                "vnetSubnetResourceId": "[variables('prestierG5Id')]",
+                "action": "Allow",
+                "tag": "Default",
+                "name": "prestier-g5",
+                "priority": 50
+            },
+            {
+                "vnetSubnetResourceId": "[variables('midtierG1Id')]",
+                "action": "Allow",
+                "tag": "Default",
+                "name": "midtier-g1",
+                "priority": 60
+            },
+            {
+                "vnetSubnetResourceId": "[variables('midtierG2Id')]",
+                "action": "Allow",
+                "tag": "Default",
+                "name": "midtier-g2",
+                "priority": 70
+            },
+            {
+                "vnetSubnetResourceId": "[variables('midtierG3Id')]",
+                "action": "Allow",
+                "tag": "Default",
+                "name": "midtier-g3",
+                "priority": 80
+            },
+            {
+                "vnetSubnetResourceId": "[variables('backendG1Id')]",
+                "action": "Allow",
+                "tag": "Default",
+                "name": "backend-g1",
+                "priority": 90
+            },
+            {
+                "vnetSubnetResourceId": "[variables('backendG2Id')]",
+                "action": "Allow",
+                "tag": "Default",
+                "name": "backend-g2",
+                "priority": 100
+            },
+            {
+                "vnetSubnetResourceId": "[variables('backendG3Id')]",
+                "action": "Allow",
+                "tag": "Default",
+                "name": "backend-g3",
+                "priority": 110
+            }
+        ]
     },
     "resources": [
         {
