@@ -112,6 +112,7 @@ const getAllUsers = async (changedAfter, correlationId) => {
         lastName: user.family_name,
         email: user.email,
         statusId: user.status,
+        lastLogin: user.last_login,
         legacyUsernames: user.legacyUsernames
       }));
 
@@ -140,6 +141,7 @@ const getUserById = async (id, correlationId) => {
     lastName: user.family_name,
     email: user.email,
     statusId: user.status,
+    lastLogin: user.last_login,
     legacyUsernames: user.legacyUsernames
   };
   return [mapped]
