@@ -32,7 +32,7 @@
     "login.dfe.api.auth": "git+https://github.com/DFE-Digital/login.dfe.api.auth.git#v2.2.0",
     "login.dfe.audit.winston-sequelize-transport": "git+https://github.com/DFE-Digital/login.dfe.audit.winston-sequelize-transport.git#v3.0.0",
     "login.dfe.config.schema.common": "git+https://github.com/DFE-Digital/login.dfe.config.schema.common.git#v1.9.3",
-    "login.dfe.dao": "^2.0.1",
+    "login.dfe.dao": "^2.9.0",
     "login.dfe.express-error-handling": "git+https://github.com/DFE-Digital/login.dfe.express-error-handling.git#v2.2.1",
     "login.dfe.healthcheck": "git+https://github.com/DFE-Digital/login.dfe.healthcheck.git#v2.2.1",
     "login.dfe.jwt-strategies": "git+https://github.com/DFE-Digital/login.dfe.jwt-strategies.git#v3.0.1",
