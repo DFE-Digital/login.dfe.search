@@ -1,3 +1,4 @@
+const { overwriteAuditLastLogins } = require('../../utils/userHelper');
 const UserIndex = require('./../indexes/UserIndex');
 
 const extractFilters = (req) => {
@@ -38,6 +39,8 @@ const search = async (req, res) => {
 
   const index = await UserIndex.current();
   const pageOfUsers = await index.search(criteria, page, 25, sortBy, sortAsc, filters, searchFields);
+  pageOfUsers.users = await overwriteAuditLastLogins(pageOfUsers.users);
+
   return res.json(pageOfUsers);
 };
 module.exports = search;
