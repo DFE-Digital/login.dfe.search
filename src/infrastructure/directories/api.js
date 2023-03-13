@@ -40,10 +40,13 @@ const getInvitation = async (id, correlationId) => {
 
 const getUser = async (id) => directories.getUser(id);
 
+const getUsers = async (ids) => directories.getUsers(ids);
+
 module.exports = {
   listUsers,
   listInvitations,
   listDeviceAssociations,
   getInvitation,
   getUser,
+  getUsers,
 };
