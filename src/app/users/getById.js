@@ -1,3 +1,4 @@
+const { overwriteAuditLastLogin } = require('../../utils/userHelper');
 const UserIndex = require('./../indexes/UserIndex');
 
 const getById = async (req, res) => {
@@ -11,6 +12,7 @@ const getById = async (req, res) => {
   if(pageOfUsers.users.length === 0){
     return res.status(404).send();
   }
-  return res.json(pageOfUsers.users[0]);
+
+  return res.json(await overwriteAuditLastLogin(pageOfUsers.users[0]));
 };
 module.exports = getById;
