@@ -8,8 +8,12 @@ const { getUser, getUsers } = require('../infrastructure/directories');
  */
 async function overwriteAuditLastLogin(userData) {
   const user = userData;
-  const databaseUser = await getUser(user.id);
-  user.lastLogin = (databaseUser.last_login);
+
+  if (!user.id.startsWith('inv-')) {
+    const databaseUser = await getUser(user.id);
+    user.lastLogin = (databaseUser.last_login);
+  }
+
   return user;
 }
 
