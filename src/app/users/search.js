@@ -18,7 +18,7 @@ const extractFilters = (req) => {
 };
 
 const removeWildCardAndEscapeSpecialChars = (criteria) => {
-  const format = /[ !'@#$%&()_+\-=\[\]{};':"\\|,.<>\/?]/;
+  const format = /[ !'*@#$%&()_+\-=\[\]{};':"\\|,.<>\/?]/;
   return format.test(criteria)? criteria.slice(0, -1).replace(/[.'+?^${}()|[\]\\]/g, '\\$&'): criteria;
 }
 

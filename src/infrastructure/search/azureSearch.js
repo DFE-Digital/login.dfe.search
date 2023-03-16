@@ -3,7 +3,7 @@ const rp = require('login.dfe.request-promise-retry');
 const omit = require('lodash/omit');
 
 const baseUri = `https://${config.search.azureSearch.serviceName}.search.windows.net/indexes`;
-const apiVersion = '2016-09-01';
+const apiVersion = '2020-06-30';
 
 const listIndexes = async () => {
   const indexesResponse = await rp({
