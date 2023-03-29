@@ -59,6 +59,8 @@ const indexStructure = {
   },
   organisationsJson: {
     type: 'String',
+    sortable: true,
+    filterable: true,
   },
   services: {
     type: 'Collection',
