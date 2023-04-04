@@ -78,7 +78,7 @@
         },
         "includeDeploymentSlot": {
             "type": "bool",
-            "defaultValue": false,
+            "defaultValue": true,
             "metadata": {
                 "description": "Enable Route All to send all traffic through the virtual network"
             }
