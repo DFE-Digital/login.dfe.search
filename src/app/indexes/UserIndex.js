@@ -112,7 +112,7 @@ const getAllUsers = async (changedAfter, correlationId) => {
         lastName: user.family_name,
         email: user.email,
         statusId: user.status,
-        lastLogin: user.last_login,
+        lastLogin: user.last_login ? new Date(user.last_login) : null,
         legacyUsernames: user.legacyUsernames
       }));
 
@@ -141,7 +141,7 @@ const getUserById = async (id, correlationId) => {
     lastName: user.family_name,
     email: user.email,
     statusId: user.status,
-    lastLogin: user.last_login,
+    lastLogin: user.last_login ? new Date(user.last_login) : null,
     legacyUsernames: user.legacyUsernames
   };
   return [mapped]
