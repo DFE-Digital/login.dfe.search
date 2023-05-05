@@ -112,8 +112,8 @@ const getAllUsers = async (changedAfter, correlationId) => {
         lastName: user.family_name,
         email: user.email,
         statusId: user.status,
-        lastLogin: user.last_login,
-        legacyUsernames: user.legacyUsernames
+        lastLogin: user.last_login ? new Date(user.last_login) : null,
+        legacyUsernames: user.legacyUsernames,
       }));
 
       if (!users) {
@@ -132,7 +132,7 @@ const getAllUsers = async (changedAfter, correlationId) => {
 };
 
 const getUserById = async (id, correlationId) => {
-  logger.info('Begin get user by id', {correlationId});
+  logger.info('Begin get user by id', { correlationId });
 
   const user = await getUser(id, correlationId);
   const mapped = {
@@ -141,10 +141,10 @@ const getUserById = async (id, correlationId) => {
     lastName: user.family_name,
     email: user.email,
     statusId: user.status,
-    lastLogin: user.last_login,
-    legacyUsernames: user.legacyUsernames
+    lastLogin: user.last_login ? new Date(user.last_login) : null,
+    legacyUsernames: user.legacyUsernames,
   };
-  return [mapped]
+  return [mapped];
 };
 
 const updateUsersWithOrganisations = async (users, correlationId) => {
