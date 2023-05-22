@@ -1,3 +1,4 @@
+const { overwriteAuditLastLogins } = require('../../utils/userHelper');
 const UserIndex = require('./../indexes/UserIndex');
 
 const extractFilters = (req) => {
@@ -17,7 +18,7 @@ const extractFilters = (req) => {
 };
 
 const removeWildCardAndEscapeSpecialChars = (criteria) => {
-  const format = /[ !'@#$%&()_+\-=\[\]{};':"\\|,.<>\/?]/;
+  const format = /[ !'*@#$%&()_+\-=\[\]{};':"\\|,.<>\/?]/;
   return format.test(criteria)? criteria.slice(0, -1).replace(/[.'+?^${}()|[\]\\]/g, '\\$&'): criteria;
 }
 
@@ -38,6 +39,8 @@ const search = async (req, res) => {
 
   const index = await UserIndex.current();
   const pageOfUsers = await index.search(criteria, page, 25, sortBy, sortAsc, filters, searchFields);
+  pageOfUsers.users = await overwriteAuditLastLogins(pageOfUsers.users);
+
   return res.json(pageOfUsers);
 };
 module.exports = search;
