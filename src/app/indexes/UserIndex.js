@@ -88,7 +88,7 @@ const indexStructure = {
   },
 };
 const pageSize = 250;
-const chunkSize = 50;
+const chunkSize = 30;
 
 const getAllUsers = async (changedAfter, correlationId) => {
   logger.info(`Begin reading user changed after ${changedAfter}`, { correlationId });

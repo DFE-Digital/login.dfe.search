@@ -45,7 +45,20 @@ class Index {
   async store(documents, correlationId) {
     ensureDocumentsAreValidStructure(documents, this.structure);
 
-    const batches = chunk(documents, 70);
+    // Check size of documents
+    const size = Buffer.byteLength(JSON.stringify(documents));
+    const kiloBytes = size / 1024;
+    const megaBytes = kiloBytes / 1024;
+    console.log('How big is documents:megaBytes', megaBytes);
+
+    const batches = chunk(documents, 40);
+
+    const batchSize = Buffer.byteLength(JSON.stringify(batches));
+    const batchKiloBytes = batchSize / 1024;
+    const batchMegaBytes = batchKiloBytes / 1024;
+    console.log('How big is batch:megaBytes', batchMegaBytes);
+
+
     await forEachAsync(batches, async (batch, index) => {
       logger.debug(`Writing batch ${index + 1} of ${batches.length} to ${this.name}`, { correlationId });
       try {
