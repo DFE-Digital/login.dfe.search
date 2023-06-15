@@ -46,7 +46,7 @@ const createIndex = async (name, structure) => {
       retrievable: fieldDetails.retrievable,
     };
   });
-  logger.info(`Fields inspect: ${fields} - name: ${name}`);
+  logger.info(`Fields inspect: ${JSON.stringify(fields)} - name: ${name}`);
 
   await rp({
     method: 'PUT',
@@ -77,7 +77,7 @@ const storeDocumentsInIndex = async (name, documents) => {
     },
     json: true,
   });
-  logger.info('Return result of storeDocuments API call: ', result);
+  logger.info('Return result of storeDocuments API call: ', JSON.stringify(result));
 };
 
 const deleteDocumentInIndex = async (name, id) => {
