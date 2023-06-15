@@ -43,7 +43,7 @@ const createIndex = async (name, structure) => {
       searchable: fieldDetails.searchable,
       filterable: fieldDetails.filterable,
       sortable: fieldDetails.sortable,
-      retrievable: fieldDetails.retrievable,
+      facetable: fieldDetails.facetable,
     };
   });
   logger.info(`Fields inspect: ${JSON.stringify(fields)} - name: ${name}`);
