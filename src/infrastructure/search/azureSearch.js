@@ -75,7 +75,7 @@ const storeDocumentsInIndex = async (name, documents) => {
     },
     json: true,
   });
-  logger.info('Return result of storeDocuments API call: ', result);
+  console.info('Return result of storeDocuments API call: ', result);
 };
 
 const deleteDocumentInIndex = async (name, id) => {
