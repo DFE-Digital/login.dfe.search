@@ -1,6 +1,7 @@
 const config = require('./../config');
 const rp = require('login.dfe.request-promise-retry');
 const omit = require('lodash/omit');
+const logger = require('./../../infrastructure/logger');
 
 const baseUri = `https://${config.search.azureSearch.serviceName}.search.windows.net/indexes`;
 const apiVersion = '2020-06-30';
@@ -45,6 +46,7 @@ const createIndex = async (name, structure) => {
       retrievable: fieldDetails.retrievable,
     };
   });
+  logger.info(`Fields inspect: ${fields} - name: ${name}`);
 
   await rp({
     method: 'PUT',
@@ -75,7 +77,7 @@ const storeDocumentsInIndex = async (name, documents) => {
     },
     json: true,
   });
-  console.info('Return result of storeDocuments API call: ', result);
+  logger.info('Return result of storeDocuments API call: ', result);
 };
 
 const deleteDocumentInIndex = async (name, id) => {
