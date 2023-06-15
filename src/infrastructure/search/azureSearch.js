@@ -62,7 +62,7 @@ const createIndex = async (name, structure) => {
 
 const storeDocumentsInIndex = async (name, documents) => {
   const indexDocuments = documents.map(x => Object.assign({ '@search.action': 'upload' }, x));
-  await rp({
+  const result = await rp({
     method: 'POST',
     uri: `${baseUri}/${name}/docs/index?api-version=${apiVersion}`,
     headers: {
@@ -74,6 +74,7 @@ const storeDocumentsInIndex = async (name, documents) => {
     },
     json: true,
   });
+  logger.info('Return result of storeDocuments API call: ', result);
 };
 
 const deleteDocumentInIndex = async (name, id) => {
