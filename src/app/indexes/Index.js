@@ -3,6 +3,7 @@ const logger = require('./../../infrastructure/logger');
 const { listIndexes, createIndex, storeDocumentsInIndex, searchIndex, deleteIndex, deleteDocumentInIndex } = require('./../../infrastructure/search');
 const cache = require('./../../infrastructure/cache');
 const { forEachAsync } = require('./../../utils/async');
+const sizeof = require('object-sizeof');
 
 const ensureValueValidForField = (value, field) => {
   if (!value && field.key) {
@@ -46,17 +47,13 @@ class Index {
     ensureDocumentsAreValidStructure(documents, this.structure);
 
     // Check size of documents
-    const size = Buffer.byteLength(JSON.stringify(documents));
-    const kiloBytes = size / 1024;
-    const megaBytes = kiloBytes / 1024;
-    logger.info('How big is documents:megaBytes', megaBytes);
+    const sizeObj = sizeof(documents);
+    logger.info(`Size of the documents object: ${sizeObj} bytes`);
 
     const batches = chunk(documents, 40);
 
-    const batchSize = Buffer.byteLength(JSON.stringify(batches));
-    const batchKiloBytes = batchSize / 1024;
-    const batchMegaBytes = batchKiloBytes / 1024;
-    logger.info('How big is batch:megaBytes', batchMegaBytes);
+    const batchSizeObj = sizeof(batches);
+    logger.info(`Size of the batch documents object: ${batchSizeObj} bytes`);
 
 
     await forEachAsync(batches, async (batch, index) => {
