@@ -49,14 +49,14 @@ class Index {
     const size = Buffer.byteLength(JSON.stringify(documents));
     const kiloBytes = size / 1024;
     const megaBytes = kiloBytes / 1024;
-    console.log('How big is documents:megaBytes', megaBytes);
+    logger.info('How big is documents:megaBytes', megaBytes);
 
     const batches = chunk(documents, 40);
 
     const batchSize = Buffer.byteLength(JSON.stringify(batches));
     const batchKiloBytes = batchSize / 1024;
     const batchMegaBytes = batchKiloBytes / 1024;
-    console.log('How big is batch:megaBytes', batchMegaBytes);
+    logger.info('How big is batch:megaBytes', batchMegaBytes);
 
 
     await forEachAsync(batches, async (batch, index) => {
