@@ -48,12 +48,12 @@ class Index {
 
     // Check size of documents
     const sizeObj = sizeof(documents);
-    logger.info(`Size of the documents object: ${sizeObj} bytes`);
+    logger.info(`Size of the documents object: ${sizeObj / Math.pow(1024, 2)} MB`);
 
     const batches = chunk(documents, 40);
 
     const batchSizeObj = sizeof(batches);
-    logger.info(`Size of the batch documents object: ${batchSizeObj} bytes`);
+    logger.info(`Size of the batch documents object: ${batchSizeObj / Math.pow(1024, 2)} MB`);
 
 
     await forEachAsync(batches, async (batch, index) => {
