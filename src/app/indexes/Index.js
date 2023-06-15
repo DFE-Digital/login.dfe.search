@@ -106,7 +106,7 @@ class Index {
 
   static async create(name, structure) {
     try {
-      logger.info(`Structure inspect: ${structure}, name: ${name}`);
+      logger.info(`Structure inspect: ${JSON.stringify(structure)}, name: ${name}`);
       await createIndex(name, structure);
     } catch (e) {
       throw new Error(`Error creating index ${name} - ${e.message}`);
