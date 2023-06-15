@@ -42,6 +42,7 @@ const createIndex = async (name, structure) => {
       searchable: fieldDetails.searchable,
       filterable: fieldDetails.filterable,
       sortable: fieldDetails.sortable,
+      retrievable: fieldDetails.retrievable,
     };
   });
 
