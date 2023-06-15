@@ -11,6 +11,7 @@ const { listUserServices, listAllUsersServices, listInvitationServices, listAllI
 const { mapAsync } = require('./../../utils/async');
 const BasicArrayList = require('./../../utils/BasicArrayList');
 const { getSearchableString } = require('./utils');
+const sizeof = require('object-sizeof');
 
 const indexStructure = {
   id: {
@@ -214,6 +215,7 @@ const updateUsersWithOrganisations = async (users, correlationId) => {
     })));
 
     user.organisationMappings = undefined;
+    console.debug(`Mapped org details for user ${i + 1} of ${users.length} (${user.email} / ${user.id}) size of: ${sizeof(user) / Math.pow(1024, 2)}`, { correlationId });
   }
 };
 const updateUsersWithServices = async (users, correlationId) => {
