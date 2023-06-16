@@ -3,7 +3,6 @@ const logger = require('./../../infrastructure/logger');
 const { listIndexes, createIndex, storeDocumentsInIndex, searchIndex, deleteIndex, deleteDocumentInIndex } = require('./../../infrastructure/search');
 const cache = require('./../../infrastructure/cache');
 const { forEachAsync } = require('./../../utils/async');
-const sizeof = require('object-sizeof');
 
 const ensureValueValidForField = (value, field) => {
   if (!value && field.key) {
@@ -46,15 +45,7 @@ class Index {
   async store(documents, correlationId) {
     ensureDocumentsAreValidStructure(documents, this.structure);
 
-    // Check size of documents
-    const sizeObj = sizeof(documents);
-    logger.info(`Size of the documents object: ${sizeObj / Math.pow(1024, 2)} MB`);
-
     const batches = chunk(documents, 40);
-
-    const batchSizeObj = sizeof(batches);
-    logger.info(`Size of the batch documents object: ${batchSizeObj / Math.pow(1024, 2)} MB`);
-
 
     await forEachAsync(batches, async (batch, index) => {
       logger.debug(`Writing batch ${index + 1} of ${batches.length} to ${this.name}`, { correlationId });
@@ -106,7 +97,6 @@ class Index {
 
   static async create(name, structure) {
     try {
-      logger.info(`Structure inspect: ${JSON.stringify(structure)}, name: ${name}`);
       await createIndex(name, structure);
     } catch (e) {
       throw new Error(`Error creating index ${name} - ${e.message}`);
