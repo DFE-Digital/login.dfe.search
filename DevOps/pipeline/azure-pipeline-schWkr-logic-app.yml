@@ -169,6 +169,9 @@ stages:
                 certificateName: non-prod-gateway
               AppDeploy: ${{parameters.AppDeploy}}
               workerRepo: search
+              logicAppRuntimeStack: ~18
+              logicAppRuntime: node
+              logicAppStandartVersion: ~4
 
         # - ${{ if parameters.AppDeploy }}:
         #   - template: pipeline/deploy.yml@devopsTemplates
