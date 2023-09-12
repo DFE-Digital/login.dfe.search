@@ -1,0 +1,152 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "templatesBaseUri": {
+            "type": "string"
+        },
+        "AccessToken": {
+            "type": "string",
+            "metadata": {
+                "description": "Token that will acces the private repo from the logic app"
+            }
+        },
+        "branch": {
+            "type": "string",
+            "defaultValue": "main",
+            "metadata": {
+                "description": "Branch that use for the ARM templateLinks"
+            }
+        },
+        "appServiceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the App Service"
+            }
+        },
+        "appServicePlanName": {
+            "type": "string",
+            "metadata": {
+                "description": "The App Service Plan name"
+            }
+        },
+        "appServicePlanRG": {
+            "type": "string",
+            "metadata": {
+                "description": "The App Service resource group"
+            }
+        },
+        "appInsightsName": {
+            "type": "string",
+            "metadata": {
+                "description": "The App Insights Name"
+            }
+        },
+        "nodeVersion": {
+            "type": "string",
+            "defaultValue": "~18",
+            "metadata": {
+                "description": "The default NodeJS version that the App Service will run"
+            }
+        },        
+        "functionRuntime": {
+            "type": "string",
+            "defaultValue": "node",
+            "metadata": {
+                "description": "The default NodeJS version that the App Service will run"
+            }
+        },        
+        "functionVersion": {
+            "type": "string",
+            "defaultValue": "~4",
+            "metadata": {
+                "description": "The default NodeJS version that the App Service will run"
+            }
+        },
+        "virtualNetworkResourceGroupName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Resource group of the virtual network"
+            }
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Name of the virtual network"
+            }
+        },
+        "subnetPrefix": {
+            "type": "string",
+            "defaultValue": "sch-sn",
+            "metadata": {
+                "description": "Prefix of the subnet to integrate the app service with"
+            }
+        },
+        "enablePrivateEndpoint": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Add app settings to support virtual network private endpoints"
+            }
+        },
+        "ipSecurityRestrictions": {
+            "type": "array"
+        }
+    },
+    "variables": {
+        "serviceSubnetResourceId": "[ resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), concat(parameters('subnetPrefix')))]",
+        "shdVnetResourceId": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+        "baseIpSecurityRestrictions":[]
+    },
+    "resources": [
+        {
+            "apiVersion": "2019-05-01",
+            "name": "[parameters('appServiceName')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templatesBaseUri'),'&repo=DFE-Digital/login.dfe.devops&ref=',parameters('branch'),'&token=', parameters('AccessToken'),'&file=templates/standard-logic-app.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "appServiceName": {
+                        "value": "[parameters('appServiceName')]"
+                    },
+                    "appServicePlanName": {
+                        "value": "[parameters('appServicePlanName')]"
+                    },
+                    "appServicePlanRG": {
+                        "value": "[parameters('appServicePlanRG')]"
+                    },
+                    "appInsightsName": {
+                        "value": "[parameters('appInsightsName')]"
+                    },
+                    "nodeVersion": {
+                        "value": "[parameters('nodeVersion')]"
+                    },
+                    "functionRuntime": {
+                        "value": "[parameters('functionRuntime')]"
+                    },
+                    "functionVersion": {
+                        "value": "[parameters('functionVersion')]"
+                    },
+                    "subnetResourceId": {
+                        "value": "[variables('serviceSubnetResourceId')]"
+                    },
+                    "vnetResourceId": {
+                        "value": "[variables('shdVnetResourceId')]"
+                    },
+                    "enablePrivateEndpointSupport": {
+                        "value": "[parameters('enablePrivateEndpoint')]"
+                    },
+                    "ipSecurityRestrictions": {
+                        "value": "[union(variables('baseIpSecurityRestrictions'), parameters('ipSecurityRestrictions'))]"
+                    }
+                }
+            }
+        }
+    ]
+}
