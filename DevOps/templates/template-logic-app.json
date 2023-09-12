@@ -182,7 +182,7 @@
                     "value": "[variables('privateSubnetResourceId')]"
                 },
                 "privateDnsZoneName": {
-                    "value": "privatelink.search.windows.net"
+                    "value": "privatelink.searchload.windows.net"
                 },
                 "virtualNetworkId": {
                     "value": "[variables('shdVnetResourceId')]"
