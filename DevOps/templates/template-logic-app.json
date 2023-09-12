@@ -91,6 +91,9 @@
                 "description": "Add app settings to support virtual network private endpoints"
             }
         },
+        "storageAccountName": {
+        "type": "string"
+        },
         "ipSecurityRestrictions": {
             "type": "array"
         }
@@ -141,6 +144,9 @@
                     },
                     "enablePrivateEndpointSupport": {
                         "value": "[parameters('enablePrivateEndpoint')]"
+                    },
+                    "storageAccountName": {
+                        "value": "[parameters('storageAccountName')]"
                     },
                     "ipSecurityRestrictions": {
                         "value": "[union(variables('baseIpSecurityRestrictions'), parameters('ipSecurityRestrictions'))]"
