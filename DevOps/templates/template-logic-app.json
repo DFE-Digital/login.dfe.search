@@ -188,13 +188,13 @@
                     "value": "[variables('shdVnetResourceId')]"
                 },
                 "targetSubResource": {
-                    "value": ["site"]
+                    "value": ["sites"]
                 }
             }
         },
         "dependsOn": [
             "[resourceId('Microsoft.Resources/deployments', parameters('appServiceName'))]"
-        ]
+            ]
         }
     ]
 }
