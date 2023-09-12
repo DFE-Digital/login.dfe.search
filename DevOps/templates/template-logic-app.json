@@ -84,6 +84,13 @@
                 "description": "Prefix of the subnet to integrate the app service with"
             }
         },
+        "subnetPrivatepoint": {
+            "type": "string",
+            "defaultValue": "logicapp-g1-sn",
+            "metadata": {
+                "description": "Prefix of the subnet to integrate the app service with"
+            }
+        },
         "enablePrivateEndpoint": {
             "type": "bool",
             "defaultValue": false,
@@ -100,6 +107,7 @@
     },
     "variables": {
         "serviceSubnetResourceId": "[ resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), concat(parameters('subnetPrefix')))]",
+        "privateSubnetResourceId": "[ resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), concat(parameters('subnetPrivatepoint')))]",
         "shdVnetResourceId": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
         "baseIpSecurityRestrictions":[]
     },
@@ -153,6 +161,37 @@
                     }
                 }
             }
+        },
+        {
+        "apiVersion": "2020-10-01",
+        "name": "azure-logicapp-private-endpoint",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(parameters('templatesBaseUri'),'&repo=DFE-Digital/login.dfe.devops&ref=',parameters('branch'),'&token=', parameters('AccessToken'),'&file=templates/azure-search-private-endpoint.json')]"
+            },
+            "parameters": {
+                "privateEndpointName": {
+                    "value":  "[concat(parameters('appServiceName'), '-pe')]"
+                },
+                "privateLinkResource": {
+                    "value": "[resourceId('Microsoft.Web/sites', parameters('appServiceName'))]"
+                },
+                "privateEndpointSubnetId": {
+                    "value": "[variables('privateSubnetResourceId')]"
+                },
+                "privateDnsZoneName": {
+                    "value": "privatelink.search.windows.net"
+                },
+                "virtualNetworkId": {
+                    "value": "[variables('shdVnetResourceId')]"
+                }
+            }
+        },
+        "dependsOn": [
+            "[resourceId('Microsoft.Resources/deployments', parameters('appServiceName'))]"
+        ]
         }
     ]
 }
