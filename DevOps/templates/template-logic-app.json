@@ -186,6 +186,9 @@
                 },
                 "virtualNetworkId": {
                     "value": "[variables('shdVnetResourceId')]"
+                },
+                "targetSubResource": {
+                    "value": ["site"]
                 }
             }
         },
