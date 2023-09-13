@@ -147,9 +147,6 @@
                     "subnetResourceId": {
                         "value": "[variables('serviceSubnetResourceId')]"
                     },
-                    "vnetResourceId": {
-                        "value": "[variables('shdVnetResourceId')]"
-                    },
                     "enablePrivateEndpointSupport": {
                         "value": "[parameters('enablePrivateEndpoint')]"
                     },
@@ -209,7 +206,7 @@
                 "connections_name": {
                     "value":  "azure-sql-server"
                 },
-                "connection": {
+                "apiType": {
                     "value": "sql"
                 },
                 "logicAppSystemAssignedIdentityTenantId": {
