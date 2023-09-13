@@ -224,5 +224,11 @@
             "[resourceId('Microsoft.Resources/deployments', parameters('appServiceName'))]"
             ]
         }
-    ]
+    ],
+    "outputs": {
+        "connectionRuntimeUrl": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Web/connections', 'azure-sql-server'),'2016-06-01', 'full').properties.connectionRuntimeUrl]"
+        }
+    }
 }
