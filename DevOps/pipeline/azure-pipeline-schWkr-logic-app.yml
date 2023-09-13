@@ -173,17 +173,16 @@ stages:
               logicAppRuntime: node
               logicAppStandartVersion: ~4
 
-        # - ${{ if parameters.AppDeploy }}:
-        #   - template: pipeline/deploy.yml@devopsTemplates
-        #     parameters: 
-        #       ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
-        #         serviceConnection: $(devServiceConnection)
-        #       ${{ elseif eq(var.key, 'pr') }}:
-        #         serviceConnection: $(prodServiceConnection)
-        #       ${{ else }}:
-        #         serviceConnection: $(testServiceConnection)
-        #       environmentName: ${{var.key}}
-        #       applicationFullName: ${{variables.applicationFullName}}
-        #       applicationShortName: ${{variables.applicationShortName}}
-        #       releaseArtifactName: ${{variables.applicationFullName}}-${{var.key}}-$(Build.BuildId)-release
-        #       InfrDeploy: ${{parameters.InfrDeploy}}
+        - ${{ if parameters.AppDeploy }}:
+          - template: pipeline/logicAppDeploy.yml@devopsTemplates
+            parameters: 
+              ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
+                serviceConnection: $(devServiceConnection)
+              ${{ elseif eq(var.key, 'pr') }}:
+                serviceConnection: $(prodServiceConnection)
+              ${{ else }}:
+                serviceConnection: $(testServiceConnection)
+              environmentName: ${{var.key}}
+              applicationShortName: ${{variables.applicationShortName}}
+              workerRepo: search
+              InfrDeploy: ${{parameters.InfrDeploy}}

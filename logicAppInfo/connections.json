@@ -1,0 +1,22 @@
+{
+  "managedApiConnections": {
+        "sql": {
+            "api": {
+                "id": "/subscriptions/{{subscriptionId}}/providers/Microsoft.Web/locations/{{deploymentLocation}}/managedApis/sql"
+            },
+            "authentication": {
+                "type": "ManagedServiceIdentity"
+            },
+            "connection": {
+                "id": "/subscriptions/{{subscriptionId}}/resourceGroups/{{applicationResourceGroupName}}/providers/Microsoft.Web/connections/sql"
+            },
+            "connectionProperties": {
+                "authentication": {
+                    "audience": "https://database.windows.net/",
+                    "type": "ManagedServiceIdentity"
+                }
+            },
+            "connectionRuntimeUrl": "@appsetting('SQL_CONNECTION_RUNTIMEURL')"
+        }
+    }
+}
