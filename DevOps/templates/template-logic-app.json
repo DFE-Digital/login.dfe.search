@@ -195,6 +195,34 @@
         "dependsOn": [
             "[resourceId('Microsoft.Resources/deployments', parameters('appServiceName'))]"
             ]
+        },
+        {
+        "apiVersion": "2020-10-01",
+        "name": "azure-logicapp-connector",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(parameters('templatesBaseUri'),'&repo=DFE-Digital/login.dfe.devops&ref=',parameters('branch'),'&token=', parameters('AccessToken'),'&file=templates/logicapp-connectors.json')]"
+            },
+            "parameters": {
+                "connections_name": {
+                    "value":  "azure-sql-server"
+                },
+                "connection": {
+                    "value": "sql"
+                },
+                "logicAppSystemAssignedIdentityTenantId": {
+                    "value": "[subscription().tenantid]"
+                },
+                "logicAppSystemAssignedIdentityObjectId": {
+                    "value": "[reference(resourceId('Microsoft.Web/sites', parameters('appServiceName')),'2019-08-01', 'full').identity.principalId]"
+                }
+            }
+        },
+        "dependsOn": [
+            "[resourceId('Microsoft.Resources/deployments', parameters('appServiceName'))]"
+            ]
         }
     ]
 }
