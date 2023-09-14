@@ -86,7 +86,7 @@
         },
         "subnetPrivatepoint": {
             "type": "string",
-            "defaultValue": "logicapp-g1-sn",
+            "defaultValue": "logicapp-backend-g2-pe-sn",
             "metadata": {
                 "description": "Prefix of the subnet to integrate the app service with"
             }

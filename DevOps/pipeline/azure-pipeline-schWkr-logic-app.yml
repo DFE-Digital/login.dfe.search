@@ -62,7 +62,7 @@ parameters:
 variables:
 - group: dsi-global
 - name: applicationShortName
-  value: 'schwkrla'
+  value: 'schwkr-la'
 - name: applicationFullName
   value: 'searchWorkerLogicApp'
 - name: tran
