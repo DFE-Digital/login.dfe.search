@@ -106,59 +106,11 @@
         }
     },
     "variables": {
-        "serviceSubnetResourceId": "[ resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), concat(parameters('subnetPrefix')))]",
         "privateSubnetResourceId": "[ resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), concat(parameters('subnetPrivatepoint')))]",
         "shdVnetResourceId": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
         "baseIpSecurityRestrictions":[]
     },
     "resources": [
-        {
-            "apiVersion": "2019-05-01",
-            "name": "[parameters('appServiceName')]",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[concat(parameters('templatesBaseUri'),'&repo=DFE-Digital/login.dfe.devops&ref=',parameters('branch'),'&token=', parameters('AccessToken'),'&file=templates/standard-logic-app.json')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "appServiceName": {
-                        "value": "[parameters('appServiceName')]"
-                    },
-                    "appServicePlanName": {
-                        "value": "[parameters('appServicePlanName')]"
-                    },
-                    "appServicePlanRG": {
-                        "value": "[parameters('appServicePlanRG')]"
-                    },
-                    "appInsightsName": {
-                        "value": "[parameters('appInsightsName')]"
-                    },
-                    "nodeVersion": {
-                        "value": "[parameters('nodeVersion')]"
-                    },
-                    "functionRuntime": {
-                        "value": "[parameters('functionRuntime')]"
-                    },
-                    "functionVersion": {
-                        "value": "[parameters('functionVersion')]"
-                    },
-                    "subnetResourceId": {
-                        "value": "[variables('serviceSubnetResourceId')]"
-                    },
-                    "enablePrivateEndpointSupport": {
-                        "value": "[parameters('enablePrivateEndpoint')]"
-                    },
-                    "storageAccountName": {
-                        "value": "[parameters('storageAccountName')]"
-                    },
-                    "ipSecurityRestrictions": {
-                        "value": "[union(variables('baseIpSecurityRestrictions'), parameters('ipSecurityRestrictions'))]"
-                    }
-                }
-            }
-        },
         {
         "apiVersion": "2020-10-01",
         "name": "azure-logicapp-private-endpoint",
