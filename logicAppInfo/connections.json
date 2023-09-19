@@ -8,7 +8,7 @@
                 "type": "ManagedServiceIdentity"
             },
             "connection": {
-                "id": "/subscriptions/{{subscriptionId}}/resourceGroups/{{applicationResourceGroupName}}/providers/Microsoft.Web/connections/sql"
+                "id": "/subscriptions/{{subscriptionId}}/resourceGroups/{{applicationResourceGroupName}}/providers/Microsoft.Web/connections/azure-sql-server"
             },
             "connectionProperties": {
                 "authentication": {
