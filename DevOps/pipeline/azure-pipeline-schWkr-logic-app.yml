@@ -28,7 +28,7 @@ pr:
 parameters:
 - name: AppDeploy
   type: boolean
-  displayName: 'App Deployment only'
+  displayName: 'Logic app workflow deployment only'
   default: false
 - name: InfrDeploy
   type: boolean
