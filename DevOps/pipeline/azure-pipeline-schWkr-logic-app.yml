@@ -104,8 +104,7 @@ stages:
   displayName: "Scan tools & Build"
   jobs:
     # Code scaning tools
-  - ${{ if eq(parameters.InfrDeploy, 'true') }}:
-    - template:  pipeline/checkov.yml@devopsTemplates
+  - template:  pipeline/checkov.yml@devopsTemplates
 
 - ${{ each var in variables }}:
   - ${{ if in(var.key, 'tran','dev','test','int','pp','pr') }}:
