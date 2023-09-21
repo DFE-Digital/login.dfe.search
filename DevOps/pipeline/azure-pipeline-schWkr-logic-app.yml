@@ -46,10 +46,6 @@ parameters:
   type: boolean
   displayName: 'Test Deployment'
   default: false
-- name: int
-  type: boolean
-  displayName: 'INT Deployment'
-  default: false
 - name: pp
   type: boolean
   displayName: 'Pre-Prod Deployment'
@@ -80,11 +76,6 @@ variables:
     value: true
   ${{ else }}:
     value: false
-- name: int
-  ${{ if or(eq(parameters.int, 'true'), contains(variables['Build.SourceBranch'],'release')) }}:
-    value: true
-  ${{ else }}:
-    value: false
 - name: pp
   ${{ if or(eq(parameters.pp, 'true'), contains(variables['Build.SourceBranch'],'release')) }}:
     value: true
@@ -107,7 +98,7 @@ stages:
   - template:  pipeline/checkov.yml@devopsTemplates
 
 - ${{ each var in variables }}:
-  - ${{ if in(var.key, 'tran','dev','test','int','pp','pr') }}:
+  - ${{ if in(var.key, 'tran','dev','test','pp','pr') }}:
     - ${{ if eq(var.value, 'true') }}:
       - stage: Deployment_${{var.Key}}
         displayName: "Deployment [${{var.Key}}]"
