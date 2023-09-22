@@ -13,6 +13,7 @@ resources:
       name: DFE-Digital/login.dfe.config
       ref: master
 
+
 trigger:
   branches:
     include:
