@@ -12,6 +12,11 @@ resources:
       endpoint: DfE-Digital
       name: DFE-Digital/login.dfe.config
       ref: master
+    - repository: scripts
+      type: github
+      endpoint: DfE-Digital
+      name: DFE-Digital/login.dfe.db-scripts
+      ref: develop
 
 
 trigger:
