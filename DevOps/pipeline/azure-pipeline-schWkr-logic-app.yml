@@ -35,11 +35,11 @@ parameters:
 - name: AppDeploy
   type: boolean
   displayName: 'Logic app workflow deployment only'
-  default: false
+  default: true
 - name: InfrDeploy
   type: boolean
   displayName: 'Infrastrucure Deployment only'
-  default: true
+  default: false
 - name: tran
   type: boolean
   displayName: 'Transformation Deployment'
