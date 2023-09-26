@@ -1,0 +1,62 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "templatesBaseUri": {
+            "type": "string"
+        },
+        "AccessToken": {
+            "type": "string",
+            "metadata": {
+                "description": "Token that will acces the private repo from the logic app"
+            }
+        },
+        "branch": {
+            "type": "string",
+            "defaultValue": "main",
+            "metadata": {
+                "description": "Branch that use for the ARM templateLinks"
+            }
+        },
+        "appServiceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the App Service"
+            }
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "apiVersion": "2020-10-01",
+            "name": "azure-logicapp-connector",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templatesBaseUri'),'&repo=DFE-Digital/login.dfe.devops&ref=',parameters('branch'),'&token=', parameters('AccessToken'),'&file=templates/logicapp-connectors.json')]"
+                },
+                "parameters": {
+                    "connections_name": {
+                        "value":  "azure-sql-server"
+                    },
+                    "apiType": {
+                        "value": "sql"
+                    },
+                    "logicAppSystemAssignedIdentityTenantId": {
+                        "value": "[subscription().tenantid]"
+                    },
+                    "logicAppSystemAssignedIdentityObjectId": {
+                        "value": "[reference(resourceId('Microsoft.Web/sites', parameters('appServiceName')),'2019-08-01', 'full').identity.principalId]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "connectionRuntimeUrl": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Web/connections', 'azure-sql-server'),'2016-06-01', 'full').properties.connectionRuntimeUrl]"
+        }
+    }
+}
