@@ -24,6 +24,7 @@ trigger:
     include:
     - release/*
     - feature/*
+    - develop
 
 pr:
   branches:
