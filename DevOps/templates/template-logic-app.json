@@ -13,7 +13,7 @@
         },
         "branch": {
             "type": "string",
-            "defaultValue": "feature/NSA-7257",
+            "defaultValue": "main",
             "metadata": {
                 "description": "Branch that use for the ARM templateLinks"
             }
