@@ -105,7 +105,7 @@ const searchIndex = async (name, criteria, page, pageSize, sortBy, sortAsc = tru
     uri += `&$orderby=${orderBy}`;
   }
 
-  if(searchFields) {
+  if (searchFields) {
     uri += `&searchFields=${searchFields}`;
   }
 
@@ -117,8 +117,20 @@ const searchIndex = async (name, criteria, page, pageSize, sortBy, sortAsc = tru
       }
       if (filter.fieldType === 'Collection') {
         filterParam += `${filter.field}/any(x: search.in(x, '${filter.values.join(',')}', ','))`;
-      } else if (filter.fieldType === 'Int64') {
+      } else if (filter.fieldType === 'Int64' && filter.field !== 'lastLogin') {
         filterParam += `(${filter.field} eq ${filter.values.join(` or ${filter.field} eq `)})`;
+      } else if (filter.field === 'lastLogin') {
+        const dateFilterExpressions = filter.values.map((dateValue) => {
+          if (dateValue === '0') {
+            return `${filter.field} eq ${dateValue}`;
+          } if (dateValue === '1') {
+            return `${filter.field} ne 0`;
+          }
+          return `${filter.field} ge ${dateValue}`;
+        });
+        const encodedDateFilterExpression = dateFilterExpressions;
+
+        filterParam += `${encodedDateFilterExpression}`;
       } else {
         filterParam += `(${filter.field} eq '${filter.values.join(`' or ${filter.field} eq '`)}')`;
       }
