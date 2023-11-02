@@ -1,6 +1,7 @@
 const config = require('./../config');
 const rp = require('login.dfe.request-promise-retry');
 const omit = require('lodash/omit');
+const { createLastLoginFilterExpression } = require('../../utils/userSearchHelpers');
 
 const baseUri = `https://${config.search.azureSearch.serviceName}.search.windows.net/indexes`;
 const apiVersion = '2020-06-30';
@@ -119,18 +120,9 @@ const searchIndex = async (name, criteria, page, pageSize, sortBy, sortAsc = tru
         filterParam += `${filter.field}/any(x: search.in(x, '${filter.values.join(',')}', ','))`;
       } else if (filter.fieldType === 'Int64' && filter.field !== 'lastLogin') {
         filterParam += `(${filter.field} eq ${filter.values.join(` or ${filter.field} eq `)})`;
-      } else if (filter.field === 'lastLogin') {
-        const dateFilterExpressions = filter.values.map((dateValue) => {
-          if (dateValue === '0') {
-            return `${filter.field} eq ${dateValue}`;
-          } if (dateValue === '1') {
-            return `${filter.field} ne 0`;
-          }
-          return `${filter.field} ge ${dateValue}`;
-        });
-        const encodedDateFilterExpression = dateFilterExpressions;
-
-        filterParam += `${encodedDateFilterExpression}`;
+      } else if (filter.fieldType === 'Int64' && filter.field === 'lastLogin') {
+        const lastLoginFilterUrl = createLastLoginFilterExpression(filter);
+        filterParam += `(${lastLoginFilterUrl})`;
       } else {
         filterParam += `(${filter.field} eq '${filter.values.join(`' or ${filter.field} eq '`)}')`;
       }
