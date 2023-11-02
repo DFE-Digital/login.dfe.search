@@ -114,7 +114,6 @@
         "midtierG2Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'midtier-g2-sn')]",
         "midtierG3Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'midtier-g3-sn')]",
         "backendG1Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'backend-g1-sn')]",
-        "backendG2Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'backend-g2-sn')]",
         "backendG3Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'backend-g3-sn')]",
         "baseIpSecurityRestrictions":[{
                 "vnetSubnetResourceId": "[variables('prestierG1Id')]",
@@ -178,13 +177,6 @@
                 "tag": "Default",
                 "name": "backend-g1",
                 "priority": 90
-            },
-            {
-                "vnetSubnetResourceId": "[variables('backendG2Id')]",
-                "action": "Allow",
-                "tag": "Default",
-                "name": "backend-g2",
-                "priority": 100
             },
             {
                 "vnetSubnetResourceId": "[variables('backendG3Id')]",
