@@ -3,7 +3,7 @@ const UserIndex = require('./../indexes/UserIndex');
 
 const extractFilters = (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
-  const filterable = ['id', 'organisations', 'organisationCategories', 'services', 'statusId'];
+  const filterable = ['id', 'organisations', 'organisationCategories', 'services', 'statusId', 'lastLogin'];
   const filters = [];
   filterable.forEach((field) => {
     const param = paramsSource[`filter_${field}`];
