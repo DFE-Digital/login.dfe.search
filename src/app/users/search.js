@@ -1,5 +1,5 @@
 const { overwriteAuditLastLogins } = require('../../utils/userHelper');
-const UserIndex = require('./../indexes/UserIndex');
+const UserIndex = require('../indexes/UserIndex');
 
 const extractFilters = (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
@@ -18,20 +18,22 @@ const extractFilters = (req) => {
 };
 
 const removeWildCardAndEscapeSpecialChars = (criteria) => {
-  const format = /[ !'*@#$%&()_+\-=\[\]{};':"\\|,.<>\/?]/;
-  return format.test(criteria)? criteria.slice(0, -1).replace(/[.'+?^${}()|[\]\\]/g, '\\$&'): criteria;
-}
+  const format = /[ !'*@#$%&()_+\-=[\]{};':"\\|,.<>/?]/;
+  const formattedCriteria = format.test(criteria) ? criteria.slice(0, -1).replace(/[.'+\-?^$~*":&{}()“!/|[\]\\]/g, '\\$&') : criteria;
+  return formattedCriteria;
+};
 
 const search = async (req, res) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
-  const criteria = removeWildCardAndEscapeSpecialChars(paramsSource.criteria) || '*';
-  const page = parseInt(paramsSource.page) || 1;
+  const criteria = encodeURIComponent(removeWildCardAndEscapeSpecialChars(paramsSource.criteria) || '*');
+
+  const page = parseInt(paramsSource.page, 10) || 1;
   const filters = extractFilters(req);
   const sortBy = paramsSource.sortBy || 'searchableName';
   const sortAsc = !((paramsSource.sortDirection || 'asc') === 'desc');
   const searchFields = paramsSource.searchFields || undefined;
 
-  if (isNaN(page) || page < 1) {
+  if (Number.isNaN(page) || page < 1) {
     return res.status(400).json({
       reason: 'page query string must be a number 1 or greater',
     });
