@@ -77,7 +77,7 @@ variables:
     value: false
 - name: dev
   ${{ if or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}:
-    value: false
+    value: true
   ${{ else }}:
     value: false
 - name: test
@@ -111,9 +111,9 @@ stages:
 
     - template:  pipeline/eslint.yml@devopsTemplates
 
-    # - template:  pipeline/dependencyCheck.yml@devopsTemplates
-    #   parameters:
-    #     npmInstCmd: 'install --force --json --no-package-lock'
+    - template:  pipeline/dependencyCheck.yml@devopsTemplates
+      parameters:
+        npmInstCmd: 'install --force --json --no-package-lock'
 
     - template: pipeline/build.yml@devopsTemplates
       parameters:
