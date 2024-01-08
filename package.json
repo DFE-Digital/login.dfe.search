@@ -35,7 +35,7 @@
     "login.dfe.dao": "^4.0.0",
     "login.dfe.express-error-handling": "git+https://github.com/DFE-Digital/login.dfe.express-error-handling.git#v3.0.0",
     "login.dfe.express-flash-2": "git+https://github.com/DFE-Digital/login.dfe.express-flash-2.git#v2.0.0",
-    "login.dfe.healthcheck": "git+https://github.com/DFE-Digital/login.dfe.healthcheck.git#v3.0.0",
+    "login.dfe.healthcheck": "github:DFE-Digital/login.dfe.healthcheck#v4.0.0",
     "login.dfe.jwt-strategies": "git+https://github.com/DFE-Digital/login.dfe.jwt-strategies.git#v4.0.0",
     "login.dfe.request-promise-retry": "git+https://github.com/DFE-Digital/login.dfe.request-promise-retry.git#v3.0.0",
     "login.dfe.winston-appinsights": "git+https://github.com/DFE-Digital/login.dfe.winston-appinsights.git#v5.0.0",
