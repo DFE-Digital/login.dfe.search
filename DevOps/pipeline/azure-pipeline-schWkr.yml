@@ -76,12 +76,12 @@ variables:
   ${{ else }}:
     value: false
 - name: dev
-  ${{ if or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}:
+  ${{ if and(or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')),eq(parameters.location, 'westeurope')) }}:
     value: true
   ${{ else }}:
     value: false
 - name: test
-  ${{ if or(eq(parameters.test, 'true'), contains(variables['Build.SourceBranch'],'develop')) }}:
+  ${{ if and(or(eq(parameters.test, 'true'), contains(variables['Build.SourceBranch'],'develop')),eq(parameters.location, 'westeurope')) }}:
     value: true
   ${{ else }}:
     value: false
