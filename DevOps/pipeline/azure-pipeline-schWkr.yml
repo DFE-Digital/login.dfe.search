@@ -131,7 +131,7 @@ stages:
           - ${{ if eq(variables.pr, 'true') }}:
             - pr
         pm2ProcessFileName: process.json
-        nodeVersionSpec: '14.18.1'
+        nodeVersionSpec: '18.17.0'
         npmInstCmd: 'install --force --json --no-package-lock'
         npmPruneFixCmd: 'install --production --json --force --no-package-lock'
         workerRepo: search
@@ -168,6 +168,7 @@ stages:
                 certificateName: non-prod-gateway
               AppDeploy: ${{parameters.AppDeploy}}
               workerRepo: search
+              runtimeStack: NODE|18-lts
               deploymentLocation: ${{parameters.location}}
 
         - ${{ if parameters.AppDeploy }}:
@@ -184,4 +185,5 @@ stages:
               applicationShortName: ${{variables.applicationShortName}}
               releaseArtifactName: ${{variables.applicationFullName}}-${{var.key}}-$(Build.BuildId)-release
               InfrDeploy: ${{parameters.InfrDeploy}}
+              runtimeStack: NODE|18-lts
               deploymentLocation: ${{parameters.location}}
