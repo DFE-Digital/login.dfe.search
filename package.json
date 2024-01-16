@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "API for searching aggregated data with DfE Sign-in",
   "scripts": {
-    "test": "./node_modules/.bin/jest",
+    "test": "jest --coverage",
     "dev": "settings='./config/login.dfe.search.local.json' nodemon src/index.js"
   },
   "repository": {
