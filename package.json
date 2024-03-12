@@ -30,7 +30,6 @@
     "lodash": "^4.17.15",
     "login.dfe.api.auth": "git+https://github.com/DFE-Digital/login.dfe.api.auth.git#v2.3.0",
     "login.dfe.audit.transporter": "^3.0.0",
-    "login.dfe.audit.winston-sequelize-transport": "git+https://github.com/DFE-Digital/login.dfe.audit.winston-sequelize-transport.git#v3.1.0",
     "login.dfe.config.schema.common": "git+https://github.com/DFE-Digital/login.dfe.config.schema.common.git#v2.1.3",
     "login.dfe.dao": "^4.0.0",
     "login.dfe.express-error-handling": "git+https://github.com/DFE-Digital/login.dfe.express-error-handling.git#v3.0.0",
