@@ -191,6 +191,7 @@ stages:
                   AppDeploy: ${{parameters.AppDeploy}}
                   deploymentLocation: ${{location}}
                   runtimeStack: NODE|18-lts
+                  workerRepo: search
 
 
             - ${{ if parameters.AppDeploy }}:
