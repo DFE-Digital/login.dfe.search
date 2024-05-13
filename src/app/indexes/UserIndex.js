@@ -1,15 +1,21 @@
-const logger = require('./../../infrastructure/logger');
-const { v4:uuid } = require('uuid');
+const { v4: uuid } = require('uuid');
 const uniq = require('lodash/uniq');
 const flatten = require('lodash/flatten');
+const logger = require('../../infrastructure/logger');
 const Index = require('./Index');
-const cache = require('./../../infrastructure/cache');
-const { getLoginStatsForUser } = require('./../../infrastructure/stats');
-const { listUsers, listInvitations, getUser, getInvitation } = require('./../../infrastructure/directories');
-const { listUsersOrganisations, getUserOrganisationsV2, listInvitationsOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
-const { listUserServices, listAllUsersServices, listInvitationServices, listAllInvitationsServices } = require('./../../infrastructure/access');
-const { mapAsync } = require('./../../utils/async');
-const BasicArrayList = require('./../../utils/BasicArrayList');
+const cache = require('../../infrastructure/cache');
+const { getLoginStatsForUser } = require('../../infrastructure/stats');
+const {
+  listUsers, listInvitations, getUser, getInvitation,
+} = require('../../infrastructure/directories');
+const {
+  listUsersOrganisations, getUserOrganisationsV2, listInvitationsOrganisations, getInvitationOrganisations,
+} = require('../../infrastructure/organisations');
+const {
+  listUserServices, listAllUsersServices, listInvitationServices, listAllInvitationsServices,
+} = require('../../infrastructure/access');
+const { mapAsync } = require('../../utils/async');
+const BasicArrayList = require('../../utils/BasicArrayList');
 const { getSearchableString } = require('./utils');
 
 const indexStructure = {
@@ -69,7 +75,7 @@ const indexStructure = {
     filterable: true,
   },
   lastLogin: {
-    type: 'Int64',
+    type: 'DateTimeOffset',
     sortable: true,
   },
   numberOfSuccessfulLoginsInPast12Months: {
@@ -170,7 +176,7 @@ const updateUsersWithOrganisations = async (users, correlationId) => {
 
       page.userOrganisations.forEach((userOrganisation) => {
         if (!user || user.id.toLowerCase() !== userOrganisation.userId.toLowerCase()) {
-          user = users.find(u => u.id.toLowerCase() === userOrganisation.userId.toLowerCase());
+          user = users.find((u) => u.id.toLowerCase() === userOrganisation.userId.toLowerCase());
           if (!user) {
             logger.warn(`User organisation mapping with id ${userOrganisation.id} is for unknown user ${userOrganisation.userId}`, { correlationId });
             return;
@@ -194,16 +200,16 @@ const updateUsersWithOrganisations = async (users, correlationId) => {
     console.debug(`Mapping org details for user ${i + 1} of ${users.length} (${user.id})`, { correlationId });
 
     user.primaryOrganisation = user.organisationMappings.length > 0 ? user.organisationMappings[0].organisation.name : undefined;
-    user.organisations = user.organisationMappings.map(x => x.organisation.id);
-    user.searchableOrganisations = user.organisationMappings.map(x => getSearchableString(x.organisation.name));
-    user.organisationCategories = user.organisationMappings.map(x => x.organisation.category ? x.organisation.category.id : undefined).filter(x => x !== undefined);
-    user.organisationIdentifiers = flatten(user.organisationMappings.map(orgMap => ([
+    user.organisations = user.organisationMappings.map((x) => x.organisation.id);
+    user.searchableOrganisations = user.organisationMappings.map((x) => getSearchableString(x.organisation.name));
+    user.organisationCategories = user.organisationMappings.map((x) => x.organisation.category ? x.organisation.category.id : undefined).filter((x) => x !== undefined);
+    user.organisationIdentifiers = flatten(user.organisationMappings.map((orgMap) => ([
       orgMap.organisation.urn,
       orgMap.organisation.uid,
       orgMap.organisation.establishmentNumber,
       orgMap.organisation.localAuthority ? orgMap.organisation.localAuthority.establishmentNumber : undefined,
-    ]))).filter(id => id !== undefined && id !== null);
-    user.organisationsJson = JSON.stringify(user.organisationMappings.map(orgMap => ({
+    ]))).filter((id) => id !== undefined && id !== null);
+    user.organisationsJson = JSON.stringify(user.organisationMappings.map((orgMap) => ({
       id: orgMap.organisation.id,
       name: orgMap.organisation.name,
       urn: orgMap.organisation.urn,
@@ -239,7 +245,7 @@ const updateUsersWithServices = async (users, correlationId) => {
 
       page.services.forEach((userService) => {
         if (!user || user.id.toLowerCase() !== userService.userId.toLowerCase()) {
-          user = users.find(u => u.id.toLowerCase() === userService.userId.toLowerCase());
+          user = users.find((u) => u.id.toLowerCase() === userService.userId.toLowerCase());
         }
         if (!user) {
           return;
@@ -270,7 +276,7 @@ const getAllInvitations = async (changedAfter, correlationId) => {
 
     try {
       const page = await listInvitations(pageNumber, pageSize, changedAfter, correlationId);
-      const mapped = page.invitations.filter(i => !i.isCompleted).map((invitation) => ({
+      const mapped = page.invitations.filter((i) => !i.isCompleted).map((invitation) => ({
         id: `inv-${invitation.id}`,
         firstName: invitation.firstName,
         lastName: invitation.lastName,
@@ -291,7 +297,7 @@ const getAllInvitations = async (changedAfter, correlationId) => {
 };
 
 const getInvitationById = async (id, correlationId) => {
-  logger.info('Begin get invitation by id', {correlationId});
+  logger.info('Begin get invitation by id', { correlationId });
 
   const invitation = await getInvitation(id.substr(4), correlationId);
   if (!invitation.isCompleted) {
@@ -302,7 +308,7 @@ const getInvitationById = async (id, correlationId) => {
       email: invitation.email,
       statusId: invitation.deactivated ? -2 : -1,
     };
-    return [mapped]
+    return [mapped];
   }
 };
 
@@ -360,30 +366,29 @@ const getAllInvitationServices = async (correlationId) => {
 };
 const mergeInvitationsOrganisationsServices = (invitations, invitationOrganisations, invitationServices) => {
   return invitations.map((invitation) => {
-    const invitationOrgMappings = invitationOrganisations.filter(x => `inv-${x.invitationId.toLowerCase()}` === invitation.id.toLowerCase());
+    const invitationOrgMappings = invitationOrganisations.filter((x) => `inv-${x.invitationId.toLowerCase()}` === invitation.id.toLowerCase());
     const primaryOrganisation = invitationOrgMappings.length > 0 ? invitationOrgMappings[0].organisation.name : undefined;
-    const organisations = invitationOrgMappings.map(x => x.organisation.id);
-    const searchableOrganisations = invitationOrgMappings.map(x => getSearchableString(x.organisation.name));
-    const organisationCategories = invitationOrgMappings.map(x => x.organisation.category ? x.organisation.category.id : undefined).filter(x => x !== undefined);
-    const organisationsJson = JSON.stringify(invitationOrgMappings.map(orgMap => ({
+    const organisations = invitationOrgMappings.map((x) => x.organisation.id);
+    const searchableOrganisations = invitationOrgMappings.map((x) => getSearchableString(x.organisation.name));
+    const organisationCategories = invitationOrgMappings.map((x) => x.organisation.category ? x.organisation.category.id : undefined).filter((x) => x !== undefined);
+    const organisationsJson = JSON.stringify(invitationOrgMappings.map((orgMap) => ({
       id: orgMap.organisation.id,
       name: orgMap.organisation.name,
       categoryId: orgMap.organisation.category ? orgMap.organisation.category.id : undefined,
       statusId: orgMap.organisation.status ? orgMap.organisation.status.id : 0,
       roleId: orgMap.role.id,
     })));
-    const services = invitationServices.filter(x => `inv-${x.invitationId.toLowerCase()}` === invitation.id.toLowerCase()).map(x => x.serviceId);
+    const services = invitationServices.filter((x) => `inv-${x.invitationId.toLowerCase()}` === invitation.id.toLowerCase()).map((x) => x.serviceId);
     return Object.assign({}, invitation, {
       primaryOrganisation,
       organisations,
       searchableOrganisations,
       organisationCategories,
       organisationsJson,
-      services
+      services,
     });
   });
 };
-
 
 const getOrganisations = async (documentId, correlationId) => {
   let accessibleOrganisations;
@@ -392,7 +397,7 @@ const getOrganisations = async (documentId, correlationId) => {
   } else {
     accessibleOrganisations = await getUserOrganisationsV2(documentId, correlationId);
   }
-  return accessibleOrganisations.map(accessibleOrganisation => ({
+  return accessibleOrganisations.map((accessibleOrganisation) => ({
     id: accessibleOrganisation.organisation.id,
     name: accessibleOrganisation.organisation.name,
     urn: accessibleOrganisation.organisation.urn,
@@ -404,17 +409,17 @@ const getOrganisations = async (documentId, correlationId) => {
     status: accessibleOrganisation.organisation.status ? accessibleOrganisation.organisation.status.id : 0,
     role: accessibleOrganisation.role ? accessibleOrganisation.role.id : 0,
     numericIdentifier: accessibleOrganisation.numericIdentifier,
-    textIdentifier: accessibleOrganisation.textIdentifier
+    textIdentifier: accessibleOrganisation.textIdentifier,
   }));
 };
 const getServices = async (documentId, correlationId) => {
   let services;
   if (documentId.startsWith('inv-')) {
-    services = await listInvitationServices(documentId.substr(4), correlationId)
+    services = await listInvitationServices(documentId.substr(4), correlationId);
   } else {
-    services = await listUserServices(documentId, correlationId)
+    services = await listUserServices(documentId, correlationId);
   }
-  return services ? services.map(service => service.serviceId) : [];
+  return services ? services.map((service) => service.serviceId) : [];
 };
 
 class UserIndex extends Index {
@@ -424,7 +429,7 @@ class UserIndex extends Index {
 
   async search(criteria, page = 1, pageSize = 25, sortBy = 'searchableName', sortAsc = true, filters = undefined, searchFields = undefined) {
     const pageOfDocuments = await super.search(criteria, page, pageSize, sortBy, sortAsc, filters, searchFields);
-    const users = pageOfDocuments.documents.map(document => ({
+    const users = pageOfDocuments.documents.map((document) => ({
       id: document.id,
       firstName: document.firstName,
       lastName: document.lastName,
@@ -443,7 +448,7 @@ class UserIndex extends Index {
       users,
       totalNumberOfResults: pageOfDocuments.totalNumberOfResults,
       numberOfPages: pageOfDocuments.numberOfPages,
-    }
+    };
   }
 
   async storeChunked(users, correlationId) {
@@ -471,37 +476,37 @@ class UserIndex extends Index {
           document.primaryOrganisation = orgsModel.length > 0 ? orgsModel[0].name : undefined;
         }
         if (!document.organisations) {
-          document.organisations = uniq(orgsModel.map(x => x.id));
+          document.organisations = uniq(orgsModel.map((x) => x.id));
         }
         if (!document.searchableOrganisations) {
-          document.searchableOrganisations = uniq(orgsModel.map(x => getSearchableString(x.name)));
+          document.searchableOrganisations = uniq(orgsModel.map((x) => getSearchableString(x.name)));
         }
         if (!document.organisationCategories) {
-          document.organisationCategories = uniq(orgsModel.map(x => x.category)).filter(x => x !== undefined);
+          document.organisationCategories = uniq(orgsModel.map((x) => x.category)).filter((x) => x !== undefined);
         }
         if (!document.organisationIdentifiers) {
-          document.organisationIdentifiers = flatten(orgsModel.map(orgMap => ([
+          document.organisationIdentifiers = flatten(orgsModel.map((orgMap) => ([
             orgMap.urn,
             orgMap.uid,
             orgMap.establishmentNumber,
             orgMap.localAuthority ? orgMap.localAuthority.establishmentNumber : undefined,
-          ]))).filter(id => id !== undefined && id !== null);
+          ]))).filter((id) => id !== undefined && id !== null);
         }
       }
       if (!document.organisations) {
         logger.debug(`getting organisations for ${document.id} (${index + 1} of ${users.length})`, { correlationId });
         const organisations = await getOrganisations(document.id);
         document.primaryOrganisation = organisations.length > 0 ? organisations[0].name : undefined;
-        document.organisations = uniq(organisations.map(x => x.id));
-        document.searchableOrganisations = uniq(organisations.map(x => getSearchableString(x.name)));
-        document.organisationCategories = uniq(organisations.map(x => x.category)).filter(x => x !== undefined);
-        document.organisationIdentifiers = flatten(organisations.map(x => ([
+        document.organisations = uniq(organisations.map((x) => x.id));
+        document.searchableOrganisations = uniq(organisations.map((x) => getSearchableString(x.name)));
+        document.organisationCategories = uniq(organisations.map((x) => x.category)).filter((x) => x !== undefined);
+        document.organisationIdentifiers = flatten(organisations.map((x) => ([
           x.urn,
           x.uid,
           x.establishmentNumber,
           x.localAuthority ? x.localAuthority.establishmentNumber : undefined,
-        ]))).filter(id => id !== undefined && id !== null);
-        document.organisationsJson = JSON.stringify(organisations.map(orgMap => ({
+        ]))).filter((id) => id !== undefined && id !== null);
+        document.organisationsJson = JSON.stringify(organisations.map((orgMap) => ({
           id: orgMap.id,
           name: orgMap.name,
           urn: orgMap.urn,
@@ -513,7 +518,7 @@ class UserIndex extends Index {
           statusId: orgMap.status || 0,
           roleId: orgMap.role,
           numericIdentifier: orgMap.numericIdentifier,
-          textIdentifier: orgMap.textIdentifier
+          textIdentifier: orgMap.textIdentifier,
         })));
       }
       if (!document.services) {
@@ -529,7 +534,7 @@ class UserIndex extends Index {
           document.statusLastChangedOn = document.statusLastChangedOn || stats.lastStatusChange;
         }
       }
-      document.lastLogin = document.lastLogin ? document.lastLogin.getTime() : 0;
+      document.lastLogin = document.lastLogin ? document.lastLogin : null;
       document.statusLastChangedOn = document.statusLastChangedOn ? document.statusLastChangedOn.getTime() : undefined;
       return document;
     });
@@ -596,7 +601,6 @@ class UserIndex extends Index {
       const invitation = await getInvitationById(id, correlationId);
       logger.debug(`Invitation ${id} for indexing into ${this.name}`, { correlationId });
       await this.store(invitation, correlationId);
-
     } else {
       const user = await getUserById(id, correlationId);
       logger.debug(`User ${id} for indexing into ${this.name}`, { correlationId });
@@ -609,19 +613,8 @@ class UserIndex extends Index {
     await super.delete(id);
   }
 
-
-  static async current(newIndex = undefined) {
-    if (newIndex) {
-      await cache.set('Pointer:UserIndex', newIndex.name);
-      return;
-    }
-
-    const currentIndexName = await cache.get('Pointer:UserIndex');
-
-    if (!currentIndexName) {
-      return undefined;
-    }
-    return new UserIndex(currentIndexName);
+  static async current() {
+    return new UserIndex('users');
   }
 
   static async create() {
@@ -630,17 +623,13 @@ class UserIndex extends Index {
     return new UserIndex(name);
   }
 
-
   static async tidyIndexes(correlationId) {
     await super.tidyIndexes(async (indexes) => {
-      const matching = indexes.filter(x => x.match(/^search\-users\-/));
+      const matching = indexes.filter((x) => x.match(/^search-users-/));
       const currentIndexName = await cache.get('Pointer:UserIndex');
-      return matching.filter(x => x !== currentIndexName);
+      return matching.filter((x) => x !== currentIndexName);
     }, correlationId);
   }
 }
-
-
-
 
 module.exports = UserIndex;
