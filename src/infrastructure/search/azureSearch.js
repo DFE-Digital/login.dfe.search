@@ -1,5 +1,5 @@
 const config = require('./../config');
-const rp = require('login.dfe.request-promise-retry');
+const { fetchApi } = require('login.dfe.async-retry');
 const omit = require('lodash/omit');
 const { createLastLoginFilterExpression } = require('../../utils/userSearchHelpers');
 
@@ -7,13 +7,11 @@ const baseUri = `https://${config.search.azureSearch.serviceName}.search.windows
 const apiVersion = '2020-06-30';
 
 const listIndexes = async () => {
-  const indexesResponse = await rp({
+  const indexesResponse = await fetchApi(`${baseUri}?api-version=${apiVersion}`, {
     method: 'GET',
-    uri: `${baseUri}?api-version=${apiVersion}`,
     headers: {
       'api-key': config.search.azureSearch.apiKey,
     },
-    json: true,
   });
   return indexesResponse.value.map(x => x.name);
 };
