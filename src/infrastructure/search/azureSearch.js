@@ -1,6 +1,8 @@
-const config = require('./../config');
+const asyncRetry = require('login.dfe.async-retry');
 const { fetchApi } = require('login.dfe.async-retry');
+const { apiStrategy } = require('login.dfe.async-retry/lib/strategies');
 const omit = require('lodash/omit');
+const config = require('../config');
 const { createLastLoginFilterExpression } = require('../../utils/userSearchHelpers');
 
 const baseUri = `https://${config.search.azureSearch.serviceName}.search.windows.net/indexes`;
@@ -13,7 +15,7 @@ const listIndexes = async () => {
       'api-key': config.search.azureSearch.apiKey,
     },
   });
-  return indexesResponse.value.map(x => x.name);
+  return indexesResponse.value.map((x) => x.name);
 };
 
 const createIndex = async (name, structure) => {
@@ -29,6 +31,9 @@ const createIndex = async (name, structure) => {
         break;
       case 'Int64':
         type = 'Edm.Int64';
+        break;
+      case 'DateTimeOffset':
+        type = 'Edm.DateTimeOffset';
         break;
       default:
         throw new Error(`Unrecognised type of ${fieldDetails.type} for field ${fieldName} when creating index ${name}`);
@@ -58,19 +63,28 @@ const createIndex = async (name, structure) => {
   });
 };
 
-const storeDocumentsInIndex = async (name, documents) => {
-  const indexDocuments = documents.map(x => Object.assign({ '@search.action': 'upload' }, x));
-  await fetchApi(`${baseUri}/${name}/docs/index?api-version=${apiVersion}`, {
+const storeDocumentsInIndex = async (name, documents) => asyncRetry(async () => {
+  const url = `${baseUri}/${name}/docs/index?api-version=${apiVersion}`;
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
       'api-key': config.search.azureSearch.apiKey,
     },
-    body: {
-      value: indexDocuments,
-    },
+    body: JSON.stringify({
+      value: documents,
+    }),
   });
-};
+
+  if (response.status < 200 || response.status > 299) {
+    throw new Error(`Request failed with status code ${response.status} (POST: ${url})`);
+  }
+
+  return {
+    statusCode: response.status,
+    body: await response.json(),
+  };
+}, apiStrategy);
 
 const deleteDocumentInIndex = async (name, id) => {
   await fetchApi(`${baseUri}/${name}/docs/index?api-version=${apiVersion}`, {
@@ -82,8 +96,8 @@ const deleteDocumentInIndex = async (name, id) => {
     body: {
       value: [
         {
-          "@search.action": "delete",
-          "id": id
+          '@search.action': 'delete',
+          id,
         },
       ],
     },
@@ -130,13 +144,13 @@ const searchIndex = async (name, criteria, page, pageSize, sortBy, sortAsc = tru
     },
   });
   let numberOfPages = 1;
-  const totalNumberOfResults = parseInt(response['@odata.count']);
-  if (!isNaN(totalNumberOfResults)) {
+  const totalNumberOfResults = parseInt(response['@odata.count'], 10);
+  if (!Number.isNaN(totalNumberOfResults)) {
     numberOfPages = Math.ceil(totalNumberOfResults / pageSize);
   }
 
   return {
-    documents: response.value.map(x => omit(x, ['@search.score'])),
+    documents: response.value.map((x) => omit(x, ['@search.score'])),
     totalNumberOfResults,
     numberOfPages,
   };
