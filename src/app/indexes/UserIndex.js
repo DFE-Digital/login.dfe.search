@@ -191,7 +191,7 @@ const updateUsersWithOrganisations = async (users, correlationId) => {
   console.debug('All user organisations read. Mapping details to user...');
   for (let i = 0; i < users.length; i += 1) {
     user = users[i];
-    console.debug(`Mapping org details for user ${i + 1} of ${users.length} (${user.email} / ${user.id})`, { correlationId });
+    console.debug(`Mapping org details for user ${i + 1} of ${users.length} (${user.id})`, { correlationId });
 
     user.primaryOrganisation = user.organisationMappings.length > 0 ? user.organisationMappings[0].organisation.name : undefined;
     user.organisations = user.organisationMappings.map(x => x.organisation.id);
