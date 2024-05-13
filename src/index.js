@@ -1,7 +1,6 @@
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
 const session = require('express-session');
 const flash = require('login.dfe.express-flash-2');
 const path = require('path');
@@ -74,9 +73,9 @@ if (config.hostingEnvironment.useDevViews) {
     saveUninitialized: true,
   }));
   app.use(flash());
-  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true}));
   app.use(cookieParser());
-  app.use(bodyParser.json());
 
   app.set('view engine', 'ejs');
   app.set('views', path.resolve(__dirname, 'app'));
