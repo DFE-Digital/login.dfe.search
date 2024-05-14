@@ -4,16 +4,16 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const flash = require('login.dfe.express-flash-2');
 const path = require('path');
-const logger = require('./infrastructure/logger');
 const https = require('https');
 const http = require('http');
-const config = require('./infrastructure/config');
-const configSchema = require('./infrastructure/config/schema');
 const helmet = require('helmet');
 const healthCheck = require('login.dfe.healthcheck');
-const registerRoutes = require('./routes');
 const { getErrorHandler } = require('login.dfe.express-error-handling');
 const apiAuth = require('login.dfe.api.auth');
+const registerRoutes = require('./routes');
+const configSchema = require('./infrastructure/config/schema');
+const config = require('./infrastructure/config');
+const logger = require('./infrastructure/logger');
 
 configSchema.validate();
 
@@ -57,14 +57,11 @@ app.use(helmet.ieNoOpen());
 
 logger.info('helmet setup complete');
 
-
 if (config.hostingEnvironment.env !== 'dev') {
   app.set('trust proxy', 1);
 }
 
-
 if (config.hostingEnvironment.useDevViews) {
-
   app.use(session({
     secret: 'development, screens, only',
     httpOnly: true,
@@ -74,7 +71,7 @@ if (config.hostingEnvironment.useDevViews) {
   }));
   app.use(flash());
   app.use(express.json());
-  app.use(express.urlencoded({ extended: true}));
+  app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
 
   app.set('view engine', 'ejs');
@@ -91,7 +88,6 @@ if (config.hostingEnvironment.useDevViews) {
   });
 }
 
-app.use(bodyParser.json());
 app.use((req, res, next) => {
   req.correlationId = req.get('x-correlation-id') || `srchci-${Date.now()}`;
   next();
