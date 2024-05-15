@@ -1,5 +1,5 @@
 const config = require('./../config');
-const fetchApi = require('login.dfe.async-retry');
+const { fetchApi } = require('login.dfe.async-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 
 class ApiClient {
