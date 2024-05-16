@@ -1,6 +1,6 @@
 {
   "name": "login.dfe.search",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "API for searching aggregated data with DfE Sign-in",
   "scripts": {
     "test": "jest --coverage",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DFE-Digital/login.dfe.search.git"
+    "url": "github:DFE-Digital/login.dfe.search"
   },
   "author": "",
   "license": "MIT",
@@ -19,7 +19,6 @@
   "dependencies": {
     "agentkeepalive": "^4.2.1",
     "applicationinsights": "^2.9.0",
-    "body-parser": "^1.20.0",
     "cookie-parser": "^1.4.4",
     "ejs": "^3.1.9",
     "express": "^4.17.3",
@@ -28,19 +27,18 @@
     "helmet": "^7.0.0",
     "ioredis": "^5.3.2",
     "lodash": "^4.17.15",
-    "login.dfe.api.auth": "git+https://github.com/DFE-Digital/login.dfe.api.auth.git#v2.3.0",
-    "login.dfe.audit.transporter": "^3.0.0",
-    "login.dfe.audit.winston-sequelize-transport": "git+https://github.com/DFE-Digital/login.dfe.audit.winston-sequelize-transport.git#v3.1.0",
-    "login.dfe.config.schema.common": "git+https://github.com/DFE-Digital/login.dfe.config.schema.common.git#v2.1.3",
-    "login.dfe.dao": "^4.0.0",
-    "login.dfe.express-error-handling": "git+https://github.com/DFE-Digital/login.dfe.express-error-handling.git#v3.0.0",
-    "login.dfe.express-flash-2": "git+https://github.com/DFE-Digital/login.dfe.express-flash-2.git#v2.0.0",
-    "login.dfe.healthcheck": "github:DFE-Digital/login.dfe.healthcheck#v3.0.0",
-    "login.dfe.jwt-strategies": "git+https://github.com/DFE-Digital/login.dfe.jwt-strategies.git#v4.0.0",
-    "login.dfe.request-promise-retry": "git+https://github.com/DFE-Digital/login.dfe.request-promise-retry.git#v3.0.0",
-    "login.dfe.winston-appinsights": "git+https://github.com/DFE-Digital/login.dfe.winston-appinsights.git#v5.0.0",
+    "login.dfe.api.auth": "github:DFE-Digital/login.dfe.api.auth#v2.3.0",
+    "login.dfe.audit.transporter": "^4.0.2",
+    "login.dfe.audit.winston-sequelize-transport": "github:DFE-Digital/login.dfe.audit.winston-sequelize-transport#v3.2.0",
+    "login.dfe.config.schema.common": "github:DFE-Digital/login.dfe.config.schema.common#v2.1.4",
+    "login.dfe.dao": "^4.2.12",
+    "login.dfe.express-error-handling": "github:DFE-Digital/login.dfe.express-error-handling#v3.0.1",
+    "login.dfe.express-flash-2": "github:DFE-Digital/login.dfe.express-flash-2#v2.0.1",
+    "login.dfe.healthcheck": "github:DFE-Digital/login.dfe.healthcheck#v3.0.1",
+    "login.dfe.jwt-strategies": "github:DFE-Digital/login.dfe.jwt-strategies#v4.1.0",
+    "login.dfe.winston-appinsights": "github:DFE-Digital/login.dfe.winston-appinsights#v5.0.1",
+    "login.dfe.async-retry": "github:DFE-Digital/login.dfe.async-retry#v2.0.3",
     "node-schedule": "^2.1.1",
-    "simpl-schema": "^3.4.1",
     "uuid": "^9.0.1",
     "winston": "^3.3.3"
   },

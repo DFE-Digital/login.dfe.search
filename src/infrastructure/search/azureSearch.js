@@ -1,5 +1,5 @@
 const config = require('./../config');
-const rp = require('login.dfe.request-promise-retry');
+const { fetchApi } = require('login.dfe.async-retry');
 const omit = require('lodash/omit');
 const { createLastLoginFilterExpression } = require('../../utils/userSearchHelpers');
 
@@ -7,13 +7,11 @@ const baseUri = `https://${config.search.azureSearch.serviceName}.search.windows
 const apiVersion = '2020-06-30';
 
 const listIndexes = async () => {
-  const indexesResponse = await rp({
+  const indexesResponse = await fetchApi(`${baseUri}?api-version=${apiVersion}`, {
     method: 'GET',
-    uri: `${baseUri}?api-version=${apiVersion}`,
     headers: {
       'api-key': config.search.azureSearch.apiKey,
     },
-    json: true,
   });
   return indexesResponse.value.map(x => x.name);
 };
@@ -47,9 +45,8 @@ const createIndex = async (name, structure) => {
     };
   });
 
-  await rp({
+  await fetchApi(`${baseUri}/${name}?api-version=${apiVersion}`, {
     method: 'PUT',
-    uri: `${baseUri}/${name}?api-version=${apiVersion}`,
     headers: {
       'content-type': 'application/json',
       'api-key': config.search.azureSearch.apiKey,
@@ -58,15 +55,13 @@ const createIndex = async (name, structure) => {
       name,
       fields,
     },
-    json: true,
   });
 };
 
 const storeDocumentsInIndex = async (name, documents) => {
   const indexDocuments = documents.map(x => Object.assign({ '@search.action': 'upload' }, x));
-  await rp({
+  await fetchApi(`${baseUri}/${name}/docs/index?api-version=${apiVersion}`, {
     method: 'POST',
-    uri: `${baseUri}/${name}/docs/index?api-version=${apiVersion}`,
     headers: {
       'content-type': 'application/json',
       'api-key': config.search.azureSearch.apiKey,
@@ -74,14 +69,12 @@ const storeDocumentsInIndex = async (name, documents) => {
     body: {
       value: indexDocuments,
     },
-    json: true,
   });
 };
 
 const deleteDocumentInIndex = async (name, id) => {
-  await rp({
+  await fetchApi(`${baseUri}/${name}/docs/index?api-version=${apiVersion}`, {
     method: 'POST',
-    uri: `${baseUri}/${name}/docs/index?api-version=${apiVersion}`,
     headers: {
       'content-type': 'application/json',
       'api-key': config.search.azureSearch.apiKey,
@@ -91,11 +84,10 @@ const deleteDocumentInIndex = async (name, id) => {
         {
           "@search.action": "delete",
           "id": id
-        }
+        },
       ],
     },
-    json: true,
-  })
+  });
 };
 
 const searchIndex = async (name, criteria, page, pageSize, sortBy, sortAsc = true, filters = undefined, searchFields = undefined) => {
@@ -130,14 +122,12 @@ const searchIndex = async (name, criteria, page, pageSize, sortBy, sortAsc = tru
     uri += `&$filter=${filterParam}`;
   }
 
-  const response = await rp({
+  const response = await fetchApi(uri, {
     method: 'GET',
-    uri,
     headers: {
       'content-type': 'application/json',
       'api-key': config.search.azureSearch.apiKey,
     },
-    json: true,
   });
   let numberOfPages = 1;
   const totalNumberOfResults = parseInt(response['@odata.count']);
@@ -154,13 +144,11 @@ const searchIndex = async (name, criteria, page, pageSize, sortBy, sortAsc = tru
 
 const deleteIndex = async (name) => {
   try {
-    await rp({
+    await fetchApi(`${baseUri}/${name}?api-version=${apiVersion}`, {
       method: 'DELETE',
-      uri: `${baseUri}/${name}?api-version=${apiVersion}`,
       headers: {
         'api-key': config.search.azureSearch.apiKey,
       },
-      json: true,
     });
   } catch (e) {
     if (e.statusCode !== 404) {
