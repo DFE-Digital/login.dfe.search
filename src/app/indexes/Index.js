@@ -42,39 +42,43 @@ const ensureDocumentsAreValidStructure = (documents, structure) => {
 };
 
 const attemptToStoreDocuments = async (name, keyFieldName, documents, attempts = 3) => {
-  if (attempts > 0 && documents.length > 0) {
-    const response = await storeDocumentsInIndex(name, documents);
+  if (attempts <= 0 || documents.length === 0) {
+    return;
+  }
 
-    // Response code 207 indicates there were some failures in the request, some of which can be retried.
-    // https://learn.microsoft.com/en-us/rest/api/searchservice/addupdate-or-delete-documents#response
-    if (response.statusCode === 207) {
-      const responseDocuments = response.body.value ?? [];
-      const failedDocuments = responseDocuments.filter((doc) => doc.status === false);
-      const canRetry = (document) => [409, 422, 503].includes(document.statusCode);
+  const response = await storeDocumentsInIndex(name, documents);
 
-      const errorDocuments = failedDocuments.filter((doc) => !canRetry(doc));
-      if (errorDocuments.length > 1) {
-        const statusCodes = [...new Set(errorDocuments.map((doc) => doc.statusCode))].join();
-        logger.error(`Documents failed to index into "${name}", status code(s): ${statusCodes}`, {
-          documents: errorDocuments,
-        });
-      }
+  // Response code 207 indicates there were some failures in the request, some of which can be retried.
+  // https://learn.microsoft.com/en-us/rest/api/searchservice/addupdate-or-delete-documents#response
+  if (response.statusCode !== 207) {
+    return;
+  }
 
-      const responseRetryDocuments = failedDocuments.filter((doc) => canRetry(doc));
-      const retryKeys = responseRetryDocuments.map((doc) => doc.key);
-      if (retryKeys.length > 1) {
-        if (attempts === 1) {
-          const statusCodes = [...new Set(responseRetryDocuments.map((doc) => doc.statusCode))].join();
-          logger.error(`Documents failed to index into "${name}" after multiple retries, status code(s): ${statusCodes}`, {
-            documents: responseRetryDocuments,
-          });
-        } else {
-          await new Promise((resolve) => { setTimeout(resolve, 500); });
-        }
-        const retryDocuments = documents.filter((doc) => retryKeys.includes(doc[keyFieldName]));
-        await attemptToStoreDocuments(name, keyFieldName, retryDocuments, attempts - 1);
-      }
+  const responseDocuments = response.body.value ?? [];
+  const failedDocuments = responseDocuments.filter((doc) => doc.status === false);
+  const canRetry = (document) => [409, 422, 503].includes(document.statusCode);
+
+  const errorDocuments = failedDocuments.filter((doc) => !canRetry(doc));
+  if (errorDocuments.length > 1) {
+    const statusCodes = [...new Set(errorDocuments.map((doc) => doc.statusCode))].join();
+    logger.error(`Documents failed to index into "${name}", status code(s): ${statusCodes}`, {
+      documents: errorDocuments,
+    });
+  }
+
+  const responseRetryDocuments = failedDocuments.filter((doc) => canRetry(doc));
+  const retryKeys = responseRetryDocuments.map((doc) => doc.key);
+  if (retryKeys.length > 1) {
+    if (attempts === 1) {
+      const statusCodes = [...new Set(responseRetryDocuments.map((doc) => doc.statusCode))].join();
+      logger.error(`Documents failed to index into "${name}" after multiple retries, status code(s): ${statusCodes}`, {
+        documents: responseRetryDocuments,
+      });
+    } else {
+      await new Promise((resolve) => { setTimeout(resolve, 500); });
     }
+    const retryDocuments = documents.filter((doc) => retryKeys.includes(doc[keyFieldName]));
+    await attemptToStoreDocuments(name, keyFieldName, retryDocuments, attempts - 1);
   }
 };
 
