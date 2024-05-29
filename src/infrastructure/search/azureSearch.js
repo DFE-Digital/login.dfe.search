@@ -124,9 +124,9 @@ const searchIndex = async (name, criteria, page, pageSize, sortBy, sortAsc = tru
       }
       if (filter.fieldType === 'Collection') {
         filterParam += `${filter.field}/any(x: search.in(x, '${filter.values.join(',')}', ','))`;
-      } else if (filter.fieldType === 'Int64' && filter.field !== 'lastLogin') {
+      } else if (filter.fieldType === 'Int64') {
         filterParam += `(${filter.field} eq ${filter.values.join(` or ${filter.field} eq `)})`;
-      } else if (filter.fieldType === 'Int64' && filter.field === 'lastLogin') {
+      } else if (filter.field === 'lastLogin') {
         const lastLoginFilterUrl = createLastLoginFilterExpression(filter);
         filterParam += `(${lastLoginFilterUrl})`;
       } else {
