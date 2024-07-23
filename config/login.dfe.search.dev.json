@@ -1,0 +1,158 @@
+{
+  "loggerSettings": {
+    "logLevel": "info",
+    "applicationName": "Search-API"
+  },
+  "hostingEnvironment": {
+    "env": "azure",
+    "useDevViews": true,
+    "host": "{{standaloneSearchHostName}}",
+    "port": 443,
+    "protocol": "https",
+    "applicationInsights": "{{appInsightsInstrumentationKey}}",
+    "agentKeepAlive" : {
+      "maxSockets":35,
+      "maxFreeSockets":10,
+      "timeout":60000,
+      "keepAliveTimeout":30000
+    }
+  },
+  "auth": {
+      "type": "aad",
+      "identityMetadata": "{{tenantUrl}}/.well-known/openid-configuration",
+      "clientID": "{{aadshdappid}}"
+  },
+  "scheduledTasks": {
+    "reindexUsers": "0 20 * * *",
+    "updateUsersIndex": "*/10 8-19 * * *",
+    "updateAuditCache": "*/5 3-23 * * *",
+    "tidyIndexes": "20,50 8-19 * * *",
+    "reindexDevices": "*/30 6-23 * * *"
+  },
+  "cache": {
+    "type": "redis",
+    "params": {
+      "connectionString": "{{redisConn}}/8?tls=true"
+    }
+  },
+  "audit": {
+    "type": "sequelize",
+    "params": {
+      "host": "{{platformGlobalServerName}}",
+      "username":"{{svcSigninAdt}}",
+      "password":"{{svcSigninAdtPassword}}",
+      "dialect":"mssql",
+      "name": "{{platformGlobalAuditDatabaseName}}",
+      "encrypt": true,
+      "schema": "dbo",
+      "pool": {
+        "max": 15,
+        "min": 0,
+        "acquire": 30000,
+        "idle": 10000
+      }
+    }
+  },
+  "search": {
+    "azureSearch": {
+      "serviceName": "{{azureSearchName}}",
+      "apiKey": "{{azureSearchkey}}"
+    }
+  },
+  "directories": {
+    "type": "api",
+    "service": {
+      "url": "https://{{standaloneDirectoriesHostName}}",
+      "auth": {
+        "type": "aad",
+        "tenant": "{{platformGlobalTenantDomain}}",
+        "authorityHostUrl": "{{tenantUrl}}",
+        "clientId": "{{aadshdclientid}}",
+        "clientSecret": "{{aadshdclientsecret}}",
+        "resource": "{{aadshdappid}}"
+      }
+    }
+  },
+  "organisations": {
+    "type": "api",
+    "service": {
+      "url": "https://{{standaloneOrganisationsHostName}}",
+      "auth": {
+        "type": "aad",
+        "tenant": "{{platformGlobalTenantDomain}}",
+        "authorityHostUrl": "{{tenantUrl}}",
+        "clientId": "{{aadshdclientid}}",
+        "clientSecret": "{{aadshdclientsecret}}",
+        "resource": "{{aadshdappid}}"
+      }
+    }
+  },
+  "access": {
+    "type": "api",
+    "service": {
+      "url": "https://{{standaloneAccessHostName}}",
+      "auth": {
+        "type": "aad",
+        "tenant": "{{platformGlobalTenantDomain}}",
+        "authorityHostUrl": "{{tenantUrl}}",
+        "clientId": "{{aadshdclientid}}",
+        "clientSecret": "{{aadshdclientsecret}}",
+        "resource": "{{aadshdappid}}"
+      }
+    }
+  },
+  "devices": {
+    "type": "api",
+    "service": {
+        "url": "https://{{standaloneDevicesHostName}}",
+      "auth": {
+        "type": "aad",
+        "tenant": "{{platformGlobalTenantDomain}}",
+        "authorityHostUrl": "{{tenantUrl}}",
+        "clientId": "{{aadshdclientid}}",
+        "clientSecret": "{{aadshdclientsecret}}",
+        "resource": "{{aadshdappid}}"
+      }
+    }
+  },
+  "adapter": {
+    "type": "sequelize",
+    "directories": {
+      "host": "{{platformGlobalServerName}}",
+      "username": "{{svcSigninDir}}",
+      "password": "{{svcSigninDirPassword}}",
+      "dialect": "mssql",
+      "name": "{{platformGlobalDirectoriesDatabaseName}}",
+      "encrypt": true,
+      "schema": "dbo",
+      "pool": {
+        "max": 5,
+        "min": 0,
+        "acquire": 30000,
+        "idle": 10000
+      }
+    },
+    "organisation": {
+      "host": "{{platformGlobalServerName}}",
+      "username": "{{svcSigninOrg}}",
+      "password": "{{svcSigninOrgPassword}}",
+      "dialect": "mssql",
+      "name": "{{platformGlobalOrganisationsDatabaseName}}",
+      "encrypt": true,
+      "schema": "dbo",
+      "pool": {
+        "max": 10,
+        "min": 0,
+        "acquire": 30000,
+        "idle": 10000
+      }
+    }
+  },
+  "notifications": {
+    "connectionString": "{{redisConn}}/4?tls=true"
+  },
+  "assets": {
+    "url": "{{cdnHostName}}",
+    "version": "{{cdnAssetsVersion}}"
+  }
+}
