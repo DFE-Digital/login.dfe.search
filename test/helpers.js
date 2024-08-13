@@ -26,9 +26,6 @@ const mockConfig = (customConfig) => {
     access: {
       type: 'static',
     },
-    devices: {
-      type: 'static',
-    },
   }, customConfig);
 };
 const mockLogger = () => {
