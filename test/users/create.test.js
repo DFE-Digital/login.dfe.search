@@ -1,10 +1,12 @@
-jest.mock('./../../src/infrastructure/config', () => require('./../helpers').mockConfig());
-jest.mock('./../../src/infrastructure/logger', () => require('./../helpers').mockLogger());
+/* eslint-disable global-require */
+jest.mock('./../../src/infrastructure/config', () => require('../helpers').mockConfig());
+jest.mock('./../../src/infrastructure/logger', () => require('../helpers').mockLogger());
+/* eslint-enable global-require */
 jest.mock('./../../src/app/indexes/UserIndex');
 
-const { mockRequest, mockResponse } = require('./../helpers');
-const UserIndex = require('./../../src/app/indexes/UserIndex');
-const create = require('./../../src/app/users/create');
+const { mockRequest, mockResponse } = require('../helpers');
+const UserIndex = require('../../src/app/indexes/UserIndex');
+const create = require('../../src/app/users/create');
 
 const user = {
   id: 'user1',
@@ -41,14 +43,14 @@ describe('when creating a user in the index', () => {
   beforeEach(() => {
     req = mockRequest({
       body: {
-        id: 'user1'
+        id: 'user1',
       },
     });
     res.mockResetAll();
 
-    UserIndex.current.mockReset().mockReturnValue(userIndex);
+    UserIndex.mockReset().mockImplementation(() => userIndex);
     userIndex.search.mockReset().mockReturnValue({
-      users: [user]
+      users: [user],
     });
   });
 
@@ -60,29 +62,29 @@ describe('when creating a user in the index', () => {
       {
         field: 'id',
         values: [req.body.id],
-      }
+      },
     ]);
     expect(res.status).toHaveBeenCalledTimes(1);
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.send).toHaveBeenCalledTimes(1);
   });
 
-  it('then it should update the user with the updated properties in the index', async() => {
+  it('then it should update the user with the updated properties in the index', async () => {
     userIndex.search.mockReturnValue({
-      users: []
+      users: [],
     });
 
     await create(req, res);
 
     expect(userIndex.indexUserById).toHaveBeenCalledTimes(1);
-    expect(userIndex.indexUserById).toHaveBeenCalledWith(req.body.id, 'correlation-id')
+    expect(userIndex.indexUserById).toHaveBeenCalledWith(req.body.id, 'correlation-id');
   });
 
   it('then it should return 201 response', async () => {
     userIndex.search.mockReturnValue({
-      users: []
+      users: [],
     });
-    
+
     await create(req, res);
 
     expect(res.status).toHaveBeenCalledTimes(1);

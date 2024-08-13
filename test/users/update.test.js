@@ -1,10 +1,12 @@
-jest.mock('./../../src/infrastructure/config', () => require('./../helpers').mockConfig());
-jest.mock('./../../src/infrastructure/logger', () => require('./../helpers').mockLogger());
+/* eslint-disable global-require */
+jest.mock('./../../src/infrastructure/config', () => require('../helpers').mockConfig());
+jest.mock('./../../src/infrastructure/logger', () => require('../helpers').mockLogger());
+/* eslint-enable global-require */
 jest.mock('./../../src/app/indexes/UserIndex');
 
-const { mockRequest, mockResponse } = require('./../helpers');
-const UserIndex = require('./../../src/app/indexes/UserIndex');
-const update = require('./../../src/app/users/update');
+const { mockRequest, mockResponse } = require('../helpers');
+const UserIndex = require('../../src/app/indexes/UserIndex');
+const update = require('../../src/app/users/update');
 
 const user = {
   id: 'user1',
@@ -50,9 +52,9 @@ describe('when updating user details', () => {
     });
     res.mockResetAll();
 
-    UserIndex.current.mockReset().mockReturnValue(userIndex);
+    UserIndex.mockReset().mockImplementation(() => userIndex);
     userIndex.search.mockReset().mockReturnValue({
-      users: [user]
+      users: [user],
     });
   });
 
@@ -67,7 +69,7 @@ describe('when updating user details', () => {
     expect(res.contentType).toHaveBeenCalledWith('json');
     expect(res.send).toHaveBeenCalledTimes(1);
     expect(res.send).toHaveBeenCalledWith({
-      errors: ['lastLogin is not a patchable property']
+      errors: ['lastLogin is not a patchable property'],
     });
   });
 
@@ -88,7 +90,7 @@ describe('when updating user details', () => {
         'firstName must have a value',
         'lastName must have a value',
         'email must have a value',
-      ]
+      ],
     });
   });
 
@@ -140,7 +142,7 @@ describe('when updating user details', () => {
 
   it('then it should return 404 response if user id is not in index', async () => {
     userIndex.search.mockReturnValue({
-      users: []
+      users: [],
     });
 
     await update(req, res);
@@ -150,14 +152,14 @@ describe('when updating user details', () => {
       {
         field: 'id',
         values: [req.params.uid],
-      }
+      },
     ]);
     expect(res.status).toHaveBeenCalledTimes(1);
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.send).toHaveBeenCalledTimes(1);
   });
 
-  it('then it should update the user with the updated properties in the index', async() => {
+  it('then it should update the user with the updated properties in the index', async () => {
     await update(req, res);
 
     expect(userIndex.store).toHaveBeenCalledTimes(1);

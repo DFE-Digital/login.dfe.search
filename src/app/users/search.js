@@ -39,7 +39,7 @@ const search = async (req, res) => {
     });
   }
 
-  const index = await UserIndex.current();
+  const index = new UserIndex();
   const pageOfUsers = await index.search(criteria, page, 25, sortBy, sortAsc, filters, searchFields);
   pageOfUsers.users = await overwriteAuditLastLogins(pageOfUsers.users);
 
