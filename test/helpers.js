@@ -8,12 +8,6 @@ const mockConfig = (customConfig) => {
         keepAliveTimeout: 30000,
       },
     },
-    scheduledTasks: {
-      reindexUsers: '0 0 * * *',
-      updateUsersIndex: '0 0 * * *',
-      updateAuditCache: '0 0 * * *',
-      tidyIndexes: '0 0 * * *',
-    },
     cache: {
       type: 'memory',
     },

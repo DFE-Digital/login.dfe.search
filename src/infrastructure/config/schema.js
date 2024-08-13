@@ -3,13 +3,6 @@ const { validateConfigAgainstSchema, schemas, patterns } = require('login.dfe.co
 const config = require('./index');
 const logger = require('./../logger');
 
-const scheduledTasksSchema = new SimpleSchema({
-  reindexUsers: String,
-  updateUsersIndex: String,
-  updateAuditCache: String,
-  tidyIndexes: String,
-  reindexDevices: String,
-});
 const cacheSchema = new SimpleSchema({
   type: {
     type: String,
@@ -69,7 +62,6 @@ const schema = new SimpleSchema({
   loggerSettings: schemas.loggerSettings,
   hostingEnvironment: schemas.hostingEnvironment,
   auth: schemas.apiServerAuth,
-  scheduledTasks: scheduledTasksSchema,
   cache: cacheSchema,
   audit: auditSchema,
   search: searchSchema,
