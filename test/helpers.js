@@ -11,18 +11,6 @@ const mockConfig = (customConfig) => {
     cache: {
       type: 'memory',
     },
-    audit: {
-      type: 'sequelize',
-      params: {
-        host: 'unittest',
-        username: 'ut',
-        password: 'unit-tests',
-        dialect: 'mssql',
-        name: 'audit',
-        encrypt: true,
-        schema: 'dbo',
-      }
-    },
     search: {
       azureSearch: {
         serviceName: 'unit-tests',
