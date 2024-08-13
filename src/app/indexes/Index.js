@@ -1,7 +1,7 @@
 const chunk = require('lodash/chunk');
 const logger = require('../../infrastructure/logger');
 const {
-  createIndex, storeDocumentsInIndex, searchIndex, deleteDocumentInIndex,
+  storeDocumentsInIndex, searchIndex, deleteDocumentInIndex,
 } = require('../../infrastructure/search');
 const { forEachAsync } = require('../../utils/async');
 
@@ -148,14 +148,6 @@ class Index {
       await deleteDocumentInIndex(this.name, id);
     } catch (e) {
       throw new Error(`Error deleting document with id ${id} from index ${this.name} - ${e.message}`);
-    }
-  }
-
-  static async create(name, structure) {
-    try {
-      await createIndex(name, structure);
-    } catch (e) {
-      throw new Error(`Error creating index ${name} - ${e.message}`);
     }
   }
 }
