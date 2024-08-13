@@ -8,9 +8,6 @@ const mockConfig = (customConfig) => {
         keepAliveTimeout: 30000,
       },
     },
-    cache: {
-      type: 'memory',
-    },
     search: {
       azureSearch: {
         serviceName: 'unit-tests',

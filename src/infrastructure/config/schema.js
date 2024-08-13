@@ -3,31 +3,6 @@ const { validateConfigAgainstSchema, schemas, patterns } = require('login.dfe.co
 const config = require('./index');
 const logger = require('./../logger');
 
-const cacheSchema = new SimpleSchema({
-  type: {
-    type: String,
-    allowedValues: ['memory', 'redis'],
-  },
-  params: {
-    type: Object,
-    optional: true,
-    custom: function() {
-      if (this.siblingField('type').value === 'redis' && !this.isSet) {
-        return SimpleSchema.ErrorTypes.REQUIRED
-      }
-    },
-  },
-  'params.connectionString': {
-    type: String,
-    regEx: patterns.redis,
-    optional: true,
-    custom: function() {
-      if (this.field('type').value === 'redis' && !this.isSet) {
-        return SimpleSchema.ErrorTypes.REQUIRED
-      }
-    },
-  },
-});
 const searchSchema = new SimpleSchema({
   azureSearch: Object,
   'azureSearch.serviceName': String,
@@ -55,7 +30,6 @@ const schema = new SimpleSchema({
   loggerSettings: schemas.loggerSettings,
   hostingEnvironment: schemas.hostingEnvironment,
   auth: schemas.apiServerAuth,
-  cache: cacheSchema,
   search: searchSchema,
   directories: schemas.apiClient,
   organisations: schemas.apiClient,

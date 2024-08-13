@@ -3,7 +3,6 @@ const uniq = require('lodash/uniq');
 const flatten = require('lodash/flatten');
 const logger = require('../../infrastructure/logger');
 const Index = require('./Index');
-const { getLoginStatsForUser } = require('../../infrastructure/stats');
 const {
   getUser, getInvitation,
 } = require('../../infrastructure/directories');
@@ -254,15 +253,6 @@ class UserIndex extends Index {
       if (!document.services) {
         logger.debug(`getting services for ${document.id} (${index + 1} of ${users.length})`, { correlationId });
         document.services = await getServices(document.id);
-      }
-      if (!document.id.startsWith('inv-') && (!document.lastLogin || document.numberOfSuccessfulLoginsInPast12Months || document.statusLastChangedOn)) {
-        logger.debug(`getting stats for ${document.id} (${index + 1} of ${users.length})`, { correlationId });
-        const stats = await getLoginStatsForUser(document.id);
-        if (stats) {
-          document.lastLogin = document.lastLogin || stats.lastLogin;
-          document.numberOfSuccessfulLoginsInPast12Months = document.numberOfSuccessfulLoginsInPast12Months || stats.loginsInPast12Months.length;
-          document.statusLastChangedOn = document.statusLastChangedOn || stats.lastStatusChange;
-        }
       }
       document.lastLogin = document.lastLogin ? document.lastLogin : null;
       document.statusLastChangedOn = document.statusLastChangedOn ? document.statusLastChangedOn.getTime() : undefined;
