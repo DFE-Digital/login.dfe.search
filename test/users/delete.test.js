@@ -1,10 +1,12 @@
-jest.mock('./../../src/infrastructure/config', () => require('./../helpers').mockConfig());
-jest.mock('./../../src/infrastructure/logger', () => require('./../helpers').mockLogger());
+/* eslint-disable global-require */
+jest.mock('./../../src/infrastructure/config', () => require('../helpers').mockConfig());
+jest.mock('./../../src/infrastructure/logger', () => require('../helpers').mockLogger());
+/* eslint-enable global-require */
 jest.mock('./../../src/app/indexes/UserIndex');
 
-const { mockRequest, mockResponse } = require('./../helpers');
-const UserIndex = require('./../../src/app/indexes/UserIndex');
-const deleteUser = require('./../../src/app/users/delete');
+const { mockRequest, mockResponse } = require('../helpers');
+const UserIndex = require('../../src/app/indexes/UserIndex');
+const deleteUser = require('../../src/app/users/delete');
 
 const user = {
   id: 'user1',
@@ -46,15 +48,15 @@ describe('when deleting a user', () => {
     });
     res.mockResetAll();
 
-    UserIndex.current.mockReset().mockReturnValue(userIndex);
+    UserIndex.mockReset().mockImplementation(() => userIndex);
     userIndex.search.mockReset().mockReturnValue({
-      users: [user]
+      users: [user],
     });
   });
 
   it('then it should return 404 response if user id is not in index', async () => {
     userIndex.search.mockReturnValue({
-      users: []
+      users: [],
     });
 
     await deleteUser(req, res);
@@ -64,14 +66,14 @@ describe('when deleting a user', () => {
       {
         field: 'id',
         values: [req.params.uid],
-      }
+      },
     ]);
     expect(res.status).toHaveBeenCalledTimes(1);
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.send).toHaveBeenCalledTimes(1);
   });
 
-  it('then it should delete the user from the index', async() => {
+  it('then it should delete the user from the index', async () => {
     await deleteUser(req, res);
 
     expect(userIndex.delete).toHaveBeenCalledTimes(1);

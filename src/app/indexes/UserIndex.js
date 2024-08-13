@@ -124,6 +124,7 @@ const getInvitationById = async (id, correlationId) => {
     };
     return [mapped];
   }
+  return null;
 };
 
 const getOrganisations = async (documentId, correlationId) => {
@@ -159,8 +160,8 @@ const getServices = async (documentId, correlationId) => {
 };
 
 class UserIndex extends Index {
-  constructor(name) {
-    super(name, indexStructure);
+  constructor() {
+    super('users', indexStructure);
   }
 
   async search(criteria, page = 1, pageSize = 25, sortBy = 'searchableName', sortAsc = true, filters = undefined, searchFields = undefined) {
@@ -191,10 +192,7 @@ class UserIndex extends Index {
     const documents = await mapAsync(users, async (user, index) => {
       const searchableName = getSearchableString(`${user.firstName}${user.lastName}`);
       const searchableEmail = getSearchableString(user.email);
-      const document = Object.assign({
-        searchableName,
-        searchableEmail,
-      }, user);
+      const document = { searchableName, searchableEmail, ...user };
       if (!document.legacyUsernames) {
         document.legacyUsernames = [];
       }
@@ -257,14 +255,16 @@ class UserIndex extends Index {
       document.statusLastChangedOn = document.statusLastChangedOn ? document.statusLastChangedOn.getTime() : undefined;
       return document;
     });
-    return await super.store(documents, correlationId);
+    return super.store(documents, correlationId);
   }
 
   async indexUserById(id, correlationId) {
     if (id.startsWith('inv-')) {
       const invitation = await getInvitationById(id, correlationId);
-      logger.debug(`Invitation ${id} for indexing into ${this.name}`, { correlationId });
-      await this.store(invitation, correlationId);
+      if (invitation !== null) {
+        logger.debug(`Invitation ${id} for indexing into ${this.name}`, { correlationId });
+        await this.store(invitation, correlationId);
+      }
     } else {
       const user = await getUserById(id, correlationId);
       logger.debug(`User ${id} for indexing into ${this.name}`, { correlationId });
@@ -275,10 +275,6 @@ class UserIndex extends Index {
   async deleteUserById(id) {
     logger.debug(`Deleting document with id: ${id}`);
     await super.delete(id);
-  }
-
-  static async current() {
-    return new UserIndex('users');
   }
 }
 
