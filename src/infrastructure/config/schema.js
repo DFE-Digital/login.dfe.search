@@ -60,7 +60,6 @@ const schema = new SimpleSchema({
   directories: schemas.apiClient,
   organisations: schemas.apiClient,
   access: schemas.apiClient,
-  devices: schemas.apiClient,
   notifications: notificationsSchema,
   adapter: adapterSchema,
   assets: schemas.assets,
