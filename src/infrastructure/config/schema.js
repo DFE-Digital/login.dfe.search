@@ -28,13 +28,6 @@ const cacheSchema = new SimpleSchema({
     },
   },
 });
-const auditSchema = new SimpleSchema({
-  type: {
-    type: String,
-    allowedValues: ['sequelize'],
-  },
-  params: schemas.sequelizeConnection,
-});
 const searchSchema = new SimpleSchema({
   azureSearch: Object,
   'azureSearch.serviceName': String,
@@ -63,7 +56,6 @@ const schema = new SimpleSchema({
   hostingEnvironment: schemas.hostingEnvironment,
   auth: schemas.apiServerAuth,
   cache: cacheSchema,
-  audit: auditSchema,
   search: searchSchema,
   directories: schemas.apiClient,
   organisations: schemas.apiClient,
