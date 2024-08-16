@@ -56,6 +56,9 @@ if (config.hostingEnvironment.env !== 'dev') {
   app.set('trust proxy', 1);
 }
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use((req, res, next) => {
   req.correlationId = req.get('x-correlation-id') || `srchci-${Date.now()}`;
   next();
