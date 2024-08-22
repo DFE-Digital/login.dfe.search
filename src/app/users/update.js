@@ -1,4 +1,4 @@
-const UserIndex = require('./../indexes/UserIndex');
+const UserIndex = require('../indexes/UserIndex');
 
 const patchableProperties = ['firstName', 'lastName', 'email', 'organisations', 'services', 'statusId', 'pendingEmail', 'legacyUsernames'];
 const requiredOrganisationProperties = ['id', 'name', 'categoryId', 'statusId', 'roleId'];
@@ -12,7 +12,7 @@ const processPatchProperties = (req) => {
   requestedProperties.forEach((propertyName) => {
     const value = req.body[propertyName];
 
-    if (!patchableProperties.find(x => x === propertyName)) {
+    if (!patchableProperties.find((x) => x === propertyName)) {
       result.errors.push(`${propertyName} is not a patchable property`);
       return;
     }
@@ -28,7 +28,7 @@ const processPatchProperties = (req) => {
     }
 
     if (propertyName === 'organisations') {
-      for (let i = 0; i < value.length; i++) {
+      for (let i = 0; i < value.length; i += 1) {
         const org = value[i];
         requiredOrganisationProperties.forEach((reqOrgPropName) => {
           const propValue = org[reqOrgPropName];
@@ -44,12 +44,12 @@ const processPatchProperties = (req) => {
   return result;
 };
 const update = async (req, res) => {
-  const userIndex = await UserIndex.current();
+  const userIndex = new UserIndex();
   const searchResult = await userIndex.search('*', 1, 1, 'searchableName', true, [
     {
       field: 'id',
       values: [req.params.uid],
-    }
+    },
   ]);
   if (searchResult.users.length === 0) {
     return res.status(404).send();
@@ -60,7 +60,7 @@ const update = async (req, res) => {
     return res.status(400).contentType('json').send({ errors: patchRequest.errors });
   }
 
-  const patched = Object.assign({}, searchResult.users[0], patchRequest.patch);
+  const patched = { ...searchResult.users[0], ...patchRequest.patch };
   patched.organisationsJson = JSON.stringify(patched.organisations);
   patched.organisations = undefined;
   patched.primaryOrganisation = undefined;

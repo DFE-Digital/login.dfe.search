@@ -1,7 +1,7 @@
 const chunk = require('lodash/chunk');
 const logger = require('../../infrastructure/logger');
 const {
-  listIndexes, createIndex, storeDocumentsInIndex, searchIndex, deleteIndex, deleteDocumentInIndex,
+  storeDocumentsInIndex, searchIndex, deleteDocumentInIndex,
 } = require('../../infrastructure/search');
 const { forEachAsync } = require('../../utils/async');
 
@@ -148,29 +148,6 @@ class Index {
       await deleteDocumentInIndex(this.name, id);
     } catch (e) {
       throw new Error(`Error deleting document with id ${id} from index ${this.name} - ${e.message}`);
-    }
-  }
-
-  static async create(name, structure) {
-    try {
-      await createIndex(name, structure);
-    } catch (e) {
-      throw new Error(`Error creating index ${name} - ${e.message}`);
-    }
-  }
-
-  static async tidyIndexes(matcher, correlationId) {
-    const allIndexes = await listIndexes();
-    const unusedIndexes = await matcher(allIndexes);
-    if (unusedIndexes) {
-      await forEachAsync(unusedIndexes, async (indexName) => {
-        try {
-          await deleteIndex(indexName);
-          logger.info(`deleted index ${indexName}`, { correlationId });
-        } catch (e) {
-          throw new Error(`Error deleting index ${indexName} - ${e.message}`);
-        }
-      });
     }
   }
 }
