@@ -8,27 +8,6 @@ const mockConfig = (customConfig) => {
         keepAliveTimeout: 30000,
       },
     },
-    scheduledTasks: {
-      reindexUsers: '0 0 * * *',
-      updateUsersIndex: '0 0 * * *',
-      updateAuditCache: '0 0 * * *',
-      tidyIndexes: '0 0 * * *',
-    },
-    cache: {
-      type: 'memory',
-    },
-    audit: {
-      type: 'sequelize',
-      params: {
-        host: 'unittest',
-        username: 'ut',
-        password: 'unit-tests',
-        dialect: 'mssql',
-        name: 'audit',
-        encrypt: true,
-        schema: 'dbo',
-      }
-    },
     search: {
       azureSearch: {
         serviceName: 'unit-tests',
@@ -42,9 +21,6 @@ const mockConfig = (customConfig) => {
       type: 'static',
     },
     access: {
-      type: 'static',
-    },
-    devices: {
       type: 'static',
     },
   }, customConfig);

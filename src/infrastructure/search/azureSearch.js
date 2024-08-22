@@ -8,61 +8,6 @@ const { createLastLoginFilterExpression } = require('../../utils/userSearchHelpe
 const baseUri = `https://${config.search.azureSearch.serviceName}.search.windows.net/indexes`;
 const apiVersion = '2020-06-30';
 
-const listIndexes = async () => {
-  const indexesResponse = await fetchApi(`${baseUri}?api-version=${apiVersion}`, {
-    method: 'GET',
-    headers: {
-      'api-key': config.search.azureSearch.apiKey,
-    },
-  });
-  return indexesResponse.value.map((x) => x.name);
-};
-
-const createIndex = async (name, structure) => {
-  const fields = Object.keys(structure).map((fieldName) => {
-    const fieldDetails = structure[fieldName];
-    let type;
-    switch (fieldDetails.type) {
-      case 'String':
-        type = 'Edm.String';
-        break;
-      case 'Collection':
-        type = 'Collection(Edm.String)';
-        break;
-      case 'Int64':
-        type = 'Edm.Int64';
-        break;
-      case 'DateTimeOffset':
-        type = 'Edm.DateTimeOffset';
-        break;
-      default:
-        throw new Error(`Unrecognised type of ${fieldDetails.type} for field ${fieldName} when creating index ${name}`);
-    }
-
-    return {
-      name: fieldName,
-      type,
-      key: fieldDetails.key,
-      searchable: fieldDetails.searchable,
-      filterable: fieldDetails.filterable,
-      sortable: fieldDetails.sortable,
-      facetable: fieldDetails.facetable,
-    };
-  });
-
-  await fetchApi(`${baseUri}/${name}?api-version=${apiVersion}`, {
-    method: 'PUT',
-    headers: {
-      'content-type': 'application/json',
-      'api-key': config.search.azureSearch.apiKey,
-    },
-    body: {
-      name,
-      fields,
-    },
-  });
-};
-
 const storeDocumentsInIndex = async (name, documents) => asyncRetry(async () => {
   const url = `${baseUri}/${name}/docs/index?api-version=${apiVersion}`;
   const response = await fetch(url, {
@@ -156,26 +101,8 @@ const searchIndex = async (name, criteria, page, pageSize, sortBy, sortAsc = tru
   };
 };
 
-const deleteIndex = async (name) => {
-  try {
-    await fetchApi(`${baseUri}/${name}?api-version=${apiVersion}`, {
-      method: 'DELETE',
-      headers: {
-        'api-key': config.search.azureSearch.apiKey,
-      },
-    });
-  } catch (e) {
-    if (e.statusCode !== 404) {
-      throw e;
-    }
-  }
-};
-
 module.exports = {
-  listIndexes,
-  createIndex,
   storeDocumentsInIndex,
   searchIndex,
-  deleteIndex,
   deleteDocumentInIndex,
 };
