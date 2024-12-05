@@ -1,11 +1,10 @@
-/* eslint-disable global-require */
 jest.mock("./../../src/infrastructure/config", () =>
   require("../helpers").mockConfig(),
 );
 jest.mock("./../../src/infrastructure/logger", () =>
   require("../helpers").mockLogger(),
 );
-/* eslint-enable global-require */
+
 jest.mock("./../../src/app/indexes/UserIndex");
 
 const { mockRequest, mockResponse } = require("../helpers");

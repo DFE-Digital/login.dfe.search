@@ -65,11 +65,10 @@ eslint-results.xml
 \.idea/markdown-navigator\.xml
 \.idea/markdown-navigator/
 \.idea/workspace\.xml
-/config/*.*
 
 .vscode
 
 LICENSE
-config/
 
-.npmrc
+# Dev env
+/config/
