@@ -1,4 +1,4 @@
-const getInvitation = async (invitationId, correlationId) => {
+const getInvitation = async (invitationId) => {
   return {
     firstName: "Some",
     lastName: "User",
@@ -9,7 +9,7 @@ const getInvitation = async (invitationId, correlationId) => {
   };
 };
 
-const getUser = async (uid) => {
+const getUser = async () => {
   return {
     sub: "7a1b077a-d7d4-4b60-83e8-1a1b49849510",
     given_name: "Test",
