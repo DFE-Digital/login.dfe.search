@@ -1,4 +1,3 @@
-// eslint-disable-next-line global-require
 jest.mock("../../src/infrastructure/logger", () =>
   require("../helpers").mockLogger(),
 );
