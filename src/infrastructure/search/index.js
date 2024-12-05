@@ -1,1 +1,1 @@
-module.exports = require('./azureSearch');
+module.exports = require("./azureSearch");

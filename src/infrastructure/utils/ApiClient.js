@@ -1,12 +1,15 @@
-const config = require('./../config');
-const { fetchApi } = require('login.dfe.async-retry');
-const jwtStrategy = require('login.dfe.jwt-strategies');
+const config = require("./../config");
+const { fetchApi } = require("login.dfe.async-retry");
+const jwtStrategy = require("login.dfe.jwt-strategies");
 
 class ApiClient {
   constructor(config) {
     this._config = config;
 
-    this._baseUrl = config.url.substr(config.url.length - 1) === '/' ? config.url.substr(0, config.url.length - 1) : config.url;
+    this._baseUrl =
+      config.url.substr(config.url.length - 1) === "/"
+        ? config.url.substr(0, config.url.length - 1)
+        : config.url;
   }
 
   async get(resource, correlationId) {
@@ -14,9 +17,9 @@ class ApiClient {
       const token = await jwtStrategy(this._config).getBearerToken();
 
       return await fetchApi(`${this._baseUrl}${resource}`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'x-correlation-id': correlationId,
+          "x-correlation-id": correlationId,
           authorization: `bearer ${token}`,
         },
       });

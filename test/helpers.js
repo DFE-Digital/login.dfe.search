@@ -1,29 +1,32 @@
 const mockConfig = (customConfig) => {
-  return Object.assign({
-    hostingEnvironment: {
-      agentKeepAlive: {
-        maxSockets: 160,
-        maxFreeSockets: 10,
-        timeout: 60000,
-        keepAliveTimeout: 30000,
+  return Object.assign(
+    {
+      hostingEnvironment: {
+        agentKeepAlive: {
+          maxSockets: 160,
+          maxFreeSockets: 10,
+          timeout: 60000,
+          keepAliveTimeout: 30000,
+        },
+      },
+      search: {
+        azureSearch: {
+          serviceName: "unit-tests",
+          apiKey: "unit-tests",
+        },
+      },
+      directories: {
+        type: "static",
+      },
+      organisations: {
+        type: "static",
+      },
+      access: {
+        type: "static",
       },
     },
-    search: {
-      azureSearch: {
-        serviceName: 'unit-tests',
-        apiKey: 'unit-tests',
-      },
-    },
-    directories: {
-      type: 'static',
-    },
-    organisations: {
-      type: 'static',
-    },
-    access: {
-      type: 'static',
-    },
-  }, customConfig);
+    customConfig,
+  );
 };
 const mockLogger = () => {
   return {
@@ -41,11 +44,14 @@ const mockLogger = () => {
 };
 
 const mockRequest = (customRequestProperties) => {
-  return Object.assign({
-    params: {},
-    query: {},
-    correlationId: 'correlation-id',
-  }, customRequestProperties);
+  return Object.assign(
+    {
+      params: {},
+      query: {},
+      correlationId: "correlation-id",
+    },
+    customRequestProperties,
+  );
 };
 const mockResponse = () => {
   const res = {
@@ -53,7 +59,7 @@ const mockResponse = () => {
     contentType: jest.fn(),
     json: jest.fn(),
     send: jest.fn(),
-    mockResetAll: function() {
+    mockResetAll: function () {
       this.status.mockReset().mockReturnValue(this);
       this.contentType.mockReset().mockReturnValue(this);
       this.json.mockReset().mockReturnValue(this);

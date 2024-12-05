@@ -9,7 +9,7 @@ const mapAsync = async (collection, iteratee) => {
     mapped.push(await iteratee(item, index));
   });
   return mapped;
-}
+};
 
 module.exports = {
   forEachAsync,

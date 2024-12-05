@@ -1,4 +1,4 @@
-const { getUser, getUsers } = require('../infrastructure/directories');
+const { getUser, getUsers } = require("../infrastructure/directories");
 
 /**
  * Overwrite the lastLogin property in a user object from UserIndex
@@ -9,9 +9,9 @@ const { getUser, getUsers } = require('../infrastructure/directories');
 async function overwriteAuditLastLogin(userData) {
   const user = userData;
 
-  if (!user.id.startsWith('inv-')) {
+  if (!user.id.startsWith("inv-")) {
     const databaseUser = await getUser(user.id);
-    user.lastLogin = (databaseUser.last_login);
+    user.lastLogin = databaseUser.last_login;
   }
 
   return user;
@@ -28,7 +28,7 @@ async function overwriteAuditLastLogins(usersData) {
   const userIndexes = new Map(users.map((user, index) => [user.id, index]));
   // Invitations have a different ID, and they won't have a last login, so cannot be overwritten.
   const userOverwriteIds = usersData
-    .filter((user) => !user.id.startsWith('inv-'))
+    .filter((user) => !user.id.startsWith("inv-"))
     .map((user) => user.id);
 
   if (userOverwriteIds.length > 0) {
