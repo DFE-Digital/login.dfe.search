@@ -1,5 +1,5 @@
-const config = require('./../config');
-const ApiClient = require('./../utils/ApiClient');
+const config = require("./../config");
+const ApiClient = require("./../utils/ApiClient");
 
 const client = new ApiClient(config.access.service);
 

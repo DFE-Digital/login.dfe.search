@@ -1,7 +1,22 @@
-const UserIndex = require('../indexes/UserIndex');
+const UserIndex = require("../indexes/UserIndex");
 
-const patchableProperties = ['firstName', 'lastName', 'email', 'organisations', 'services', 'statusId', 'pendingEmail', 'legacyUsernames'];
-const requiredOrganisationProperties = ['id', 'name', 'categoryId', 'statusId', 'roleId'];
+const patchableProperties = [
+  "firstName",
+  "lastName",
+  "email",
+  "organisations",
+  "services",
+  "statusId",
+  "pendingEmail",
+  "legacyUsernames",
+];
+const requiredOrganisationProperties = [
+  "id",
+  "name",
+  "categoryId",
+  "statusId",
+  "roleId",
+];
 
 const processPatchProperties = (req) => {
   const result = {
@@ -17,23 +32,39 @@ const processPatchProperties = (req) => {
       return;
     }
 
-    if ((propertyName === 'firstName' || propertyName === 'lastName' || propertyName === 'email') && !value) {
+    if (
+      (propertyName === "firstName" ||
+        propertyName === "lastName" ||
+        propertyName === "email") &&
+      !value
+    ) {
       result.errors.push(`${propertyName} must have a value`);
       return;
     }
 
-    if ((propertyName === 'organisations' || propertyName === 'services' || propertyName === 'legacyUsernames') && !(value instanceof Array)) {
+    if (
+      (propertyName === "organisations" ||
+        propertyName === "services" ||
+        propertyName === "legacyUsernames") &&
+      !(value instanceof Array)
+    ) {
       result.errors.push(`${propertyName} must be an array`);
       return;
     }
 
-    if (propertyName === 'organisations') {
+    if (propertyName === "organisations") {
       for (let i = 0; i < value.length; i += 1) {
         const org = value[i];
         requiredOrganisationProperties.forEach((reqOrgPropName) => {
           const propValue = org[reqOrgPropName];
-          if (propValue === '' || propValue === undefined || propValue === null) {
-            result.errors.push(`organisations item at index ${i} must have ${reqOrgPropName}`);
+          if (
+            propValue === "" ||
+            propValue === undefined ||
+            propValue === null
+          ) {
+            result.errors.push(
+              `organisations item at index ${i} must have ${reqOrgPropName}`,
+            );
           }
         });
       }
@@ -45,19 +76,29 @@ const processPatchProperties = (req) => {
 };
 const update = async (req, res) => {
   const userIndex = new UserIndex();
-  const searchResult = await userIndex.search('*', 1, 1, 'searchableName', true, [
-    {
-      field: 'id',
-      values: [req.params.uid],
-    },
-  ]);
+  const searchResult = await userIndex.search(
+    "*",
+    1,
+    1,
+    "searchableName",
+    true,
+    [
+      {
+        field: "id",
+        values: [req.params.uid],
+      },
+    ],
+  );
   if (searchResult.users.length === 0) {
     return res.status(404).send();
   }
 
   const patchRequest = processPatchProperties(req);
   if (patchRequest.errors.length > 0) {
-    return res.status(400).contentType('json').send({ errors: patchRequest.errors });
+    return res
+      .status(400)
+      .contentType("json")
+      .send({ errors: patchRequest.errors });
   }
 
   const patched = { ...searchResult.users[0], ...patchRequest.patch };

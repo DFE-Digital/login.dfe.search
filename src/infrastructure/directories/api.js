@@ -1,6 +1,6 @@
-const { directories } = require('login.dfe.dao');
-const config = require('./../config');
-const ApiClient = require('./../utils/ApiClient');
+const { directories } = require("login.dfe.dao");
+const config = require("./../config");
+const ApiClient = require("./../utils/ApiClient");
 
 const client = new ApiClient(config.directories.service);
 
