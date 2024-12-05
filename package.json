@@ -2,6 +2,12 @@
   "name": "login.dfe.search",
   "version": "2.0.0",
   "description": "API for searching aggregated data with DfE Sign-in",
+  "repository": {
+    "type": "git",
+    "url": "github:DFE-Digital/login.dfe.search"
+  },
+  "author": "",
+  "license": "MIT",
   "scripts": {
     "dev": "settings='./config/login.dfe.search.local.json' nodemon src/index.js",
     "format": "prettier . --write",
@@ -11,16 +17,6 @@
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
   },
-  "repository": {
-    "type": "git",
-    "url": "github:DFE-Digital/login.dfe.search"
-  },
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/DFE-Digital/login.dfe.search/issues"
-  },
-  "homepage": "https://github.com/DFE-Digital/login.dfe.search#readme",
   "dependencies": {
     "applicationinsights": "^2.9.0",
     "express": "^4.17.3",
