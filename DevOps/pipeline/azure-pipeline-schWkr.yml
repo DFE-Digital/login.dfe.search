@@ -102,7 +102,7 @@ stages:
     jobs:
       - template: pipeline/scanTools.yml@devopsTemplates
         parameters:
-          npmInstCmd: "install --force --json --no-package-lock"
+          useRevisedLinting: true
           AppDeploy: ${{ not(parameters.InfrDeploy) }}
 
       - ${{ if not(eq(parameters.InfrDeploy, 'true')) }}:
@@ -123,8 +123,7 @@ stages:
                     - pr
               pm2ProcessFileName: process.json
               nodeVersionSpec: "18.17.0"
-              npmInstCmd: "install --force --json --no-package-lock"
-              npmPruneFixCmd: "install --production --json --force --no-package-lock"
+              useRevisedLinting: true
               workerRepo: search
 
   - ${{ each location in parameters.location }}:
