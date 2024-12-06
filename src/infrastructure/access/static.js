@@ -1,8 +1,8 @@
-const listUserServices = async (userId, correlationId) => {
+const listUserServices = async () => {
   return Promise.resolve([]);
 };
 
-const listInvitationServices = async (invitationId, correlationId) => {
+const listInvitationServices = async () => {
   return Promise.resolve([]);
 };
 

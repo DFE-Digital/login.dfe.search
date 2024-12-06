@@ -1,11 +1,11 @@
-const { overwriteAuditLastLogin } = require('../../utils/userHelper');
-const UserIndex = require('../indexes/UserIndex');
+const { overwriteAuditLastLogin } = require("../../utils/userHelper");
+const UserIndex = require("../indexes/UserIndex");
 
 const getById = async (req, res) => {
   const index = new UserIndex();
-  const pageOfUsers = await index.search('*', 1, 1, 'searchableName', true, [
+  const pageOfUsers = await index.search("*", 1, 1, "searchableName", true, [
     {
-      field: 'id',
+      field: "id",
       values: [req.params.uid],
     },
   ]);

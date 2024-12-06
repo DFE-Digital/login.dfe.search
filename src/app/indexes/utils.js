@@ -1,8 +1,7 @@
 const getSearchableString = (source) => {
-  return source.toLowerCase()
-    .replace(/\s/g, '');
+  return source.toLowerCase().replace(/\s/g, "");
 };
 
 module.exports = {
-  getSearchableString
+  getSearchableString,
 };
