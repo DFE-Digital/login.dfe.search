@@ -1,4 +1,4 @@
-'use strict';
+
 
 const fs = require('fs');
 const Path = require('path');
@@ -6,7 +6,7 @@ const Path = require('path');
 const getSettingsObject = (settings) => {
   try {
     return JSON.parse(settings);
-  } catch (e) {
+  } catch {
     return null;
   }
 };

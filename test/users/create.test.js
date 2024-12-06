@@ -1,24 +1,27 @@
-/* eslint-disable global-require */
-jest.mock('./../../src/infrastructure/config', () => require('../helpers').mockConfig());
-jest.mock('./../../src/infrastructure/logger', () => require('../helpers').mockLogger());
-/* eslint-enable global-require */
-jest.mock('./../../src/app/indexes/UserIndex');
+jest.mock("./../../src/infrastructure/config", () =>
+  require("../helpers").mockConfig(),
+);
+jest.mock("./../../src/infrastructure/logger", () =>
+  require("../helpers").mockLogger(),
+);
 
-const { mockRequest, mockResponse } = require('../helpers');
-const UserIndex = require('../../src/app/indexes/UserIndex');
-const create = require('../../src/app/users/create');
+jest.mock("./../../src/app/indexes/UserIndex");
+
+const { mockRequest, mockResponse } = require("../helpers");
+const UserIndex = require("../../src/app/indexes/UserIndex");
+const create = require("../../src/app/users/create");
 
 const user = {
-  id: 'user1',
-  firstName: 'Bob',
-  lastName: 'Johns',
-  email: 'user1@unit.test',
-  primaryOrganisation: 'org1',
+  id: "user1",
+  firstName: "Bob",
+  lastName: "Johns",
+  email: "user1@unit.test",
+  primaryOrganisation: "org1",
   organisations: [
     {
-      id: 'org1',
-      name: 'Organisation One',
-      categoryId: '001',
+      id: "org1",
+      name: "Organisation One",
+      categoryId: "001",
       statusId: 1,
       roleId: 10000,
     },
@@ -29,7 +32,7 @@ const user = {
   statusLastChangedOn: undefined,
   statusId: 1,
   pendingEmail: undefined,
-  legacyUsernames: ['sau1'],
+  legacyUsernames: ["sau1"],
 };
 const userIndex = {
   search: jest.fn(),
@@ -37,13 +40,13 @@ const userIndex = {
 };
 const res = mockResponse();
 
-describe('when creating a user in the index', () => {
+describe("when creating a user in the index", () => {
   let req;
 
   beforeEach(() => {
     req = mockRequest({
       body: {
-        id: 'user1',
+        id: "user1",
       },
     });
     res.mockResetAll();
@@ -54,22 +57,29 @@ describe('when creating a user in the index', () => {
     });
   });
 
-  it('then it should return 403 response if user id is already indexed', async () => {
+  it("then it should return 403 response if user id is already indexed", async () => {
     await create(req, res);
 
     expect(userIndex.search).toHaveBeenCalledTimes(1);
-    expect(userIndex.search).toHaveBeenCalledWith('*', 1, 1, 'searchableName', true, [
-      {
-        field: 'id',
-        values: [req.body.id],
-      },
-    ]);
+    expect(userIndex.search).toHaveBeenCalledWith(
+      "*",
+      1,
+      1,
+      "searchableName",
+      true,
+      [
+        {
+          field: "id",
+          values: [req.body.id],
+        },
+      ],
+    );
     expect(res.status).toHaveBeenCalledTimes(1);
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.send).toHaveBeenCalledTimes(1);
   });
 
-  it('then it should update the user with the updated properties in the index', async () => {
+  it("then it should update the user with the updated properties in the index", async () => {
     userIndex.search.mockReturnValue({
       users: [],
     });
@@ -77,10 +87,13 @@ describe('when creating a user in the index', () => {
     await create(req, res);
 
     expect(userIndex.indexUserById).toHaveBeenCalledTimes(1);
-    expect(userIndex.indexUserById).toHaveBeenCalledWith(req.body.id, 'correlation-id');
+    expect(userIndex.indexUserById).toHaveBeenCalledWith(
+      req.body.id,
+      "correlation-id",
+    );
   });
 
-  it('then it should return 201 response', async () => {
+  it("then it should return 201 response", async () => {
     userIndex.search.mockReturnValue({
       users: [],
     });
