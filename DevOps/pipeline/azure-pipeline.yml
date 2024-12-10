@@ -6,7 +6,7 @@ resources:
       type: github
       endpoint: DfE-Digital
       name: DFE-Digital/login.dfe.devops
-      ref: main
+      ref: feature/package-code-quality
     - repository: config
       type: github
       endpoint: DfE-Digital
@@ -96,34 +96,18 @@ variables:
       value: false
 
 stages:
-  # Code Scans & Build the artifact for deployment
-  - stage: scanBuildApp
-    displayName: "Scan tools & Build"
+  - stage: prepare
+    displayName: Prepare
     jobs:
-      - template: pipeline/scanTools.yml@devopsTemplates
+      - template: pipeline/v2/node-project/checks.yml@devopsTemplates
         parameters:
-          useRevisedLinting: true
-          AppDeploy: ${{ not(parameters.InfrDeploy) }}
+          nodeVersionSpec: 18.17.0
 
-      - ${{ if not(eq(parameters.InfrDeploy, 'true')) }}:
-          - template: pipeline/build.yml@devopsTemplates
-            parameters:
-              applicationName: ${{variables.applicationFullName}}
-              custRegAuth: $(custRegAuth)
-              environmentNames:
-                - ${{ if eq(variables.tran, 'true') }}:
-                    - tran
-                - ${{ if eq(variables.dev, 'true') }}:
-                    - dev
-                - ${{ if eq(variables.test, 'true') }}:
-                    - test
-                - ${{ if eq(variables.pp, 'true') }}:
-                    - pp
-                - ${{ if eq(variables.pr, 'true') }}:
-                    - pr
-              pm2ProcessFileName: process.json
-              nodeVersionSpec: "18.17.0"
-              useRevisedLinting: true
+      - template: pipeline/v2/node-project/buildComponent.yml@devopsTemplates
+        parameters:
+          applicationName: ${{ variables.applicationFullName }}
+          pm2ProcessFileName: process.json
+          nodeVersionSpec: 18.17.0
 
   - ${{ each location in parameters.location }}:
       - ${{ each var in variables }}:
@@ -134,18 +118,18 @@ stages:
                         displayName: "Deployment [${{var.key}}] ${{location}}"
                         ${{ if eq(location,'westeurope') }}:
                           dependsOn:
-                            - scanBuildApp
-                          condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
+                            - prepare
+                          condition: in(dependencies.prepare.result, 'Succeeded', 'Skipped')
                         ${{ if eq(location,'northeurope') }}:
                           ${{ if eq(length(parameters.location), 2) }}:
                             dependsOn:
-                              - scanBuildApp
+                              - prepare
                               - Deployment_${{var.key}}_westeurope
-                            condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
+                            condition: in(dependencies.prepare.result, 'Succeeded', 'Skipped')
                           ${{ else }}:
                             dependsOn:
-                              - scanBuildApp
-                            condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
+                              - prepare
+                            condition: in(dependencies.prepare.result, 'Succeeded', 'Skipped')
                         variables:
                           - name: environmentId
                             ${{ if eq(var.key, 'tran') }}:
