@@ -32,7 +32,7 @@ async function overwriteAuditLastLogins(usersData) {
     .map((user) => user.id);
 
   if (userOverwriteIds.length > 0) {
-    const databaseUsers = await getUsers(userOverwriteIds);
+    const databaseUsers = (await getUsers(userOverwriteIds)) ?? [];
     databaseUsers.forEach((dbUser) => {
       users[userIndexes.get(dbUser.sub)].lastLogin = dbUser.last_login;
     });
