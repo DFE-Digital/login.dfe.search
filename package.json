@@ -23,6 +23,7 @@
     "**/*": "prettier --write --ignore-unknown"
   },
   "dependencies": {
+    "@azure/identity": "^4.6.0",
     "applicationinsights": "^2.9.0",
     "express": "^4.17.3",
     "helmet": "^7.0.0",
