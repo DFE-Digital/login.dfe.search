@@ -6,68 +6,52 @@ const config = require("../config");
 const {
   createLastLoginFilterExpression,
 } = require("../../utils/userSearchHelpers");
-//Poc work
-const { DefaultAzureCredential } = require("@azure/identity");
-const { SearchClient, SearchIndexClient } = require("@azure/search-documents");
-const credential = new DefaultAzureCredential();
 
 const baseUri = `https://${config.search.azureSearch.serviceName}.search.windows.net/indexes`;
 const apiVersion = "2020-06-30";
 
-const azureSearchClient = (indexName) => {
-  return new SearchClient(`https://${config.cache.params.serviceName}.search.windows.net`, indexName ,credential);
-};
-
 const storeDocumentsInIndex = async (name, documents) =>
   asyncRetry(async () => {
-    // const url = `${baseUri}/${name}/docs/index?api-version=${apiVersion}`;
-    // const response = await fetch(url, {
-    //   method: "POST",
-    //   headers: {
-    //     "content-type": "application/json",
-    //     "api-key": config.search.azureSearch.apiKey,
-    //   },
-    //   body: JSON.stringify({
-    //     value: documents,
-    //   }),
-    // });
+    const url = `${baseUri}/${name}/docs/index?api-version=${apiVersion}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "api-key": config.search.azureSearch.apiKey,
+      },
+      body: JSON.stringify({
+        value: documents,
+      }),
+    });
 
-    // if (response.status < 200 || response.status > 299) {
-    //   throw new Error(
-    //     `Request failed with status code ${response.status} (POST: ${url})`,
-    //   );
-    // }
-    response = await azureSearchClient(name).uploadDocuments([documents])
+    if (response.status < 200 || response.status > 299) {
+      throw new Error(
+        `Request failed with status code ${response.status} (POST: ${url})`,
+      );
+    }
 
     return {
-      statusCode: response._response.status,
-      body: await response,
+      statusCode: response.status,
+      body: await response.json(),
     };
   }, apiStrategy);
 
 const deleteDocumentInIndex = async (name, id) => {
-
-  const document = {
-    id: id // Replace with the ID of the document you want to delete
-  }
-
-  response = await azureSearchClient(name).deleteDocuments([document])
-  
-  // await fetchApi(`${baseUri}/${name}/docs/index?api-version=${apiVersion}`, {
-  //   method: "POST",
-  //   headers: {
-  //     "content-type": "application/json",
-  //     "api-key": config.search.azureSearch.apiKey,
-  //   },
-  //   body: {
-  //     value: [
-  //       {
-  //         "@search.action": "delete",
-  //         id,
-  //       },
-  //     ],
-  //   },
-  // });
+  await fetchApi(`${baseUri}/${name}/docs/index?api-version=${apiVersion}`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "api-key": config.search.azureSearch.apiKey,
+    },
+    body: {
+      value: [
+        {
+          "@search.action": "delete",
+          id,
+        },
+      ],
+    },
+  });
 };
 
 const searchIndex = async (
@@ -81,20 +65,18 @@ const searchIndex = async (
   searchFields = undefined,
 ) => {
   const skip = (page - 1) * pageSize;
-  //let uri = `${baseUri}/${name}/docs?api-version=${apiVersion}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}&queryType=full&searchMode=all`;
-  let orderBy = ""
-  let filterParam = "";
+  let uri = `${baseUri}/${name}/docs?api-version=${apiVersion}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}&queryType=full&searchMode=all`;
   if (sortBy) {
-     orderBy = sortAsc ? sortBy : `${sortBy} desc`;
-    //uri += `&$orderby=${orderBy}`;
+    const orderBy = sortAsc ? sortBy : `${sortBy} desc`;
+    uri += `&$orderby=${orderBy}`;
   }
 
-  // if (searchFields) {
-  //   uri += `&searchFields=${searchFields}`;
-  // }
+  if (searchFields) {
+    uri += `&searchFields=${searchFields}`;
+  }
 
   if (filters) {
-    //let filterParam = "";
+    let filterParam = "";
     filters.forEach((filter) => {
       if (filterParam.length > 0) {
         filterParam += " and ";
@@ -110,34 +92,24 @@ const searchIndex = async (
         filterParam += `(${filter.field} eq '${filter.values.join(`' or ${filter.field} eq '`)}')`;
       }
     });
-    //uri += `&$filter=${filterParam}`;
+    uri += `&$filter=${filterParam}`;
   }
-  const searchText = criteria; // Replace with your search text
-  const options = {
-    skip: skip,
-    orderby: sortBy ? sortAsc ? sortBy : `${sortBy} desc` : "",
-    searchFields: searchFields ? searchFields : "",
-    filter: filterParam
 
-    
-  }
-  response = await azureSearchClient(name).search(searchText, options)
-
-  // const response = await fetchApi(uri, {
-  //   method: "GET",
-  //   headers: {
-  //     "content-type": "application/json",
-  //     "api-key": config.search.azureSearch.apiKey,
-  //   },
-  // });
+  const response = await fetchApi(uri, {
+    method: "GET",
+    headers: {
+      "content-type": "application/json",
+      "api-key": config.search.azureSearch.apiKey,
+    },
+  });
   let numberOfPages = 1;
-  const totalNumberOfResults = parseInt(response.count, 10);
+  const totalNumberOfResults = parseInt(response["@odata.count"], 10);
   if (!Number.isNaN(totalNumberOfResults)) {
     numberOfPages = Math.ceil(totalNumberOfResults / pageSize);
   }
 
   return {
-    documents: response.map((x) => omit(x, ["@search.score"])),
+    documents: response.value.map((x) => omit(x, ["@search.score"])),
     totalNumberOfResults,
     numberOfPages,
   };
