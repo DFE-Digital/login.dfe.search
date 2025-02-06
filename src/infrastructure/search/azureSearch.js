@@ -6,18 +6,34 @@ const config = require("../config");
 const {
   createLastLoginFilterExpression,
 } = require("../../utils/userSearchHelpers");
+const { ManagedIdentityCredential  } = require("@azure/identity");
+const schMngClientId = process.env.AZURE_SCH_MNG_CLIENT_ID
+// Set up the User Managed Identity credentials
+const credential = new ManagedIdentityCredential(clientId);
 
 const baseUri = `https://${config.search.azureSearch.serviceName}.search.windows.net/indexes`;
 const apiVersion = "2020-06-30";
 
+async function getToken() {
+  try {
+      // Get the token for Azure Cognitive Search
+      const tokenResponse = await credential.getToken("https://search.azure.com/.default");
+
+      return tokenResponse.token;
+  } catch (error) {
+      throw new Error("Error getting token:", error);
+  }
+}
+
 const storeDocumentsInIndex = async (name, documents) =>
   asyncRetry(async () => {
+    const token = await  getToken()
     const url = `${baseUri}/${name}/docs/index?api-version=${apiVersion}`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "api-key": config.search.azureSearch.apiKey,
+        "Authorization": `Bearer ${token}`,
       },
       body: JSON.stringify({
         value: documents,
@@ -37,11 +53,12 @@ const storeDocumentsInIndex = async (name, documents) =>
   }, apiStrategy);
 
 const deleteDocumentInIndex = async (name, id) => {
+  const token = await  getToken()
   await fetchApi(`${baseUri}/${name}/docs/index?api-version=${apiVersion}`, {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      "api-key": config.search.azureSearch.apiKey,
+      "Authorization": `Bearer ${token}`,
     },
     body: {
       value: [
@@ -64,6 +81,7 @@ const searchIndex = async (
   filters = undefined,
   searchFields = undefined,
 ) => {
+  const token = await  getToken()
   const skip = (page - 1) * pageSize;
   let uri = `${baseUri}/${name}/docs?api-version=${apiVersion}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}&queryType=full&searchMode=all`;
   if (sortBy) {
@@ -99,7 +117,7 @@ const searchIndex = async (
     method: "GET",
     headers: {
       "content-type": "application/json",
-      "api-key": config.search.azureSearch.apiKey,
+      "Authorization": `Bearer ${token}`,
     },
   });
   let numberOfPages = 1;
