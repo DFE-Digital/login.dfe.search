@@ -9,7 +9,7 @@ const {
 const { ManagedIdentityCredential  } = require("@azure/identity");
 const schMngClientId = process.env.AZURE_SCH_MNG_CLIENT_ID
 // Set up the User Managed Identity credentials
-const credential = new ManagedIdentityCredential(clientId);
+const credential = new ManagedIdentityCredential(schMngClientId);
 
 const baseUri = `https://${config.search.azureSearch.serviceName}.search.windows.net/indexes`;
 const apiVersion = "2020-06-30";
