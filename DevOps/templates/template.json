@@ -225,7 +225,7 @@
           "additionalAppSettings": {
             "value": {
               "WEBSITE_HEALTHCHECK_MAXPINGFAILURES": "4",
-              "AZURE_SCH_MNG_CLIENT_ID": "[reference(resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.ManagedIdentity/userAssignedIdentities', variables('schMngIdName'))).clientID]"
+              "AZURE_SCH_MNG_CLIENT_ID": "[reference(resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.ManagedIdentity/userAssignedIdentities', variables('schMngIdName')),'2021-08-01').clientID]"
             }
           },
           "healthCheckPath": {
