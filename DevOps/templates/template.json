@@ -100,6 +100,12 @@
     },
     "ipSecurityRestrictions": {
       "type": "array"
+    },
+    "schMngIdName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of user manage identity for AI searach access"
+      }
     }
   },
   "variables": {
@@ -223,7 +229,8 @@
           },
           "additionalAppSettings": {
             "value": {
-              "WEBSITE_HEALTHCHECK_MAXPINGFAILURES": "4"
+              "WEBSITE_HEALTHCHECK_MAXPINGFAILURES": "4",
+              "AZURE_SCH_MNG_CLIENT_ID": "[reference(resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('schMngIdName'))).clientID]"
             }
           },
           "healthCheckPath": {
