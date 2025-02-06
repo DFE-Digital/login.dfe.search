@@ -100,16 +100,11 @@
     },
     "ipSecurityRestrictions": {
       "type": "array"
-    },
-    "schMngIdName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of user manage identity for AI searach access"
-      }
     }
   },
   "variables": {
     "enableVirtualNetworkIntegration": "[and(not(empty(parameters('virtualNetworkResourceGroupName'))), not(empty(parameters('virtualNetworkName'))))]",
+    "schMngIdName": "[replace(parameters('virtualNetworkName'),'vnet','search-id')]",
     "serviceSubnetResourceId": "[if(variables('enableVirtualNetworkIntegration'), resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), concat(parameters('subnetPrefix'))), '')]",
     "prestierG1Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'prestier-g1-sn')]",
     "prestierG2Id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'prestier-g2-sn')]",
@@ -230,7 +225,7 @@
           "additionalAppSettings": {
             "value": {
               "WEBSITE_HEALTHCHECK_MAXPINGFAILURES": "4",
-              "AZURE_SCH_MNG_CLIENT_ID": "[reference(resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('schMngIdName'))).clientID]"
+              "AZURE_SCH_MNG_CLIENT_ID": "[reference(resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.ManagedIdentity/userAssignedIdentities', variables('schMngIdName'))).clientID]"
             }
           },
           "healthCheckPath": {
