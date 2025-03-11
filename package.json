@@ -1,6 +1,6 @@
 {
   "name": "login.dfe.search",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "API for searching aggregated data with DfE Sign-in",
   "repository": {
     "type": "git",
