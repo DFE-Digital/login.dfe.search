@@ -36,7 +36,8 @@
     "login.dfe.healthcheck": "github:DFE-Digital/login.dfe.healthcheck#v3.0.2",
     "login.dfe.jwt-strategies": "github:DFE-Digital/login.dfe.jwt-strategies#v4.1.1",
     "login.dfe.winston-appinsights": "github:DFE-Digital/login.dfe.winston-appinsights#v5.0.3",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+    "dotenv": "^16.4.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
