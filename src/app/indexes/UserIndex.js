@@ -1,11 +1,11 @@
 const uniq = require("lodash/uniq");
 const flatten = require("lodash/flatten");
+const { getUserOrganisationsRaw } = require("login.dfe.api-client/users");
 const logger = require("../../infrastructure/logger");
 const Index = require("./Index");
 const { getUser } = require("../../infrastructure/directories");
 const { getInvitation } = require("login.dfe.api-client/invitations");
 const {
-  getUserOrganisationsV2,
   getInvitationOrganisations,
 } = require("../../infrastructure/organisations");
 const {
@@ -128,17 +128,16 @@ const getInvitationById = async (id, correlationId) => {
   return null;
 };
 
-const getOrganisations = async (documentId, correlationId) => {
+const getOrganisations = async (documentId) => {
   let accessibleOrganisations;
   if (documentId.startsWith("inv-")) {
     accessibleOrganisations = await getInvitationOrganisations(
       documentId.substr(4),
     );
   } else {
-    accessibleOrganisations = await getUserOrganisationsV2(
-      documentId,
-      correlationId,
-    );
+    accessibleOrganisations = await getUserOrganisationsRaw({
+      userId: documentId,
+    });
   }
   return accessibleOrganisations.map((accessibleOrganisation) => ({
     id: accessibleOrganisation.organisation.id,
