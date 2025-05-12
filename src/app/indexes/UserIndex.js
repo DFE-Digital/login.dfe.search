@@ -2,7 +2,8 @@ const uniq = require("lodash/uniq");
 const flatten = require("lodash/flatten");
 const logger = require("../../infrastructure/logger");
 const Index = require("./Index");
-const { getUser, getInvitation } = require("../../infrastructure/directories");
+const { getUser } = require("../../infrastructure/directories");
+const { getInvitation } = require("login.dfe.api-client/invitations");
 const {
   getUserOrganisationsV2,
   getInvitationOrganisations,
@@ -113,7 +114,7 @@ const getUserById = async (id, correlationId) => {
 const getInvitationById = async (id, correlationId) => {
   logger.info("Begin get invitation by id", { correlationId });
 
-  const invitation = await getInvitation(id.substr(4), correlationId);
+  const invitation = await getInvitation({ by: { id: id.substr(4) } });
   if (!invitation.isCompleted) {
     const mapped = {
       id: `inv-${invitation.id}`,

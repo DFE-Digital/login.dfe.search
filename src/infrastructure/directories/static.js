@@ -1,14 +1,3 @@
-const getInvitation = async (invitationId) => {
-  return {
-    firstName: "Some",
-    lastName: "User",
-    email: "some.user@test.local",
-    keyToSuccessId: "1234567",
-    tokenSerialNumber: "12345678901",
-    id: invitationId,
-  };
-};
-
 const getUser = async () => {
   return {
     sub: "7a1b077a-d7d4-4b60-83e8-1a1b49849510",
@@ -22,6 +11,5 @@ const getUser = async () => {
 };
 
 module.exports = {
-  getInvitation,
   getUser,
 };
