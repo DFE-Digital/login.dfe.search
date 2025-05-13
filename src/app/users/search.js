@@ -1,5 +1,5 @@
-const { overwriteAuditLastLogins } = require("../../utils/userHelper");
 const UserIndex = require("../indexes/UserIndex");
+const { overwriteAuditLastLogins } = require("../../utils/userHelper");
 
 const extractFilters = (req) => {
   const paramsSource = req.method === "POST" ? req.body : req.query;
