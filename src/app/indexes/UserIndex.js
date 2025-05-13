@@ -1,17 +1,17 @@
 const uniq = require("lodash/uniq");
 const flatten = require("lodash/flatten");
-const { getUserOrganisationsRaw } = require("login.dfe.api-client/users");
+const { getInvitation } = require("login.dfe.api-client/invitations");
+const {
+  getUserOrganisationsRaw,
+  getUserServicesRaw,
+} = require("login.dfe.api-client/users");
 const logger = require("../../infrastructure/logger");
 const Index = require("./Index");
 const { getUser } = require("../../infrastructure/directories");
-const { getInvitation } = require("login.dfe.api-client/invitations");
 const {
   getInvitationOrganisations,
 } = require("../../infrastructure/organisations");
-const {
-  listUserServices,
-  listInvitationServices,
-} = require("../../infrastructure/access");
+const { listInvitationServices } = require("../../infrastructure/access");
 const { mapAsync } = require("../../utils/async");
 const { getSearchableString } = require("./utils");
 
@@ -169,7 +169,7 @@ const getServices = async (documentId, correlationId) => {
       correlationId,
     );
   } else {
-    services = await listUserServices(documentId, correlationId);
+    services = await getUserServicesRaw({ userId: documentId });
   }
   return services ? services.map((service) => service.serviceId) : [];
 };
