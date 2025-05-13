@@ -1,6 +1,9 @@
 const uniq = require("lodash/uniq");
 const flatten = require("lodash/flatten");
-const { getInvitation } = require("login.dfe.api-client/invitations");
+const {
+  getInvitation,
+  getInvitationServicesRaw,
+} = require("login.dfe.api-client/invitations");
 const {
   getUserOrganisationsRaw,
   getUserServicesRaw,
@@ -11,7 +14,6 @@ const { getUser } = require("../../infrastructure/directories");
 const {
   getInvitationOrganisations,
 } = require("../../infrastructure/organisations");
-const { listInvitationServices } = require("../../infrastructure/access");
 const { mapAsync } = require("../../utils/async");
 const { getSearchableString } = require("./utils");
 
@@ -161,13 +163,12 @@ const getOrganisations = async (documentId) => {
     textIdentifier: accessibleOrganisation.textIdentifier,
   }));
 };
-const getServices = async (documentId, correlationId) => {
+const getServices = async (documentId) => {
   let services;
   if (documentId.startsWith("inv-")) {
-    services = await listInvitationServices(
-      documentId.substr(4),
-      correlationId,
-    );
+    services = await getInvitationServicesRaw({
+      userInvitationId: documentId.substr(4),
+    });
   } else {
     services = await getUserServicesRaw({ userId: documentId });
   }
