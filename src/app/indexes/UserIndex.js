@@ -10,10 +10,7 @@ const {
 } = require("login.dfe.api-client/users");
 const logger = require("../../infrastructure/logger");
 const Index = require("./Index");
-const { getUser } = require("../../infrastructure/directories");
-const {
-  getInvitationOrganisations,
-} = require("../../infrastructure/organisations");
+const { directories, invitation } = require("login.dfe.dao");
 const { mapAsync } = require("../../utils/async");
 const { getSearchableString } = require("./utils");
 
@@ -100,7 +97,7 @@ const indexStructure = {
 const getUserById = async (id, correlationId) => {
   logger.info("Begin get user by id", { correlationId });
 
-  const user = await getUser(id, correlationId);
+  const user = await directories.getUser(id);
   const mapped = {
     id: user.sub,
     firstName: user.given_name,
@@ -133,7 +130,7 @@ const getInvitationById = async (id, correlationId) => {
 const getOrganisations = async (documentId) => {
   let accessibleOrganisations;
   if (documentId.startsWith("inv-")) {
-    accessibleOrganisations = await getInvitationOrganisations(
+    accessibleOrganisations = await invitation.getInvitationResponseById(
       documentId.substr(4),
     );
   } else {

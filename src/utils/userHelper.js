@@ -1,4 +1,4 @@
-const { getUser, getUsers } = require("../infrastructure/directories");
+const { directories } = require("login.dfe.dao");
 
 /**
  * Overwrite the lastLogin property in a user object from UserIndex
@@ -10,7 +10,7 @@ async function overwriteAuditLastLogin(userData) {
   const user = userData;
 
   if (!user.id.startsWith("inv-")) {
-    const databaseUser = await getUser(user.id);
+    const databaseUser = await directories.getUser(user.id);
     user.lastLogin = databaseUser.last_login;
   }
 
@@ -32,7 +32,7 @@ async function overwriteAuditLastLogins(usersData) {
     .map((user) => user.id);
 
   if (userOverwriteIds.length > 0) {
-    const databaseUsers = (await getUsers(userOverwriteIds)) ?? [];
+    const databaseUsers = (await directories.getUsers(userOverwriteIds)) ?? [];
     databaseUsers.forEach((dbUser) => {
       users[userIndexes.get(dbUser.sub)].lastLogin = dbUser.last_login;
     });
