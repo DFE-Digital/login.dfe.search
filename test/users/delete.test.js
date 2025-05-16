@@ -7,6 +7,15 @@ jest.mock("./../../src/infrastructure/logger", () =>
 
 jest.mock("./../../src/app/indexes/UserIndex");
 
+jest.mock("login.dfe.dao", () => ({
+  invitation: {
+    getById: jest.fn(),
+  },
+  directories: {
+    getUser: jest.fn(),
+  },
+}));
+
 const { mockRequest, mockResponse } = require("../helpers");
 const UserIndex = require("../../src/app/indexes/UserIndex");
 const deleteUser = require("../../src/app/users/delete");
