@@ -1,16 +1,16 @@
 const uniq = require("lodash/uniq");
 const flatten = require("lodash/flatten");
+const {
+  getInvitation,
+  getInvitationServicesRaw,
+} = require("login.dfe.api-client/invitations");
+const {
+  getUserOrganisationsRaw,
+  getUserServicesRaw,
+} = require("login.dfe.api-client/users");
 const logger = require("../../infrastructure/logger");
 const Index = require("./Index");
-const { getUser, getInvitation } = require("../../infrastructure/directories");
-const {
-  getUserOrganisationsV2,
-  getInvitationOrganisations,
-} = require("../../infrastructure/organisations");
-const {
-  listUserServices,
-  listInvitationServices,
-} = require("../../infrastructure/access");
+const { directories, invitation } = require("login.dfe.dao");
 const { mapAsync } = require("../../utils/async");
 const { getSearchableString } = require("./utils");
 
@@ -97,7 +97,7 @@ const indexStructure = {
 const getUserById = async (id, correlationId) => {
   logger.info("Begin get user by id", { correlationId });
 
-  const user = await getUser(id, correlationId);
+  const user = await directories.getUser(id);
   const mapped = {
     id: user.sub,
     firstName: user.given_name,
@@ -113,7 +113,7 @@ const getUserById = async (id, correlationId) => {
 const getInvitationById = async (id, correlationId) => {
   logger.info("Begin get invitation by id", { correlationId });
 
-  const invitation = await getInvitation(id.substr(4), correlationId);
+  const invitation = await getInvitation({ by: { id: id.substr(4) } });
   if (!invitation.isCompleted) {
     const mapped = {
       id: `inv-${invitation.id}`,
@@ -127,17 +127,16 @@ const getInvitationById = async (id, correlationId) => {
   return null;
 };
 
-const getOrganisations = async (documentId, correlationId) => {
+const getOrganisations = async (documentId) => {
   let accessibleOrganisations;
   if (documentId.startsWith("inv-")) {
-    accessibleOrganisations = await getInvitationOrganisations(
+    accessibleOrganisations = await invitation.getInvitationResponseById(
       documentId.substr(4),
     );
   } else {
-    accessibleOrganisations = await getUserOrganisationsV2(
-      documentId,
-      correlationId,
-    );
+    accessibleOrganisations = await getUserOrganisationsRaw({
+      userId: documentId,
+    });
   }
   return accessibleOrganisations.map((accessibleOrganisation) => ({
     id: accessibleOrganisation.organisation.id,
@@ -161,15 +160,14 @@ const getOrganisations = async (documentId, correlationId) => {
     textIdentifier: accessibleOrganisation.textIdentifier,
   }));
 };
-const getServices = async (documentId, correlationId) => {
+const getServices = async (documentId) => {
   let services;
   if (documentId.startsWith("inv-")) {
-    services = await listInvitationServices(
-      documentId.substr(4),
-      correlationId,
-    );
+    services = await getInvitationServicesRaw({
+      userInvitationId: documentId.substr(4),
+    });
   } else {
-    services = await listUserServices(documentId, correlationId);
+    services = await getUserServicesRaw({ userId: documentId });
   }
   return services ? services.map((service) => service.serviceId) : [];
 };

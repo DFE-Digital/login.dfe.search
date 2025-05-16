@@ -5,12 +5,34 @@ const helmet = require("helmet");
 const healthCheck = require("login.dfe.healthcheck");
 const { getErrorHandler } = require("login.dfe.express-error-handling");
 const apiAuth = require("login.dfe.api.auth");
+const { setupApi } = require("login.dfe.api-client/api/setup");
 const registerRoutes = require("./routes");
 const configSchema = require("./infrastructure/config/schema");
 const config = require("./infrastructure/config");
 const logger = require("./infrastructure/logger");
 
 configSchema.validate();
+
+setupApi({
+  auth: {
+    tenant: config.directories.service.auth.tenant,
+    authorityHostUrl: config.directories.service.auth.authorityHostUrl,
+    clientId: config.directories.service.auth.clientId,
+    clientSecret: config.directories.service.auth.clientSecret,
+    resource: config.directories.service.auth.resource,
+  },
+  api: {
+    directories: {
+      baseUri: config.directories.service.url,
+    },
+    organisations: {
+      baseUri: config.organisations.service.url,
+    },
+    access: {
+      baseUri: config.access.service.url,
+    },
+  },
+});
 
 const app = express();
 https.globalAgent.maxSockets = http.globalAgent.maxSockets =
