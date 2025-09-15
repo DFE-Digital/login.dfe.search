@@ -56,7 +56,6 @@ const scriptSources = [
   "'unsafe-eval'",
   "localhost",
   "*.signin.education.gov.uk",
-  "https://code.jquery.com",
 ];
 
 app.use(
