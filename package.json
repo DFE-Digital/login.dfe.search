@@ -24,10 +24,10 @@
   },
   "dependencies": {
     "dotenv": "^16.6.1",
-    "express": "^4.21.2",
+    "express": "^4.22.1",
     "helmet": "^7.2.0",
     "lodash": "^4.17.21",
-    "login.dfe.api-client": "^1.0.29",
+    "login.dfe.api-client": "^1.0.58",
     "login.dfe.api.auth": "^2.3.4",
     "login.dfe.async-retry": "github:DFE-Digital/login.dfe.async-retry#v2.0.3",
     "login.dfe.config.schema.common": "^2.1.8",
@@ -36,8 +36,8 @@
     "login.dfe.healthcheck": "^3.0.3"
   },
   "devDependencies": {
-    "@eslint/js": "^9.35.0",
-    "eslint": "^9.35.0",
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
     "eslint-formatter-junit": "^8.40.0",
     "eslint-plugin-jest": "^28.14.0",
     "globals": "^15.15.0",
@@ -46,8 +46,8 @@
     "jest-cli": "^29.7.0",
     "jest-junit": "^16.0.0",
     "lint-staged": "^15.5.2",
-    "nodemon": "^3.1.10",
-    "prettier": "^3.6.2",
+    "nodemon": "^3.1.11",
+    "prettier": "^3.7.4",
     "sequelize-mock": "^0.10.2"
   },
   "jest": {
