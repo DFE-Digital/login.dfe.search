@@ -88,6 +88,8 @@ const searchIndex = async (
       } else if (filter.field === "lastLogin") {
         const lastLoginFilterUrl = createLastLoginFilterExpression(filter);
         filterParam += `(${lastLoginFilterUrl})`;
+      } else if (filter.mode === "exclude") {
+        filterParam += `(${filter.field} ne '${filter.values[0]}')`;
       } else {
         filterParam += `(${filter.field} eq '${filter.values.join(`' or ${filter.field} eq '`)}')`;
       }
