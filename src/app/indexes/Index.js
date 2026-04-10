@@ -187,6 +187,7 @@ class Index {
             field: filter.field,
             fieldType: field.type,
             values: filter.values,
+            mode: filter.mode,
           });
         });
       }

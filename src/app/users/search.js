@@ -21,6 +21,16 @@ const extractFilters = (req) => {
       });
     }
   });
+
+  const excludeId = paramsSource.exclude_id;
+  if (excludeId) {
+    filters.push({
+      field: "id",
+      values: [excludeId],
+      mode: "exclude",
+    });
+  }
+
   return filters.length > 0 ? filters : undefined;
 };
 
