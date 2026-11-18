@@ -27,13 +27,13 @@
     "express": "^4.22.1",
     "helmet": "^7.2.0",
     "lodash": "^4.17.21",
-    "login.dfe.api-client": "^1.0.69",
-    "login.dfe.api.auth": "^2.3.4",
-    "login.dfe.async-retry": "github:DFE-Digital/login.dfe.async-retry#v2.0.3",
-    "login.dfe.config.schema.common": "^2.1.8",
-    "login.dfe.dao": "^5.0.7",
+    "login.dfe.api-client": "^2.0.4-prerelease",
+    "login.dfe.api.auth": "2.3.5-prerelease",
+    "login.dfe.async-retry": "github:DFE-Digital/login.dfe.async-retry#2.0.4-prerelease",
+    "login.dfe.config.schema.common": "^2.1.9-prerelease",
+    "login.dfe.dao": "^5.0.10-prerelease",
     "login.dfe.express-error-handling": "^3.0.5",
-    "login.dfe.healthcheck": "^3.0.3"
+    "login.dfe.healthcheck": "^3.0.4-prerelease"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
